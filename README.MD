@@ -1,3 +1,9 @@
+# Dependencies
+
+Python 3.9+
+
+`pip3 install -r requirements.txt`
+
 # Taginfo code (Ruby)
 
 https://github.com/taginfo/taginfo/blob/master/sources/wiki/lib/mediawikiapi.rb
