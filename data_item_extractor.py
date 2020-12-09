@@ -127,6 +127,7 @@ def turn_api_response_to_parsed(parsed_json):
 
 def page_data(page_title):
     url = "https://wiki.openstreetmap.org/w/api.php?action=wbgetentities&sites=wiki&titles=" + page_title + "&languages=en|fr&format=json"
+    url = url.replace(" ", "%20")
     data = urllib.request.urlopen(url).read()
     #print(data)
     parsed = json.loads(data)

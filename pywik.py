@@ -8,14 +8,27 @@ import template_extractor
 
 
 def compare_data(page_name):
+    url = "https://wiki.openstreetmap.org/wiki/" + page_name
+    url = url.replace(" ", "%20")
     data_item = data_item_extractor.page_data(page_name)
     template = template_extractor.page_data(page_name)
+    print(data_item)
+    print(template)
+    print()
+    print()
+    print()
     for key in set(set(data_item.keys()) | set(template.keys())):
         in_data_item = data_item.get(key)
         in_template = template.get(key)
         if in_template == None:
             if in_data_item != None:
-                print("https://wiki.openstreetmap.org/wiki/" + page_name, "-", key, "is from data item")
+                print(url, "-", key, "is from data item (", in_data_item, ")")
+        if in_template != None:
+            if in_data_item != None:
+                if in_template != in_data_item:
+                    if "?" not in in_data_item:
+                        print(url, "-", key, "are mismatched between data item and OSM Wiki (", in_template, "vs", in_data_item, ")")
+
 
 
 site = pywikibot.Site()
