@@ -55,6 +55,8 @@ def extract_magic_code(entity, claim_id):
 def extract_usage_status_string(entity):
     claim_id = "P6"
     magic_status_code = extract_magic_code(entity, claim_id)
+    if magic_status_code == None:
+        return None
     if magic_status_code == 13:
         return "de facto"
     elif magic_status_code == 14:
