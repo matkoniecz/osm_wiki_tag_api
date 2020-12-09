@@ -37,6 +37,35 @@ def extract_url(entity, claim_id):
     # maybe implementing whatever type matches should be done...
     return extract_string(entity, claim_id)
 
+def extract_magic_code(entity, claim_id):
+    if "claims" not in entity:
+        return None
+    if claim_id not in entity["claims"]:
+        return None
+    magic_status_code_object = entity["claims"][claim_id][0]["mainsnak"]["datavalue"]["value"] # partial processing, assumes that first value os relevant and ignores any other
+    if "numeric-id" in magic_status_code_object:
+        return magic_status_code_object["numeric-id"]
+    else:
+        print(json.dumps(parsed_json, indent = 4))
+        print(json.dumps(magic_status_code_object, indent = 4))
+        raise "missing status code"
+
+def extract_usage_status_string(entity):
+    claim_id = "P6"
+    magic_status_code = extract_magic_code(entity, claim_id)
+    if magic_status_code == 13:
+        return "de facto"
+    elif magic_status_code == 14:
+        return "in use"
+    elif magic_status_code == 5061:
+        return "deprecated"
+    elif magic_status_code == 15:
+        return "approved"
+    else:
+        print(json.dumps(parsed_json, indent = 4))
+        print(magic_status_code)
+        raise "unexpected status code"
+
 def turn_api_response_to_parsed(parsed_json):
     returned_ids = list(parsed_json['entities'].keys())
     if len(returned_ids) != 1:
@@ -50,16 +79,9 @@ def turn_api_response_to_parsed(parsed_json):
     if value != None:
         returned["image"] = value
     returned["description"] = entity["descriptions"]["en"]["value"]
-
-    magic_status_code_object = entity["claims"]["P6"][0]["mainsnak"]["datavalue"]["value"] # partial processing, assumes that first value os relevant and ignores any other
-    if "numeric-id" in magic_status_code_object:
-        magic_status_code = magic_status_code_object["numeric-id"]
-        if magic_status_code == 13:
-            returned["status"] = "De facto"
-        else:
-            print(json.dumps(parsed_json, indent = 4))
-            print(magic_status_code)
-            raise "unexpected status code"
+    status_string = extract_usage_status_string(entity)
+    if status_string != None:
+        returned["status"] = status_string
 
     status = status_for_geometry(entity, "P33")
     if status != None:
