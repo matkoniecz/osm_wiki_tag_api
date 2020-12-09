@@ -12,20 +12,31 @@ def compare_data(page_name):
     url = url.replace(" ", "%20")
     data_item = data_item_extractor.page_data(page_name)
     template = template_extractor.page_data(page_name)
-    print(data_item)
-    print(template)
-    print()
-    print()
-    print()
+    if template == {}:
+        return # for example, on pages where Template:Deprecated calls it internally
     for key in set(set(data_item.keys()) | set(template.keys())):
         in_data_item = data_item.get(key)
+        normalized_in_data_item = in_data_item
         in_template = template.get(key)
+        normalized_in_template = in_template
         if in_template == None:
             if in_data_item != None:
                 print(url, "-", key, "is from data item (", in_data_item, ")")
         if in_template != None:
+            if key == "image":
+                normalized_in_template = normalized_in_template.removeprefix("Image:")
+                normalized_in_template = normalized_in_template.removeprefix("File:")
+                normalized_in_template = normalized_in_template.replace("_", " ")
+                continue
+            if key == "status":
+                normalized_in_template = normalized_in_template.lower()
+            if key == "description":
+                if normalized_in_template[-1] == ".":
+                    normalized_in_template = normalized_in_template[:-1]
+                if normalized_in_data_item[-1] == ".":
+                    normalized_in_data_item = normalized_in_data_item[:-1]
             if in_data_item != None:
-                if in_template != in_data_item:
+                if normalized_in_template != normalized_in_data_item:
                     if "?" not in in_data_item:
                         print(url, "-", key, "are mismatched between data item and OSM Wiki (", in_template, "vs", in_data_item, ")")
 
