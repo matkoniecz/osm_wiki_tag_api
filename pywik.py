@@ -10,6 +10,13 @@ import template_extractor
 def compare_data(page_name):
     data_item = data_item_extractor.page_data(page_name)
     template = template_extractor.page_data(page_name)
+    for key in set(set(data_item.keys()) | set(template.keys())):
+        in_data_item = data_item.get(key)
+        in_template = template.get(key)
+        if in_template == None:
+            if in_data_item != None:
+                print("https://wiki.openstreetmap.org/wiki/" + page_name, "-", key, "is from data item")
+
 
 site = pywikibot.Site()
 #print(template_extractor.tag_data("highway", "motorway"))
