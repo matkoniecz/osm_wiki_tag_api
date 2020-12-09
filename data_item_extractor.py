@@ -5,6 +5,11 @@
 import urllib
 import json
 
+# this is a hacky workaround
+
+# pywikibot failed: https://phabricator.wikimedia.org/T269635
+# maybe https://github.com/SuLab/WikidataIntegrator would work (see https://github.com/SuLab/WikidataIntegrator/issues/164 )
+
 def status_for_geometry(entity, claim_id):
     if claim_id not in entity["claims"]:
         return None
