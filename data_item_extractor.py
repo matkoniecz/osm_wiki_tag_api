@@ -23,6 +23,7 @@ def status_for_geometry(entity, claim_id):
         print(magic_status_code)
         print("invalid status code for geometry")
     else:
+        print(json.dumps(entity, indent = 4))
         print(magic_status_code_object)
         raise "invalid magic object"
 
@@ -39,6 +40,7 @@ def extract_url(entity, claim_id):
 def turn_api_response_to_parsed(parsed_json):
     returned_ids = list(parsed_json['entities'].keys())
     if len(returned_ids) != 1:
+        print(json.dumps(parsed_json, indent = 4))
         raise "unexpected"
     item_id = returned_ids[0]
     entity = parsed_json['entities'][item_id]
@@ -55,6 +57,7 @@ def turn_api_response_to_parsed(parsed_json):
         if magic_status_code == 13:
             returned["status"] = "De facto"
         else:
+            print(json.dumps(parsed_json, indent = 4))
             print(magic_status_code)
             raise "unexpected status code"
 
