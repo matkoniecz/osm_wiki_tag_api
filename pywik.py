@@ -59,8 +59,9 @@ for page in site.allpages(namespace = [0]):
 for infobox in ["Template:ValueDescription", "Template:KeyDescription"]:
     root_page = pywikibot.Page(pywikibot.Site(), infobox)
     for page in root_page.getReferences(namespaces=[0], content=True): #namespaces=self.opt.namespaces
-        print(data_item_extractor.page_data(page.title()))
-        print(template_extractor.page_data(page.title()))
+        compare_data(page.title())
+        #print(data_item_extractor.page_data(page.title()))
+        #print(template_extractor.page_data(page.title()))
 
 
 """
