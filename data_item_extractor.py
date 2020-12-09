@@ -1,3 +1,7 @@
+# Copyright (C) 2020  Mateusz Konieczny <matkoniecz@gmail.com>
+# This program is free software: you can redistribute it and/or modify it under
+# the terms of the GNU Affero General Public License 3 as published by FSF
+
 import urllib
 import json
 
