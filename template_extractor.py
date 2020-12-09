@@ -31,7 +31,7 @@ def turn_page_text_to_parsed(text):
                             "requires", "implies", "combination", "seeAlso",
                             "wikidata", "group"]:
                 if fetched in template:
-                    returned[fetched] = template.get(fetched).strip()
+                    returned[fetched] = template.get(fetched).value.strip()
     return returned
 
 def page_data(page_title):
