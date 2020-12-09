@@ -29,7 +29,7 @@ def turn_page_text_to_parsed(text):
             for fetched in ["image", "description", "status", "statuslink",
                             "onNode", "onWay", "onArea", "onRelation",
                             "requires", "implies", "combination", "seeAlso",
-                            "wikidata"]:
+                            "wikidata", "group"]:
                 if fetched in template:
                     returned[fetched] = template.get(fetched).strip()
     return returned
