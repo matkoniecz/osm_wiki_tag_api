@@ -82,7 +82,10 @@ def turn_api_response_to_parsed(parsed_json):
     value = extract_string(entity, "P28")
     if value != None:
         returned["image"] = value
-    returned["description"] = entity["descriptions"]["en"]["value"]
+    language_code = "en"
+    if "descriptions" in entity:
+        if language_code in entity["descriptions"]:
+            returned["description"] = entity["descriptions"][language_code]["value"]
     status_string = extract_usage_status_string(entity)
     if status_string != None:
         returned["status"] = status_string
