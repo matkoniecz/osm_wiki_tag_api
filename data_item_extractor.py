@@ -64,7 +64,7 @@ def extract_usage_status_string(entity):
     elif magic_status_code == 15:
         return "approved"
     else:
-        print(json.dumps(parsed_json, indent = 4))
+        print(json.dumps(entity, indent = 4))
         print(magic_status_code)
         raise "unexpected status code"
 
