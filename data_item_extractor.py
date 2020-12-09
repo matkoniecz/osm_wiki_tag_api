@@ -28,6 +28,8 @@ def status_for_geometry(entity, claim_id):
         raise "invalid magic object"
 
 def extract_string(entity, claim_id):
+    if "claims" not in entity:
+        return None
     if claim_id not in entity["claims"]:
         return None
     # partial processing, assumes that first value os relevant and ignores any other
