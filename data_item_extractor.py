@@ -81,6 +81,8 @@ def extract_usage_status_string(entity):
         return "deprecated"
     elif magic_status_code == 15:
         return "approved"
+    elif magic_status_code == 19:
+        return "abandoned"
     else:
         print(json.dumps(entity, indent = 4))
         print(magic_status_code)
