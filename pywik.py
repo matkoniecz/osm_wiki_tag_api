@@ -72,6 +72,11 @@ def valid_wikidata(page_name):
         "Tag:natural=wood": "Q4421",
         "Tag:highway=motorway_junction": "Q353070",
         "Tag:amenity=cafe": "Q30022",
+        "Tag:barrier=hedge": "Q235779",
+        "Tag:bicycle=no": "Q66361472",
+        "Tag:barrier=city_wall": "Q16748868",
+        "Tag:waterway=canal": "Q12284",
+        "Tag:power=generator": "Q131502",
     }
     return wikidata.get(page_name)
 
