@@ -62,7 +62,7 @@ def normalize_description(description):
     return description[:-1]
 
 def valid_wikidata(page_name):
-    # why not added? Because I consider adding them as mistake
+    # why not added? Because I consider wikidata parameter as a mistake
     # why listed here? To detect invalid ones
     page_name = page_name.replace(" ", "_")
     wikidata = {
