@@ -10,10 +10,24 @@ import json
 # pywikibot failed: https://phabricator.wikimedia.org/T269635
 # maybe https://github.com/SuLab/WikidataIntegrator would work (see https://github.com/SuLab/WikidataIntegrator/issues/164 )
 
-def status_for_geometry(entity, claim_id):
+def extract_unqualified_statement(entity, claim_id):
     if claim_id not in entity["claims"]:
         return None
-    magic_status_code_object = entity["claims"][claim_id][0]["mainsnak"]["datavalue"]["value"]
+    statements = entity["claims"][claim_id]
+    for statement in statements:
+        if "qualifiers" in statement:
+            continue
+        # returns first value if there are multiple ones
+        # see case of image for
+        # https://wiki.openstreetmap.org/wiki/Item:Q4990
+        return statement["mainsnak"]
+    return None
+
+def status_for_geometry(entity, claim_id):
+    statement = extract_unqualified_statement(entity, claim_id)
+    if statement == None:
+        return None
+    magic_status_code_object = statement["datavalue"]["value"]
     if "numeric-id" in magic_status_code_object:
         magic_status_code = magic_status_code_object["numeric-id"]
         if magic_status_code == 8001:
@@ -32,8 +46,10 @@ def extract_string(entity, claim_id):
         return None
     if claim_id not in entity["claims"]:
         return None
-    # partial processing, assumes that first value os relevant and ignores any other
-    return entity["claims"][claim_id][0]["mainsnak"]["datavalue"]["value"]
+    statement = extract_unqualified_statement(entity, claim_id)
+    if statement == None:
+        return None
+    return statement["datavalue"]["value"]
 
 def extract_url(entity, claim_id):
     # maybe implementing whatever type matches should be done...
@@ -44,7 +60,7 @@ def extract_magic_code(entity, claim_id):
         return None
     if claim_id not in entity["claims"]:
         return None
-    magic_status_code_object = entity["claims"][claim_id][0]["mainsnak"]["datavalue"]["value"] # partial processing, assumes that first value os relevant and ignores any other
+    magic_status_code_object =extract_unqualified_statement(entity, claim_id)["datavalue"]["value"]
     if "numeric-id" in magic_status_code_object:
         return magic_status_code_object["numeric-id"]
     else:
@@ -130,13 +146,19 @@ def turn_api_response_to_parsed(parsed_json):
         returned["wikidata"] = value
     return returned
 
-def page_data(page_title):
+def json_response_from_api(page_title):
     url = "https://wiki.openstreetmap.org/w/api.php?action=wbgetentities&sites=wiki&titles=" + page_title + "&languages=en|fr&format=json"
     url = url.replace(" ", "%20")
     data = urllib.request.urlopen(url).read()
-    #print(data)
-    parsed = json.loads(data)
+    return json.loads(data)
+
+def page_data(page_title):
+    parsed = json_response_from_api(page_title)
     return turn_api_response_to_parsed(parsed)
+
+def pretty_response_text(page_title):
+    parsed = json_response_from_api(page_title)
+    return json.dumps(parsed, indent = 4)
 
 def tag_data(key, value=None):
     if value == None:
@@ -144,7 +166,6 @@ def tag_data(key, value=None):
     else:
         return page_data("Tag:" + key + "=" + value)
 
-    #print(json.dumps(parsed, indent = 4))
 
     """
     following fails:
