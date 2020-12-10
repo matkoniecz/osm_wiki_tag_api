@@ -2,7 +2,8 @@
 # This program is free software: you can redistribute it and/or modify it under
 # the terms of the GNU Affero General Public License 3 as published by FSF
 
-import template_extractor
+import extract_infobox_data
+
 text = """
 {{ValueDescription
 |key=building
@@ -24,5 +25,5 @@ text_for_group_bug = """{{ValueDescription
 |unrelated=group
 }}"""
 
-print(template_extractor.turn_page_text_to_parsed(text))
-print(template_extractor.turn_page_text_to_parsed(text_for_group_bug))
+print(extract_infobox_data.turn_page_text_to_parsed(text))
+print(extract_infobox_data.turn_page_text_to_parsed(text_for_group_bug))

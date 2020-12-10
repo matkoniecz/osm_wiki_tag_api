@@ -1,6 +1,6 @@
 import pywikibot
 import data_item_extractor
-import template_extractor
+import extract_infobox_data
 
 # https://www.mediawiki.org/wiki/Manual:Pywikibot/Installation#Install_Pywikibot
 # I followed it, run script, and recopied it here
@@ -11,7 +11,7 @@ def compare_data(page_name):
     url = "https://wiki.openstreetmap.org/wiki/" + page_name
     url = url.replace(" ", "_")
     data_item = data_item_extractor.page_data(page_name)
-    template = template_extractor.page_data(page_name)
+    template = extract_infobox_data.page_data(page_name)
     if template == {}:
         return # for example, on pages where Template:Deprecated calls it internally
     for key in set(set(data_item.keys()) | set(template.keys())):
