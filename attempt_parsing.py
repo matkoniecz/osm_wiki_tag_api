@@ -20,4 +20,9 @@ Building of an unspecific type, used when someone is unable to tag it more speci
 Replacing by more specific building type is always welcomed (if more specific value is correct). [[StreetComplete]] is one of tools that can be used for that.
 """
 
+text_for_group_bug = """{{ValueDescription
+|unrelated=group
+}}"""
+
 print(template_extractor.turn_page_text_to_parsed(text))
+print(template_extractor.turn_page_text_to_parsed(text_for_group_bug))
