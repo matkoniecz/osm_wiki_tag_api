@@ -9,7 +9,7 @@ import template_extractor
 
 def compare_data(page_name):
     url = "https://wiki.openstreetmap.org/wiki/" + page_name
-    url = url.replace(" ", "%20")
+    url = url.replace(" ", "_")
     data_item = data_item_extractor.page_data(page_name)
     template = template_extractor.page_data(page_name)
     if template == {}:
@@ -20,26 +20,56 @@ def compare_data(page_name):
         in_template = template.get(key)
         normalized_in_template = in_template
         if in_template == None:
+            if key == "group":
+                continue # do not report leaks here (for now - TODO!)
             if in_data_item != None:
                 print(url, "-", key, "is from data item (", in_data_item, ")")
-        if in_template != None:
+            if key == "wikidata":
+                    print('        "' + page_name + '": "' + data_item + '",')
+        if in_template != None and in_data_item != None:
             if key == "image":
                 normalized_in_template = normalized_in_template.removeprefix("Image:")
                 normalized_in_template = normalized_in_template.removeprefix("File:")
                 normalized_in_template = normalized_in_template.replace("_", " ")
-                continue
+                continue # do not report mismatches here
             if key == "status":
                 normalized_in_template = normalized_in_template.lower()
             if key == "description":
-                if normalized_in_template[-1] == ".":
-                    normalized_in_template = normalized_in_template[:-1]
-                if normalized_in_data_item[-1] == ".":
-                    normalized_in_data_item = normalized_in_data_item[:-1]
-            if in_data_item != None:
+                normalized_in_template = normalize_description(normalized_in_template)
+                normalized_in_data_item = normalize_description(normalized_in_data_item)
                 if normalized_in_template != normalized_in_data_item:
-                    if "?" not in in_data_item:
-                        print(url, "-", key, "are mismatched between data item and OSM Wiki (", in_template, "vs", in_data_item, ")")
+                    print(url, "-", key, "are mismatched between OSM Wiki and data item")
+                    print(in_template)
+                    print(in_data_item)
+                continue # do not report mismatches here
+            if key == "wikidata":
+                if normalized_in_template == None and normalized_in_data_item != None:
+                    normalized_in_template = valid_wikidata(page_name)
+            if normalized_in_template != normalized_in_data_item:
+                if "?" not in in_data_item:
+                    print(url, "-", key, "are mismatched between OSM Wiki and data item (", in_template, "vs", in_data_item, ")")
 
+def normalize_description(description):
+    if description == None:
+        return description
+    if description == "":
+        return description
+    if description[-1] != ".":
+        return description
+    return description[:-1]
+
+def valid_wikidata(page_name):
+    # why not added? Because I consider adding them as mistake
+    # why listed here? To detect invalid ones
+    page_name = page_name.replace(" ", "_")
+    wikidata = {
+        "Tag:aerialway=chair_lift": "Q850767",
+        "Tag:barrier=toll_booth": "Q1364150",
+        "Tag:man_made=survey_point": "Q352956",
+        "Tag:natural=wood": "Q4421",
+        "Tag:highway=motorway_junction": "Q353070",
+    }
+    return wikidata.get(page_name)
 
 
 site = pywikibot.Site()
