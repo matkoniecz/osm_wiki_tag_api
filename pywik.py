@@ -68,6 +68,7 @@ def valid_wikidata(page_name):
         "Tag:man_made=survey_point": "Q352956",
         "Tag:natural=wood": "Q4421",
         "Tag:highway=motorway_junction": "Q353070",
+        "Tag:amenity=cafe": "Q30022",
     }
     return wikidata.get(page_name)
 
