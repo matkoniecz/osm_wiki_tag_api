@@ -85,6 +85,8 @@ def extract_usage_status_string(entity):
         return "abandoned"
     elif magic_status_code == 20:
         return "proposed"
+    elif magic_status_code == 21146:
+        return "imported"
     else:
         print(json.dumps(entity, indent = 4))
         print(magic_status_code)
