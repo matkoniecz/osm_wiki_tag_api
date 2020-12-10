@@ -24,7 +24,7 @@ def compare_data(page_name):
             if normalized_in_template == None and normalized_in_data_item != None:
                 normalized_in_template = valid_wikidata(page_name)
 
-        if in_template == None:
+        if normalized_in_template == None:
             if key == "group":
                 continue # do not report leaks here (for now - TODO!)
             if in_data_item != None:
