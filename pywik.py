@@ -82,54 +82,24 @@ def valid_wikidata(page_name):
 
 
 site = pywikibot.Site()
-#print(template_extractor.tag_data("highway", "motorway"))
-#print(data_item_extractor.tag_data("highway", "motorway"))
-
-compare_data("Key:highway")
-compare_data("Tag:building=yes")
-
-
-"""
-print(site.namespaces)
-for n in site.namespaces:
-    print(n)
-    print(site.namespaces[n])
-    print(site.namespaces[n].canonical_prefix())
-    print(site.namespaces[n].normalize_name(site.namespaces[n].canonical_prefix()))
-    print(type(site.namespaces[n]))
-"""
-
-"""
-# all pages in main namespace
-for page in site.allpages(namespace = [0]):
-    print(page)
-    print(page.title())
-"""
 
 for infobox in ["Template:ValueDescription", "Template:KeyDescription"]:
     root_page = pywikibot.Page(pywikibot.Site(), infobox)
     for page in root_page.getReferences(namespaces=[0], content=True):
         if page.title().find("Tag:") == 0 or page.title().find("Key:") == 0: #No translated pages as data items are borked there
             compare_data(page.title())
-            #print(data_item_extractor.page_data(page.title()))
-            #print(template_extractor.page_data(page.title()))
-
 
 """
-print("aaaaa")
-for namespace in site.namespaces:
-    print(namespace)
+# list namespaces
+for n in site.namespaces:
+    print(n)
+    print(site.namespaces[n])
+    print(site.namespaces[n].canonical_prefix())
+    print(site.namespaces[n].normalize_name(site.namespaces[n].canonical_prefix()))
+    print(type(site.namespaces[n]))
 
-site = pywikibot.Site()
-for namespace in site.namespaces:
-    print(namespace)
-    for page in site.allpages(namespace = namespace):
-        print(page)
-        #// process page.title() and page.editTime()
-
-page = pywikibot.Page(site, "Key:highway")
-text = page.text
-print(text)
-wikicode = mwparserfromhell.parse(text)
-templates = wikicode.filter_templates()
+# all pages in main namespace
+for page in site.allpages(namespace = [0]):
+    print(page)
+    print(page.title())
 """
