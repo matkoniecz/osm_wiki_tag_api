@@ -30,7 +30,8 @@ def compare_data(page_name):
             if in_data_item != None:
                 print(url, "-", key, "is from data item (", in_data_item, ")")
             if key == "wikidata":
-                    print('        "' + page_name + '": "' + data_item + '",')
+                    print('https://www.wikidata.org/wiki/' + in_data_item)
+                    print('        "' + page_name + '": "' + in_data_item.replace(" ", "_") + '",')
         if in_template != None and in_data_item != None:
             if key == "image":
                 normalized_in_template = normalized_in_template.removeprefix("Image:")
