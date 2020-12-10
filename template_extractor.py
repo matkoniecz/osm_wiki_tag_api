@@ -30,7 +30,7 @@ def turn_page_text_to_parsed(text):
                             "onNode", "onWay", "onArea", "onRelation",
                             "requires", "implies", "combination", "seeAlso",
                             "wikidata", "group"]:
-                if fetched in template:
+                if template.has(fetched):
                     returned[fetched] = template.get(fetched).value.strip()
     return returned
 
