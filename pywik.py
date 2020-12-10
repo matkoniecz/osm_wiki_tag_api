@@ -19,6 +19,11 @@ def compare_data(page_name):
         normalized_in_data_item = in_data_item
         in_template = template.get(key)
         normalized_in_template = in_template
+
+        if key == "wikidata":
+            if normalized_in_template == None and normalized_in_data_item != None:
+                normalized_in_template = valid_wikidata(page_name)
+
         if in_template == None:
             if key == "group":
                 continue # do not report leaks here (for now - TODO!)
@@ -42,9 +47,6 @@ def compare_data(page_name):
                     print(in_template)
                     print(in_data_item)
                 continue # do not report mismatches here
-            if key == "wikidata":
-                if normalized_in_template == None and normalized_in_data_item != None:
-                    normalized_in_template = valid_wikidata(page_name)
             if normalized_in_template != normalized_in_data_item:
                 if "?" not in in_data_item:
                     print(url, "-", key, "are mismatched between OSM Wiki and data item (", in_template, "vs", in_data_item, ")")
