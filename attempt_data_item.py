@@ -1044,8 +1044,745 @@ data_item = """{
     "success": 1
 }"""
 
+university_text = """
+{
+    "entities": {
+        "Q4736": {
+            "pageid": 210765,
+            "ns": 120,
+            "title": "Item:Q4736",
+            "lastrevid": 2052768,
+            "modified": "2020-10-22T20:35:49Z",
+            "type": "item",
+            "id": "Q4736",
+            "labels": {
+                "en": {
+                    "language": "en",
+                    "value": "amenity=university"
+                }
+            },
+            "descriptions": {
+                "en": {
+                    "language": "en",
+                    "value": "An educational institution designed for instruction, examination, or both, of students in many branches of advanced learning."
+                },
+                "fr": {
+                    "language": "fr",
+                    "value": "Un \u00e9tablissement d\u2019enseignement universitaire."
+                }
+            },
+            "aliases": {},
+            "claims": {
+                "P2": [
+                    {
+                        "mainsnak": {
+                            "snaktype": "value",
+                            "property": "P2",
+                            "hash": "6511c2931be27bcac018d16006b07c7c2e704c57",
+                            "datavalue": {
+                                "value": {
+                                    "entity-type": "item",
+                                    "numeric-id": 2,
+                                    "id": "Q2"
+                                },
+                                "type": "wikibase-entityid"
+                            },
+                            "datatype": "wikibase-item"
+                        },
+                        "type": "statement",
+                        "id": "Q4736$66FC33F7-1CA5-4072-ABBE-490AF2054C69",
+                        "rank": "normal"
+                    }
+                ],
+                "P19": [
+                    {
+                        "mainsnak": {
+                            "snaktype": "value",
+                            "property": "P19",
+                            "hash": "cb061476e539eada26f0e5e403856bce14780343",
+                            "datavalue": {
+                                "value": "amenity=university",
+                                "type": "string"
+                            },
+                            "datatype": "string"
+                        },
+                        "type": "statement",
+                        "id": "Q4736$82E5F3D0-12F8-4D63-AD21-752B8A58342B",
+                        "rank": "normal"
+                    }
+                ],
+                "P10": [
+                    {
+                        "mainsnak": {
+                            "snaktype": "value",
+                            "property": "P10",
+                            "hash": "1328a252ed5de0baf77d66a1640301b6dfe18308",
+                            "datavalue": {
+                                "value": {
+                                    "entity-type": "item",
+                                    "numeric-id": 61,
+                                    "id": "Q61"
+                                },
+                                "type": "wikibase-entityid"
+                            },
+                            "datatype": "wikibase-item"
+                        },
+                        "type": "statement",
+                        "id": "Q4736$59F81DE4-DE7E-4514-9D96-767CC2BC59C1",
+                        "rank": "normal"
+                    }
+                ],
+                "P28": [
+                    {
+                        "mainsnak": {
+                            "snaktype": "value",
+                            "property": "P28",
+                            "hash": "255ddd779cecf1b346823eef31b9433e301a7d59",
+                            "datavalue": {
+                                "value": "Dscf1076 600.jpg",
+                                "type": "string"
+                            },
+                            "datatype": "string"
+                        },
+                        "type": "statement",
+                        "id": "Q4736$5CECD7D6-E139-4E64-A42A-5ECB51EB35B6",
+                        "rank": "preferred"
+                    },
+                    {
+                        "mainsnak": {
+                            "snaktype": "value",
+                            "property": "P28",
+                            "hash": "7509218b3d7e028545fb1bd1be863daaf9679e5e",
+                            "datavalue": {
+                                "value": "Uniwersytet Jagiello\u0144ski, Collegium Novum.JPG",
+                                "type": "string"
+                            },
+                            "datatype": "string"
+                        },
+                        "type": "statement",
+                        "qualifiers": {
+                            "P26": [
+                                {
+                                    "snaktype": "value",
+                                    "property": "P26",
+                                    "hash": "d467e092d2f9541bac5a796ddf95a2101b3f619e",
+                                    "datavalue": {
+                                        "value": {
+                                            "entity-type": "item",
+                                            "numeric-id": 7806,
+                                            "id": "Q7806"
+                                        },
+                                        "type": "wikibase-entityid"
+                                    },
+                                    "datatype": "wikibase-item"
+                                }
+                            ],
+                            "P47": [
+                                {
+                                    "snaktype": "value",
+                                    "property": "P47",
+                                    "hash": "c88607de9ada8af5d70f765405a9f4514810abd2",
+                                    "datavalue": {
+                                        "value": {
+                                            "text": "Uniwersytet Jagiello\u0144ski, Collegium Novum.",
+                                            "language": "pl"
+                                        },
+                                        "type": "monolingualtext"
+                                    },
+                                    "datatype": "monolingualtext"
+                                }
+                            ]
+                        },
+                        "qualifiers-order": [
+                            "P26",
+                            "P47"
+                        ],
+                        "id": "Q4736$F952BE05-3E0E-4DA5-9EF4-1195CC0721F6",
+                        "rank": "normal"
+                    }
+                ],
+                "P39": [
+                    {
+                        "mainsnak": {
+                            "snaktype": "value",
+                            "property": "P39",
+                            "hash": "eb0f8c5170b0f9b2fbbfd6508d339372d36fd078",
+                            "datavalue": {
+                                "value": "Rendering-area-amenity-school.png",
+                                "type": "string"
+                            },
+                            "datatype": "string"
+                        },
+                        "type": "statement",
+                        "id": "Q4736$92F4A8C8-E609-4B99-AE6D-BAF0B7F41E58",
+                        "rank": "preferred"
+                    }
+                ],
+                "P6": [
+                    {
+                        "mainsnak": {
+                            "snaktype": "value",
+                            "property": "P6",
+                            "hash": "b2c07cc9f42392a0a80595b5b6c968e50068ffa0",
+                            "datavalue": {
+                                "value": {
+                                    "entity-type": "item",
+                                    "numeric-id": 15,
+                                    "id": "Q15"
+                                },
+                                "type": "wikibase-entityid"
+                            },
+                            "datatype": "wikibase-item"
+                        },
+                        "type": "statement",
+                        "id": "Q4736$171D1C07-BE40-45E1-B4FF-C4F4E9D0D95C",
+                        "rank": "preferred"
+                    }
+                ],
+                "P33": [
+                    {
+                        "mainsnak": {
+                            "snaktype": "value",
+                            "property": "P33",
+                            "hash": "787ef76c487fb28eedcc10c388fb4245e2b92e0f",
+                            "datavalue": {
+                                "value": {
+                                    "entity-type": "item",
+                                    "numeric-id": 8000,
+                                    "id": "Q8000"
+                                },
+                                "type": "wikibase-entityid"
+                            },
+                            "datatype": "wikibase-item"
+                        },
+                        "type": "statement",
+                        "id": "Q4736$09E675D1-C0C6-4334-B170-0D22499414B3",
+                        "rank": "preferred"
+                    }
+                ],
+                "P34": [
+                    {
+                        "mainsnak": {
+                            "snaktype": "value",
+                            "property": "P34",
+                            "hash": "9b6067afea85541b88f2bac304657bd2e8962e0d",
+                            "datavalue": {
+                                "value": {
+                                    "entity-type": "item",
+                                    "numeric-id": 8001,
+                                    "id": "Q8001"
+                                },
+                                "type": "wikibase-entityid"
+                            },
+                            "datatype": "wikibase-item"
+                        },
+                        "type": "statement",
+                        "id": "Q4736$5144C882-3FA8-4138-B8A5-5B92E168EF90",
+                        "rank": "preferred"
+                    }
+                ],
+                "P35": [
+                    {
+                        "mainsnak": {
+                            "snaktype": "value",
+                            "property": "P35",
+                            "hash": "8d54b8f7391e3f783fe3d76d15d9036b90305842",
+                            "datavalue": {
+                                "value": {
+                                    "entity-type": "item",
+                                    "numeric-id": 8000,
+                                    "id": "Q8000"
+                                },
+                                "type": "wikibase-entityid"
+                            },
+                            "datatype": "wikibase-item"
+                        },
+                        "type": "statement",
+                        "id": "Q4736$BEA7AFA9-A5D8-4E5D-830F-225F2E295572",
+                        "rank": "preferred"
+                    }
+                ],
+                "P36": [
+                    {
+                        "mainsnak": {
+                            "snaktype": "value",
+                            "property": "P36",
+                            "hash": "724c9a8f85dfb6c9de78ecb25a7504e02b40a8c7",
+                            "datavalue": {
+                                "value": {
+                                    "entity-type": "item",
+                                    "numeric-id": 8000,
+                                    "id": "Q8000"
+                                },
+                                "type": "wikibase-entityid"
+                            },
+                            "datatype": "wikibase-item"
+                        },
+                        "type": "statement",
+                        "qualifiers": {
+                            "P26": [
+                                {
+                                    "snaktype": "value",
+                                    "property": "P26",
+                                    "hash": "e05b66e5c396eb30a261000045022603c63cf8e8",
+                                    "datavalue": {
+                                        "value": {
+                                            "entity-type": "item",
+                                            "numeric-id": 6994,
+                                            "id": "Q6994"
+                                        },
+                                        "type": "wikibase-entityid"
+                                    },
+                                    "datatype": "wikibase-item"
+                                },
+                                {
+                                    "snaktype": "value",
+                                    "property": "P26",
+                                    "hash": "f9e806c2f33e02433219e0d7672f15f5ac62b020",
+                                    "datavalue": {
+                                        "value": {
+                                            "entity-type": "item",
+                                            "numeric-id": 7788,
+                                            "id": "Q7788"
+                                        },
+                                        "type": "wikibase-entityid"
+                                    },
+                                    "datatype": "wikibase-item"
+                                }
+                            ]
+                        },
+                        "qualifiers-order": [
+                            "P26"
+                        ],
+                        "id": "Q4736$7D653833-16E5-40F6-A91E-005DC27E07C9",
+                        "rank": "normal"
+                    },
+                    {
+                        "mainsnak": {
+                            "snaktype": "value",
+                            "property": "P36",
+                            "hash": "da59fea04a91ec684c883ff2db27de2c13a3875e",
+                            "datavalue": {
+                                "value": {
+                                    "entity-type": "item",
+                                    "numeric-id": 8001,
+                                    "id": "Q8001"
+                                },
+                                "type": "wikibase-entityid"
+                            },
+                            "datatype": "wikibase-item"
+                        },
+                        "type": "statement",
+                        "qualifiers": {
+                            "P26": [
+                                {
+                                    "snaktype": "value",
+                                    "property": "P26",
+                                    "hash": "8a06ee7969c5eee29022df9642c0c1fa0b165d22",
+                                    "datavalue": {
+                                        "value": {
+                                            "entity-type": "item",
+                                            "numeric-id": 7809,
+                                            "id": "Q7809"
+                                        },
+                                        "type": "wikibase-entityid"
+                                    },
+                                    "datatype": "wikibase-item"
+                                }
+                            ]
+                        },
+                        "qualifiers-order": [
+                            "P26"
+                        ],
+                        "id": "Q4736$50E22041-4577-4458-A112-6E19290D2773",
+                        "rank": "normal"
+                    }
+                ],
+                "P12": [
+                    {
+                        "mainsnak": {
+                            "snaktype": "value",
+                            "property": "P12",
+                            "hash": "2499807cbd6ad8f165de1cf91b5cc42ff1b569dc",
+                            "datavalue": {
+                                "value": "Q3918",
+                                "type": "string"
+                            },
+                            "datatype": "external-id"
+                        },
+                        "type": "statement",
+                        "id": "Q4736$190131C1-0524-4EF7-89B3-3A3F351AB6D8",
+                        "rank": "preferred"
+                    }
+                ],
+                "P46": [
+                    {
+                        "mainsnak": {
+                            "snaktype": "value",
+                            "property": "P46",
+                            "hash": "3335bd20921b46c31e02654c618c04fc8b0eca72",
+                            "datavalue": {
+                                "value": {
+                                    "entity-type": "item",
+                                    "numeric-id": 174,
+                                    "id": "Q174"
+                                },
+                                "type": "wikibase-entityid"
+                            },
+                            "datatype": "wikibase-item"
+                        },
+                        "type": "statement",
+                        "id": "Q4736$B89B3FBB-AF9B-4428-B39A-ECF57546BCA8",
+                        "rank": "normal"
+                    },
+                    {
+                        "mainsnak": {
+                            "snaktype": "value",
+                            "property": "P46",
+                            "hash": "d4cad755ff16c779f89cc7ab671537ac5fbec91a",
+                            "datavalue": {
+                                "value": {
+                                    "entity-type": "item",
+                                    "numeric-id": 35,
+                                    "id": "Q35"
+                                },
+                                "type": "wikibase-entityid"
+                            },
+                            "datatype": "wikibase-item"
+                        },
+                        "type": "statement",
+                        "id": "Q4736$80EB667D-1563-4E9D-99B7-5CA988658113",
+                        "rank": "normal"
+                    },
+                    {
+                        "mainsnak": {
+                            "snaktype": "value",
+                            "property": "P46",
+                            "hash": "b97d4332a0de3c31dbd4677c02d09261c8ae121c",
+                            "datavalue": {
+                                "value": {
+                                    "entity-type": "item",
+                                    "numeric-id": 464,
+                                    "id": "Q464"
+                                },
+                                "type": "wikibase-entityid"
+                            },
+                            "datatype": "wikibase-item"
+                        },
+                        "type": "statement",
+                        "id": "Q4736$133517BB-E894-4078-8F5B-B1FACB25D5A8",
+                        "rank": "normal"
+                    },
+                    {
+                        "mainsnak": {
+                            "snaktype": "value",
+                            "property": "P46",
+                            "hash": "f21c4383bc67c702ae0572cca35e91c9e5e94ce2",
+                            "datavalue": {
+                                "value": {
+                                    "entity-type": "item",
+                                    "numeric-id": 524,
+                                    "id": "Q524"
+                                },
+                                "type": "wikibase-entityid"
+                            },
+                            "datatype": "wikibase-item"
+                        },
+                        "type": "statement",
+                        "id": "Q4736$2352FAA6-70C8-43B5-B1F4-7A9DA3B277FF",
+                        "rank": "normal"
+                    },
+                    {
+                        "mainsnak": {
+                            "snaktype": "value",
+                            "property": "P46",
+                            "hash": "3077616b4115dcc33718e9e18b75aef6240446b7",
+                            "datavalue": {
+                                "value": {
+                                    "entity-type": "item",
+                                    "numeric-id": 828,
+                                    "id": "Q828"
+                                },
+                                "type": "wikibase-entityid"
+                            },
+                            "datatype": "wikibase-item"
+                        },
+                        "type": "statement",
+                        "id": "Q4736$DCB9BC6A-4581-4A29-8852-FEF6656F4690",
+                        "rank": "normal"
+                    }
+                ],
+                "P31": [
+                    {
+                        "mainsnak": {
+                            "snaktype": "value",
+                            "property": "P31",
+                            "hash": "fff664f19e8e37b88ef79acbad71ea04dc200574",
+                            "datavalue": {
+                                "value": {
+                                    "text": "Tag:amenity=university",
+                                    "language": "en"
+                                },
+                                "type": "monolingualtext"
+                            },
+                            "datatype": "monolingualtext"
+                        },
+                        "type": "statement",
+                        "id": "Q4736$996B8338-7EEE-4B93-B3C5-716B09B42A91",
+                        "rank": "normal"
+                    },
+                    {
+                        "mainsnak": {
+                            "snaktype": "value",
+                            "property": "P31",
+                            "hash": "08d79d7aaebb70a97aeb62ee803d7f74992c713b",
+                            "datavalue": {
+                                "value": {
+                                    "text": "Cs:Tag:amenity=university",
+                                    "language": "cs"
+                                },
+                                "type": "monolingualtext"
+                            },
+                            "datatype": "monolingualtext"
+                        },
+                        "type": "statement",
+                        "id": "Q4736$F0E68AD9-EC11-488F-B29C-F1D3B080B7EE",
+                        "rank": "normal"
+                    },
+                    {
+                        "mainsnak": {
+                            "snaktype": "value",
+                            "property": "P31",
+                            "hash": "121d8564834545bf361b04652564a4e22c1777d7",
+                            "datavalue": {
+                                "value": {
+                                    "text": "DE:Tag:amenity=university",
+                                    "language": "de"
+                                },
+                                "type": "monolingualtext"
+                            },
+                            "datatype": "monolingualtext"
+                        },
+                        "type": "statement",
+                        "id": "Q4736$5068C6E6-CE2D-46DD-9ADA-DF6231E07F35",
+                        "rank": "normal"
+                    },
+                    {
+                        "mainsnak": {
+                            "snaktype": "value",
+                            "property": "P31",
+                            "hash": "f0f8c09008838af996c4e77a43535506322b9f6e",
+                            "datavalue": {
+                                "value": {
+                                    "text": "El:Tag:amenity=university",
+                                    "language": "el"
+                                },
+                                "type": "monolingualtext"
+                            },
+                            "datatype": "monolingualtext"
+                        },
+                        "type": "statement",
+                        "id": "Q4736$480C0D57-31D3-4719-B603-760320A83A22",
+                        "rank": "normal"
+                    },
+                    {
+                        "mainsnak": {
+                            "snaktype": "value",
+                            "property": "P31",
+                            "hash": "398e477e8a6a969338efbbf87ab3a48f8bd900f4",
+                            "datavalue": {
+                                "value": {
+                                    "text": "ES:Tag:amenity=university",
+                                    "language": "es"
+                                },
+                                "type": "monolingualtext"
+                            },
+                            "datatype": "monolingualtext"
+                        },
+                        "type": "statement",
+                        "id": "Q4736$3C6A86FA-F5F7-44F9-BEE5-A11F70DDABA1",
+                        "rank": "normal"
+                    },
+                    {
+                        "mainsnak": {
+                            "snaktype": "value",
+                            "property": "P31",
+                            "hash": "ca0d7a9d21102b0fc09631a89c3c06eb562ed05c",
+                            "datavalue": {
+                                "value": {
+                                    "text": "FR:Tag:amenity=university",
+                                    "language": "fr"
+                                },
+                                "type": "monolingualtext"
+                            },
+                            "datatype": "monolingualtext"
+                        },
+                        "type": "statement",
+                        "id": "Q4736$E0645E70-7F7B-4191-8455-E3B3282ACC80",
+                        "rank": "normal"
+                    },
+                    {
+                        "mainsnak": {
+                            "snaktype": "value",
+                            "property": "P31",
+                            "hash": "fd1dd8eca569710786cee36032cf8ec92c405641",
+                            "datavalue": {
+                                "value": {
+                                    "text": "IT:Tag:amenity=university",
+                                    "language": "it"
+                                },
+                                "type": "monolingualtext"
+                            },
+                            "datatype": "monolingualtext"
+                        },
+                        "type": "statement",
+                        "id": "Q4736$C48BAAEC-85EC-44AB-8091-E73E945B65F2",
+                        "rank": "normal"
+                    },
+                    {
+                        "mainsnak": {
+                            "snaktype": "value",
+                            "property": "P31",
+                            "hash": "1012d88cf75857dc88383cf4c37a15f2ffcb0c57",
+                            "datavalue": {
+                                "value": {
+                                    "text": "JA:Tag:amenity=university",
+                                    "language": "ja"
+                                },
+                                "type": "monolingualtext"
+                            },
+                            "datatype": "monolingualtext"
+                        },
+                        "type": "statement",
+                        "id": "Q4736$26ED17F5-A65E-4980-B861-0B97F452BEDC",
+                        "rank": "normal"
+                    },
+                    {
+                        "mainsnak": {
+                            "snaktype": "value",
+                            "property": "P31",
+                            "hash": "8a57f13405765811ce82957332e4acd2031f0ff5",
+                            "datavalue": {
+                                "value": {
+                                    "text": "Pl:Tag:amenity=university",
+                                    "language": "pl"
+                                },
+                                "type": "monolingualtext"
+                            },
+                            "datatype": "monolingualtext"
+                        },
+                        "type": "statement",
+                        "id": "Q4736$A03C58C8-3EB6-4068-918F-AFF7F03BFA1C",
+                        "rank": "normal"
+                    },
+                    {
+                        "mainsnak": {
+                            "snaktype": "value",
+                            "property": "P31",
+                            "hash": "af997b9d513df1e25a286d1293e3171ab0467e96",
+                            "datavalue": {
+                                "value": {
+                                    "text": "Pt:Tag:amenity=university",
+                                    "language": "pt"
+                                },
+                                "type": "monolingualtext"
+                            },
+                            "datatype": "monolingualtext"
+                        },
+                        "type": "statement",
+                        "id": "Q4736$9D5DAD63-6272-4113-8BE6-66C89B6C1609",
+                        "rank": "normal"
+                    },
+                    {
+                        "mainsnak": {
+                            "snaktype": "value",
+                            "property": "P31",
+                            "hash": "aa9c62d74453fe79dd2be2374c778cea5a23480c",
+                            "datavalue": {
+                                "value": {
+                                    "text": "Pt-br:Tag:amenity=university",
+                                    "language": "pt-br"
+                                },
+                                "type": "monolingualtext"
+                            },
+                            "datatype": "monolingualtext"
+                        },
+                        "type": "statement",
+                        "qualifiers": {
+                            "P50": [
+                                {
+                                    "snaktype": "value",
+                                    "property": "P50",
+                                    "hash": "28956fc1b7060e8faeb6bc18885e718d29ca2a94",
+                                    "datavalue": {
+                                        "value": "Pt:Tag:amenity=university",
+                                        "type": "string"
+                                    },
+                                    "datatype": "string"
+                                }
+                            ]
+                        },
+                        "qualifiers-order": [
+                            "P50"
+                        ],
+                        "id": "Q4736$E4E7279C-F5A0-45E8-85AD-ED7CCEB13D43",
+                        "rank": "normal"
+                    },
+                    {
+                        "mainsnak": {
+                            "snaktype": "value",
+                            "property": "P31",
+                            "hash": "1db1e426fd55d31530c085a1bcc3095466312659",
+                            "datavalue": {
+                                "value": {
+                                    "text": "RU:Tag:amenity=university",
+                                    "language": "ru"
+                                },
+                                "type": "monolingualtext"
+                            },
+                            "datatype": "monolingualtext"
+                        },
+                        "type": "statement",
+                        "id": "Q4736$BFBCA8F4-67EA-4AB3-A708-B31919D24AA8",
+                        "rank": "normal"
+                    },
+                    {
+                        "mainsnak": {
+                            "snaktype": "value",
+                            "property": "P31",
+                            "hash": "2ae1e8faf7c2f9cc53556dfcc57bacb29851fc3b",
+                            "datavalue": {
+                                "value": {
+                                    "text": "Uk:Tag:amenity=university",
+                                    "language": "uk"
+                                },
+                                "type": "monolingualtext"
+                            },
+                            "datatype": "monolingualtext"
+                        },
+                        "type": "statement",
+                        "id": "Q4736$EF847B1F-18D0-4A15-8C24-F0D021DD3DDE",
+                        "rank": "normal"
+                    }
+                ]
+            },
+            "sitelinks": {
+                "wiki": {
+                    "site": "wiki",
+                    "title": "Tag:amenity=university",
+                    "badges": []
+                }
+            }
+        }
+    },
+    "success": 1
+}
+"""
 
 parsed = json.loads(data_item)
+returned = data_item_extractor.turn_api_response_to_parsed(parsed)
+print(returned)
 
+parsed = json.loads(university_text)
 returned = data_item_extractor.turn_api_response_to_parsed(parsed)
 print(returned)
