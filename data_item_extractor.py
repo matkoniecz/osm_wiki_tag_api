@@ -73,20 +73,26 @@ def extract_usage_status_string(entity):
     magic_status_code = extract_magic_code(entity, claim_id)
     if magic_status_code == None:
         return None
+
+    # active
     if magic_status_code == 13:
         return "de facto"
     elif magic_status_code == 14:
         return "in use"
-    elif magic_status_code == 5061:
-        return "deprecated"
     elif magic_status_code == 15:
         return "approved"
-    elif magic_status_code == 19:
-        return "abandoned"
-    elif magic_status_code == 20:
-        return "proposed"
+
+    # active, but not fully
+    elif magic_status_code == 5061:
+        return "deprecated"
     elif magic_status_code == 21146:
         return "imported"
+    elif magic_status_code == 18:
+        return "draft"
+    elif magic_status_code == 20:
+        return "proposed"
+    elif magic_status_code == 19:
+        return "abandoned"
     else:
         print(json.dumps(entity, indent = 4))
         print(magic_status_code)
