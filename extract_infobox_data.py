@@ -1,6 +1,16 @@
 import mwparserfromhell
 import pywikibot
 
+def page_data(page_title):
+    page = pywikibot.Page(pywikibot.Site(), page_title)
+    return turn_page_text_to_parsed(page.text)
+
+def tag_data(key, value=None):
+    if value == None:
+        return page_data("Key:" + key)
+    else:
+        return page_data("Tag:" + key + "=" + value)
+
 """
 parsing engines that were considered
 
@@ -33,13 +43,3 @@ def turn_page_text_to_parsed(text):
                 if template.has(fetched):
                     returned[fetched] = template.get(fetched).value.strip()
     return returned
-
-def page_data(page_title):
-    page = pywikibot.Page(pywikibot.Site(), page_title)
-    return turn_page_text_to_parsed(page.text)
-
-def tag_data(key, value=None):
-    if value == None:
-        return page_data("Key:" + key)
-    else:
-        return page_data("Tag:" + key + "=" + value)

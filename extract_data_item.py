@@ -5,6 +5,20 @@
 import urllib
 import json
 
+def page_data(page_title):
+    parsed = json_response_from_api(page_title)
+    return turn_api_response_to_parsed(parsed)
+
+def pretty_response_text(page_title):
+    parsed = json_response_from_api(page_title)
+    return json.dumps(parsed, indent = 4)
+
+def tag_data(key, value=None):
+    if value == None:
+        return page_data("Key:" + key)
+    else:
+        return page_data("Tag:" + key + "=" + value)
+
 # this is a hacky workaround
 
 # pywikibot failed: https://phabricator.wikimedia.org/T269635
@@ -163,20 +177,6 @@ def json_response_from_api(page_title):
     url = url.replace(" ", "%20")
     data = urllib.request.urlopen(url).read()
     return json.loads(data)
-
-def page_data(page_title):
-    parsed = json_response_from_api(page_title)
-    return turn_api_response_to_parsed(parsed)
-
-def pretty_response_text(page_title):
-    parsed = json_response_from_api(page_title)
-    return json.dumps(parsed, indent = 4)
-
-def tag_data(key, value=None):
-    if value == None:
-        return page_data("Key:" + key)
-    else:
-        return page_data("Tag:" + key + "=" + value)
 
 
     """
