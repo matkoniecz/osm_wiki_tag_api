@@ -3,7 +3,7 @@
 # the terms of the GNU Affero General Public License 3 as published by FSF
 
 import json
-import data_item_extractor
+import extract_data_item
 
 data_item = """{
     "entities": {
@@ -1780,9 +1780,9 @@ university_text = """
 """
 
 parsed = json.loads(data_item)
-returned = data_item_extractor.turn_api_response_to_parsed(parsed)
+returned = extract_data_item.turn_api_response_to_parsed(parsed)
 print(returned)
 
 parsed = json.loads(university_text)
-returned = data_item_extractor.turn_api_response_to_parsed(parsed)
+returned = extract_data_item.turn_api_response_to_parsed(parsed)
 print(returned)
