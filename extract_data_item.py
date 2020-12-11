@@ -74,7 +74,14 @@ def extract_magic_code(entity, claim_id):
         return None
     if claim_id not in entity["claims"]:
         return None
-    magic_status_code_object =extract_unqualified_statement(entity, claim_id)["datavalue"]["value"]
+    statement = extract_unqualified_statement(entity, claim_id)
+    if statement == None:
+        return None
+    if "datavalue" not in statement:
+        print(json.dumps(parsed_json, indent = 4))
+        raise "missing data value"
+    datavalue = statement["datavalue"]
+    magic_status_code_object = datavalue["value"]
     if "numeric-id" in magic_status_code_object:
         return magic_status_code_object["numeric-id"]
     else:
