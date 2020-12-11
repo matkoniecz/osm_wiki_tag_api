@@ -7,6 +7,18 @@ This repository contains
 - [code](compare.py) comparing info in data items and in infoboxes, listing mismatches and cases where infobox is not using its parameters but is silently displaying info from data item
     - mismatches often indicate that something is wrong, and use of data item instead of infobox parameters is unwanted. Especially in cases where someone deleted parameter from infobox ecause it was wrong but incorrect data from data item still haunts us.
 
+# Limitations
+
+If you need anything of things listed below - feel free to make a pull request!
+
+Ideally, open an issue first if you want to add something not listed below.
+
+* Full parsing of data items is missing.
+
+* Missing support for non-English descriptions
+
+* Missing documentation and proper tests
+
 # Dependencies
 
 Python 3.9+
