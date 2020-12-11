@@ -28,10 +28,12 @@ def compare_data(page_name):
             if key == "group":
                 continue # do not report leaks here (for now - TODO!)
             if in_data_item != None:
-                print(url, "-", key, "is from data item (", in_data_item, ")")
+                print(":", url, "-", key, "is from data item (", in_data_item, ")")
             if key == "wikidata":
-                    print('https://www.wikidata.org/wiki/' + in_data_item)
+                    print(': https://www.wikidata.org/wiki/' + in_data_item)
+                    print("<pre>")
                     print('        "' + page_name.replace(" ", "_") + '": "' + in_data_item + '",')
+                    print("</pre>")
         if in_template != None and in_data_item != None:
             if key == "image":
                 normalized_in_template = normalized_in_template.removeprefix("Image:")
@@ -44,13 +46,13 @@ def compare_data(page_name):
                 normalized_in_template = normalize_description(normalized_in_template)
                 normalized_in_data_item = normalize_description(normalized_in_data_item)
                 if normalized_in_template != normalized_in_data_item:
-                    print(url, "-", key, "are mismatched between OSM Wiki and data item")
-                    print(in_template)
-                    print(in_data_item)
+                    print(":", url, "-", key, "are mismatched between OSM Wiki and data item")
+                    print("::", in_template)
+                    print("::", in_data_item)
                 continue # do not report mismatches here
             if normalized_in_template != normalized_in_data_item:
                 if "?" not in in_data_item:
-                    print(url, "-", key, "are mismatched between OSM Wiki and data item (", in_template, "vs", in_data_item, ")")
+                    print(":", url, "-", key, "are mismatched between OSM Wiki and data item (", in_template, "vs", in_data_item, ")")
 
 def normalize_description(description):
     if description == None:
