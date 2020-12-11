@@ -83,7 +83,7 @@ def valid_wikidata(page_name):
         "Tag:place=city": "Q515",
         "Tag:highway=mini_roundabout": "Q12037720",
         "Tag:highway=footway": "Q3352369",
-        "Tag:man made=pipeline": "Q16885408",
+        "Tag:man_made=pipeline": "Q16885408",
         "Tag:highway=residential": "Q97674120",
         "Tag:public_transport=stop_position": "Q548662",
         "Tag:landuse=farmland": "Q3395383",
