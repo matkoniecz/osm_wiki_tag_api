@@ -21,8 +21,29 @@ def compare_data(page_name):
         normalized_in_template = in_template
 
         if key == "wikidata":
+            if in_data_item == None and in_template != None:
+                print(":", url, "Wikidata link is not mentioned in data item, it should be present there to make future elimination of wikidata from infobox easier")
             if normalized_in_template == None and normalized_in_data_item != None:
                 normalized_in_template = valid_wikidata(page_name)
+        
+        if key == "statuslink":
+            if normalized_in_data_item != None:
+                normalized_in_data_item = normalized_in_data_item.removeprefix("https://wiki.openstreetmap.org/wiki/")
+
+        if key == "image":
+            if normalized_in_template != None:
+                normalized_in_template = normalized_in_template.removeprefix("Image:")
+                normalized_in_template = normalized_in_template.removeprefix("File:")
+                normalized_in_template = normalized_in_template.replace("_", " ")
+
+        if key == "status":
+            if normalized_in_template != None:
+                normalized_in_template = normalized_in_template.lower()
+
+        if key == "description":
+            if normalized_in_template != None:
+                normalized_in_template = normalize_description(normalized_in_template)
+                normalized_in_data_item = normalize_description(normalized_in_data_item)
 
         if normalized_in_template == None:
             if key == "group":
@@ -36,22 +57,15 @@ def compare_data(page_name):
                     print("</pre>")
         if in_template != None and in_data_item != None:
             if key == "image":
-                normalized_in_template = normalized_in_template.removeprefix("Image:")
-                normalized_in_template = normalized_in_template.removeprefix("File:")
-                normalized_in_template = normalized_in_template.replace("_", " ")
                 continue # do not report mismatches here
-            if key == "status":
-                normalized_in_template = normalized_in_template.lower()
             if key == "description":
-                normalized_in_template = normalize_description(normalized_in_template)
-                normalized_in_data_item = normalize_description(normalized_in_data_item)
-                if normalized_in_template != normalized_in_data_item:
+                continue # do not report mismatches here
+            if normalized_in_template != normalized_in_data_item:
+                if key == "description":
                     print(":", url, "-", key, "are mismatched between OSM Wiki and data item")
                     print("::", in_template)
                     print("::", in_data_item)
-                continue # do not report mismatches here
-            if normalized_in_template != normalized_in_data_item:
-                if "?" not in in_data_item:
+                elif "?" not in in_data_item:
                     print(":", url, "-", key, "are mismatched between OSM Wiki and data item (", in_template, "vs", in_data_item, ")")
 
 def normalize_description(description):
