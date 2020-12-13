@@ -40,6 +40,16 @@ def compare_data(page_name):
             if normalized_in_template != None:
                 normalized_in_template = normalized_in_template.lower()
 
+            if normalized_in_template == "defacto":
+                # do not bother, at least for now, with this
+                normalized_in_template = "de facto"
+
+            # obsolete and deprecated are not worth distinguishing
+            if normalized_in_data_item == "obsolete" and normalized_in_template == "deprecated":
+                normalized_in_data_item = "deprecated"
+            if normalized_in_data_item == "deprecated" and normalized_in_template == "obsolete":
+                normalized_in_data_item = "obsolete"
+
         if key == "description":
             if normalized_in_template != None:
                 normalized_in_template = normalize_description(normalized_in_template)
