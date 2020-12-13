@@ -48,8 +48,9 @@ def compare_data(page_name):
         if normalized_in_template == None:
             if key == "group":
                 continue # do not report leaks here (for now - TODO!)
-            if in_data_item != None:
-                print(":", url, "-", key, "is from data item (", in_data_item, ")")
+            if in_data_item == None:
+                continue
+            print(":", url, "-", key, "is from data item (", in_data_item, ")")
             if key == "wikidata":
                     print(': https://www.wikidata.org/wiki/' + in_data_item)
                     print("<pre>")
