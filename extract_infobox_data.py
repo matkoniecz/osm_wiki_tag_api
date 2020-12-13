@@ -15,16 +15,19 @@ def tag_data(key, value=None):
 parsing engines that were considered
 
 (1)
-mwparserfromhell 
+mwparserfromhell - first tried, worked very well
 
 (2)
 pywikibot's harvest_template.py
 
 (3)
+https://github.com/5j9/wikitextparser
+
+(4)
 MediaWiki API - https://en.wikipedia.org/wiki/Special:ApiSandbox#action=parse&format=json&text=%7B%7B1x%7Carg%7D%7D&prop=parsetree&contentmodel=wikitext&formatversion=2
 not sure is it actually a parser, not tested usefullness
 
-(4)
+(5)
 https://www.mediawiki.org/wiki/Parsoid - PHP, old version in JS
 """
 
