@@ -106,6 +106,8 @@ def extract_usage_status_string(entity):
     # active, but not fully
     elif magic_status_code == 5061:
         return "deprecated"
+    elif magic_status_code == 5060:
+        return "obsolete"
     elif magic_status_code == 21146:
         return "imported"
     elif magic_status_code == 18:
