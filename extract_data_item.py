@@ -3,6 +3,7 @@
 # the terms of the GNU Affero General Public License 3 as published by FSF
 
 import urllib
+import urllib.request
 import json
 
 def page_data(page_title):
