@@ -12,6 +12,7 @@ def compare_data(page_name):
     url = url.replace(" ", "_")
     data_item = extract_data_item.page_data(page_name)
     template = extract_infobox_data.page_data(page_name)
+    written_something = False
     if template == {}:
         return # for example, on pages where Template:Deprecated calls it internally
     for key in set(set(data_item.keys()) | set(template.keys())):
@@ -21,8 +22,10 @@ def compare_data(page_name):
         normalized_in_template = in_template
 
         if key == "wikidata":
+            continue # big time sing, it would be smarter to work on removal it from infoboxes
             if in_data_item == None and in_template != None:
                 print(":", url, "Wikidata link is not mentioned in data item, it should be present there to make future elimination of wikidata from infobox easier")
+                written_something = True
             if normalized_in_template == None and normalized_in_data_item != None:
                 normalized_in_template = valid_wikidata(page_name)
         
@@ -61,6 +64,7 @@ def compare_data(page_name):
             if in_data_item == None:
                 continue
             print(":", url, "-", key, "is from data item (", in_data_item, ")")
+            written_something = True
             if key == "wikidata":
                     print(': https://www.wikidata.org/wiki/' + in_data_item)
                     print("<pre>")
@@ -76,8 +80,12 @@ def compare_data(page_name):
                     print(":", url, "-", key, "are mismatched between OSM Wiki and data item")
                     print("::", in_template)
                     print("::", in_data_item)
+                    written_something = True
                 elif "?" not in in_data_item:
                     print(":", url, "-", key, "are mismatched between OSM Wiki and data item (", in_template, "vs", in_data_item, ")")
+                    written_something = True
+    if written_something:
+        print()
 
 def normalize_description(description):
     if description == None:
