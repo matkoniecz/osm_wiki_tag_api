@@ -24,6 +24,8 @@ def tag_data(key, value=None):
 
 # pywikibot failed: https://phabricator.wikimedia.org/T269635
 # maybe https://github.com/SuLab/WikidataIntegrator would work (see https://github.com/SuLab/WikidataIntegrator/issues/164 )
+# see https://github.com/osmlab/atlas-checks/blob/0296d4d0544e801a198a186462487f2014c8fac5/scripts/wikidata/get_wikidata.py
+# for a very similar parsing to this one, but different
 
 def extract_unqualified_statement(entity, claim_id):
     if claim_id not in entity["claims"]:
