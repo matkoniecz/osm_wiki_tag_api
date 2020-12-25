@@ -179,12 +179,12 @@ def valid_wikidata(page_name):
 
 
 site = pywikibot.Site()
-
 for infobox in ["Template:ValueDescription", "Template:KeyDescription"]:
     root_page = pywikibot.Page(pywikibot.Site(), infobox)
     for page in root_page.getReferences(namespaces=[0], content=True):
         if page.title().find("Tag:") == 0 or page.title().find("Key:") == 0: #No translated pages as data items are borked there
             compare_data(page.title())
+compare_data("Tag:source=Bymiljøetaten")
 
 """
 # list namespaces
