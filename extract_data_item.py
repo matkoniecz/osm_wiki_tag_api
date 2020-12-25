@@ -3,6 +3,7 @@
 # the terms of the GNU Affero General Public License 3 as published by FSF
 
 import urllib
+import urllib.request
 import json
 
 def page_data(page_title):
@@ -123,22 +124,33 @@ def extract_usage_status_string(entity):
         print(magic_status_code)
         raise "unexpected status code"
 
-def turn_api_response_to_parsed(parsed_json):
+def extract_description(entity, language_code = "en"):
+    if "descriptions" in entity:
+        if language_code in entity["descriptions"]:
+            return entity["descriptions"][language_code]["value"]
+    return None
+
+def extract_entity_from_parsed_json(parsed_json):
     returned_ids = list(parsed_json['entities'].keys())
     if len(returned_ids) != 1:
         print(json.dumps(parsed_json, indent = 4))
         raise "unexpected"
     item_id = returned_ids[0]
     entity = parsed_json['entities'][item_id]
+    return entity
+
+def turn_api_response_to_parsed(parsed_json):
+    entity = extract_entity_from_parsed_json(parsed_json)
 
     returned = {}
     value = extract_string(entity, "P28")
     if value != None:
         returned["image"] = value
-    language_code = "en"
-    if "descriptions" in entity:
-        if language_code in entity["descriptions"]:
-            returned["description"] = entity["descriptions"][language_code]["value"]
+    
+    description = extract_description(entity)
+    if description != None:
+        returned["description"] = description
+
     status_string = extract_usage_status_string(entity)
     if status_string != None:
         returned["status"] = status_string
