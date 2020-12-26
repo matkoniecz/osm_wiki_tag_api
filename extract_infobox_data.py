@@ -2,7 +2,7 @@ import mwparserfromhell
 import pywikibot
 
 def page_data(page_title):
-    page = pywikibot.Page(pywikibot.Site(), page_title)
+    page = pywikibot.Page(pywikibot.Site('en', 'osm'), page_title)
     return turn_page_text_to_parsed(page.text)
 
 def tag_data(key, value=None):

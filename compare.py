@@ -178,9 +178,9 @@ def valid_wikidata(page_name):
     return wikidata.get(page_name)
 
 
-site = pywikibot.Site()
+site = pywikibot.Site('en', 'osm') 
 for infobox in ["Template:ValueDescription", "Template:KeyDescription"]:
-    root_page = pywikibot.Page(pywikibot.Site(), infobox)
+    root_page = pywikibot.Page(site, infobox)
     for page in root_page.getReferences(namespaces=[0], content=True):
         if page.title().find("Tag:") == 0 or page.title().find("Key:") == 0: #No translated pages as data items are borked there
             compare_data(page.title())

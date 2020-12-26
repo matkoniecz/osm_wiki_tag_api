@@ -221,7 +221,7 @@ def json_response_from_api(page_title):
 
     # https://phabricator.wikimedia.org/T269635
     item = pywikibot.ItemPage(site, "Key:amenity")
-    page = pywikibot.Page(pywikibot.Site(), "Key:amenity")
+    page = pywikibot.Page(pywikibot.Site('en', 'osm'), "Key:amenity")
     item = pywikibot.ItemPage.fromPage(page)
     """
 
@@ -240,7 +240,7 @@ def json_response_from_api(page_title):
         repo = site.data_repository()
         return pywikibot.ItemPage(repo, data_item_id)
 
-    page = pywikibot.Page(pywikibot.Site(), "Tag:building=yes")
+    page = pywikibot.Page(pywikibot.Site('en', 'osm'), "Tag:building=yes")
     data_item = get_data_item_from_page(site, page)
     print(data_item)
     data_item.get()  # you need to call it to access any data.
