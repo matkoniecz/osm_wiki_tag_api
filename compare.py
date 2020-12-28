@@ -21,6 +21,10 @@ def compare_data(page_name):
         in_template = template.get(key)
         normalized_in_template = in_template
 
+        if key == "seeAlso" or key == "combination":
+            # implement parsing that in future to make copying easier
+            continue
+
         if key == "wikidata":
             continue # big time sing, it would be smarter to work on removal it from infoboxes
             if in_data_item == None and in_template != None:
