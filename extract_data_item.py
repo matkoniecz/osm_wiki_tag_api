@@ -4,6 +4,7 @@
 
 import urllib
 import urllib.request
+import urllib.parse
 import json
 
 def page_data(page_title):
@@ -199,8 +200,7 @@ def turn_api_response_to_parsed(parsed_json):
 
 def json_response_from_api(page_title):
     try:
-        url = "https://wiki.openstreetmap.org/w/api.php?action=wbgetentities&sites=wiki&titles=" + page_title + "&languages=en|fr&format=json"
-        url = url.replace(" ", "%20")
+        url = "https://wiki.openstreetmap.org/w/api.php?action=wbgetentities&sites=wiki&titles=" + urllib.parse.quote(page_title) + "&languages=en|fr&format=json"
         data = urllib.request.urlopen(url).read()
         return json.loads(data)
     except UnicodeEncodeError:
