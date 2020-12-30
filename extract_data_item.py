@@ -127,24 +127,24 @@ def turn_api_response_to_parsed(parsed_json):
     if status != None:
         returned["onRelation"] = status 
 
-    if "P46" in entity["claims"]:
-        returned["combination"] = "??????" # TODO, process this horrific mess
+    if "claims" in entity:
+        if "P46" in entity["claims"]:
+            returned["combination"] = "??????" # TODO, process this horrific mess
 
-    if "P45" in entity["claims"]:
-        returned["implies"] = "??????" # TODO, process this horrific mess
+        if "P45" in entity["claims"]:
+            returned["implies"] = "??????" # TODO, process this horrific mess
 
-    if "P18" in entity["claims"]: # Note that P18 is "different from", not "see also" - but it is used in this way
-        returned["seeAlso"] = "??????" # TODO, process this horrific mess
+        if "P18" in entity["claims"]: # Note that P18 is "different from", not "see also" - but it is used in this way
+            returned["seeAlso"] = "??????" # TODO, process this horrific mess
 
-    if "P22" in entity["claims"]:
-        returned["requires"] = "??????" # TODO, process this horrific mess
+        if "P22" in entity["claims"]:
+            returned["requires"] = "??????" # TODO, process this horrific mess
 
-    if "P25" in entity["claims"]:
-        returned["group"] = "??????" # TODO, process this horrific mess
+        if "P25" in entity["claims"]:
+            returned["group"] = "??????" # TODO, process this horrific mess
 
-    if "P11" in entity["claims"]:
-        returned["statuslink"] = extract_wikibase_item.extract_url(entity, 'P11')
-    
+        if "P11" in entity["claims"]:
+            returned["statuslink"] = extract_wikibase_item.extract_url(entity, 'P11')
 
     value = extract_wikibase_item.extract_string(entity, "P12")
     if value != None:

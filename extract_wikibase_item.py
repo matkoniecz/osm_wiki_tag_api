@@ -99,6 +99,8 @@ def extract_url(entity, claim_id):
     return extract_string(entity, claim_id)
 
 def extract_unqualified_statement(entity, claim_id):
+    if "claims" not in entity:
+        return None
     if claim_id not in entity["claims"]:
         return None
     statements = entity["claims"][claim_id]
