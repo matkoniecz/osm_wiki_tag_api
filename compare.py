@@ -1,6 +1,7 @@
 import pywikibot
 import extract_data_item
 import extract_infobox_data
+import re
 
 # https://www.mediawiki.org/wiki/Manual:Pywikibot/Installation#Install_Pywikibot
 # I followed it, run script, and recopied it here
@@ -24,6 +25,10 @@ def compare_data(page_name):
         if key == "seeAlso" or key == "combination":
             # implement parsing that in future to make copying easier
             continue
+
+        if normalized_in_template != None:
+            # for comparison skip comments in template
+            normalized_in_template = re.sub('<!--.*-->', '', normalized_in_template)
 
         if key == "wikidata":
             continue # big time sing, it would be smarter to work on removal it from infoboxes
