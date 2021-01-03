@@ -185,6 +185,7 @@ def valid_wikidata(page_name):
         "Tag:historic=tomb": "Q381885",
     }
     return wikidata.get(page_name)
+"ab".removeprefix("a") # quick check that we are running python 3.9+
 
 site = pywikibot.Site('en', 'osm') 
 for infobox in ["Template:ValueDescription", "Template:KeyDescription"]:
