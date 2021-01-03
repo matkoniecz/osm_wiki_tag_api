@@ -57,10 +57,11 @@ def compare_data(page_name):
                 normalized_in_template = "de facto"
 
             # obsolete and deprecated are not worth distinguishing
-            if normalized_in_data_item == "obsolete" and normalized_in_template == "deprecated":
-                normalized_in_data_item = "deprecated"
-            if normalized_in_data_item == "deprecated" and normalized_in_template == "obsolete":
-                normalized_in_data_item = "obsolete"
+            if normalized_in_data_item != normalized_in_template:
+                dead = ["obsolete", "deprecated", "abandoned"]
+                if normalized_in_data_item in dead:
+                    if normalized_in_template in dead:
+                        normalized_in_data_item = normalized_in_template
 
         if key == "description":
             if normalized_in_template != None:
