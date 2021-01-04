@@ -101,6 +101,9 @@ def turn_api_response_to_parsed(parsed_json):
     entity = extract_wikibase_item.extract_entity_from_parsed_json(parsed_json)
 
     returned = {}
+    if "id" not in entity:
+        print(json.dumps(entity, indent = 4))
+    returned['data_item_id'] = entity['id']
     value = extract_wikibase_item.extract_string(entity, "P28")
     if value != None:
         returned["image"] = value

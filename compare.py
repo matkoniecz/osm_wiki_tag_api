@@ -7,6 +7,59 @@ import re
 # I followed it, run script, and recopied it here
 # https://www.mediawiki.org/wiki/Manual:Pywikibot/Create_your_own_script
 
+# TODO: detect incomplete skeleton (distinguish missing parameter and no parameter set)
+
+def is_adding_image_important(page_name, template_data):
+    if "status" in template_data:
+        if template_data["status"] in ["obsolete", "deprecated", "abandoned", "proposed"]:
+            # TODO: detect marked as proposed with significant use
+            return False
+    if "Tag:landmark=" in page_name or "seamark" in page_name or "source" in page_name:
+        return False
+    if is_page_skipped_for_now_from_missing_parameters(page_name, template_data):
+        return False
+    return True
+
+def is_page_skipped_for_now_from_missing_parameters(page_name, template):
+    if "Tag:seamark" in page_name or "Tag:pilotage" in page_name or "Tag:landmark" in page_name or "Tag:type=" in page_name: # skip seamark mess, at least for now
+        return True
+    if page_name in ["Tag:seamark:conspicuity=conspicuous", "Tag:waterway=deep well"]:
+        return True
+    if "status" in template:
+        if template["status"] in ["obsolete", "abandoned", "deprecated", "proposed"]:
+            # TODO: detect marked as obsolete/abandoned with some real use (>100?)
+            return True
+    return False
+
+def is_page_skipped_for_now_from_missing_description(page_name, template):
+    if "Tag:crop=" or "Tag:wood=" in page_name: # give up with this group 
+        return True
+    if "Tag:mooring=" in page_name: # give up with this group 
+        return True
+    if status in ["obsolete",  "abandoned", "deprecated", "proposed"]:
+        return True # TODO - maybe consider as low importance?
+
+def is_key_reportable_as_completely_missing_in_template(key, page_name, template):
+    if is_page_skipped_for_now_from_missing_parameters(page_name, template):
+        return False
+    if key not in template.keys():
+        return True
+    return False
+
+def is_key_reportable_as_missing_in_template(key, page_name, template):
+    if is_page_skipped_for_now_from_missing_parameters(page_name, template):
+        return False
+    if key in template.keys() and template[key].strip() != "":
+        # it is not missing
+        return False
+    if key == "image":
+        if is_adding_image_important(page_name, template) == False:
+            return False
+        return False # drop for now
+    if key == "description":
+        if is_page_skipped_for_now_from_missing_description(page_name, template):
+            return False
+    return True
 
 def compare_data(page_name):
     url = "https://wiki.openstreetmap.org/wiki/" + page_name
@@ -16,7 +69,20 @@ def compare_data(page_name):
     written_something = False
     if template == {}:
         return # for example, on pages where Template:Deprecated calls it internally
+    mandatory = ["onNode", "onWay", "onArea", "onRelation", "image", "description", "status"]
+    for key in mandatory:
+        if key in data_item.keys():
+            # it is in data item, warning about copying will appear
+            continue
+        if is_key_reportable_as_completely_missing_in_template(key, page_name, template):
+            print(":", url, key, "is missing and not present even as empty parameter")
+            written_something = True
+        elif is_key_reportable_as_missing_in_template(key, page_name, template):
+            print(":", url, key, "value is missing in the infobox template")
+            written_something = True
     for key in set(set(data_item.keys()) | set(template.keys())):
+        if key in ["data_item_id"]:
+            continue
         in_data_item = data_item.get(key)
         normalized_in_data_item = in_data_item
         in_template = template.get(key)
@@ -30,6 +96,11 @@ def compare_data(page_name):
             # for comparison skip comments in template
             normalized_in_template = re.sub('<!--.*-->', '', normalized_in_template)
 
+        if normalized_in_template != None:
+            normalized_in_template = normalized_in_template.strip()
+            if normalized_in_template == "":
+                normalized_in_template = None
+
         if key == "wikidata":
             continue # big time sing, it would be smarter to work on removal it from infoboxes
             if in_data_item == None and in_template != None:
@@ -41,6 +112,8 @@ def compare_data(page_name):
         if key == "statuslink":
             if normalized_in_data_item != None:
                 normalized_in_data_item = normalized_in_data_item.removeprefix("https://wiki.openstreetmap.org/wiki/")
+                normalized_in_data_item = normalized_in_data_item.replace("%22", '"')
+                normalized_in_data_item = normalized_in_data_item.replace("_", ' ')
 
         if key == "image":
             if normalized_in_template != None:
@@ -80,6 +153,20 @@ def compare_data(page_name):
                     print("<pre>")
                     print('        "' + page_name.replace(" ", "_") + '": "' + in_data_item + '",')
                     print("</pre>")
+            continue
+        
+        if key in ["onNode", "onWay", "onArea", "onRelation"]:
+            if "status" in template:
+                if template["status"] in ["obsolete", "deprecated"]:
+                    if normalized_in_template == "no":
+                        if normalized_in_data_item != None and normalized_in_data_item != "no":
+                            # ignores cases where onNode, onWay etc all can be set to 'no'
+                            # may be worth special handling if someone cares about fixing data items
+                            # or to reduce risk of damage
+                            # but disabled for now
+                            # TODO
+                            normalized_in_data_item = "no"
+
         if in_template != None and in_data_item != None:
             if key == "image":
                 continue # do not report mismatches here
@@ -87,15 +174,16 @@ def compare_data(page_name):
                 continue # do not report mismatches here
             if normalized_in_template != normalized_in_data_item:
                 if key == "description":
-                    print(":", url, "-", key, "are mismatched between OSM Wiki and data item")
+                    print(":", url, data_item["data_item_id"], "-", key, "are mismatched between OSM Wiki and data item")
                     print("::", in_template)
                     print("::", in_data_item)
                     written_something = True
                 elif "?" not in in_data_item:
-                    print(":", url, "-", key, "are mismatched between OSM Wiki and data item (", in_template, "vs", in_data_item, ")")
+                    print(":", url, data_item["data_item_id"], "-", key, "are mismatched between OSM Wiki and data item (", in_template, "vs", in_data_item, ")")
                     written_something = True
     if written_something:
         print()
+    return written_something
 
 def normalize_description(description):
     if description == None:
@@ -188,12 +276,28 @@ def valid_wikidata(page_name):
     return wikidata.get(page_name)
 "ab".removeprefix("a") # quick check that we are running python 3.9+
 
-site = pywikibot.Site('en', 'osm') 
+site = pywikibot.Site('en', 'osm')
+compare_data("Tag:amenity=trolley_bay")
+skip_until = "Tag:landuse=plantation" # None
+processed = 0
+reported_something = False
 for infobox in ["Template:ValueDescription", "Template:KeyDescription"]:
     root_page = pywikibot.Page(site, infobox)
     for page in root_page.getReferences(namespaces=[0], content=True):
+        if skip_until != None:
+            if page.title() == skip_until:
+                skip_until = None
+            else:
+                print("skipped", page.title())
+                continue
         if page.title().find("Tag:") == 0 or page.title().find("Key:") == 0: #No translated pages as data items are borked there
-            compare_data(page.title())
+            if compare_data(page.title()) == True:
+                if reported_something == False:
+                    print("processed", processed, "before showing anything")
+                reported_something = True
+        processed += 1
+        if processed % 100 == 0:
+            print("processed", processed)
 
 """
 # list namespaces
