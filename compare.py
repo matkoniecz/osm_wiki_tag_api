@@ -9,9 +9,12 @@ import re
 
 # TODO: detect incomplete skeleton (distinguish missing parameter and no parameter set)
 
+def unimportant_tag_status():
+    return ["obsolete", "abandoned", "deprecated", "proposed", "draft"]
+
 def is_adding_image_important(page_name, template_data):
     if "status" in template_data:
-        if template_data["status"] in ["obsolete", "deprecated", "abandoned", "proposed"]:
+        if template_data["status"] in unimportant_tag_status():
             # TODO: detect marked as proposed with significant use
             return False
     if "Tag:landmark=" in page_name or "seamark" in page_name or "source" in page_name:
@@ -26,7 +29,7 @@ def is_page_skipped_for_now_from_missing_parameters(page_name, template):
     if page_name in ["Tag:seamark:conspicuity=conspicuous", "Tag:waterway=deep well"]:
         return True
     if "status" in template:
-        if template["status"] in ["obsolete", "abandoned", "deprecated", "proposed"]:
+        if template["status"] in unimportant_tag_status():
             # TODO: detect marked as obsolete/abandoned with some real use (>100?)
             return True
     return False
@@ -36,7 +39,7 @@ def is_page_skipped_for_now_from_missing_description(page_name, template):
         return True
     if "Tag:mooring=" in page_name: # give up with this group 
         return True
-    if status in ["obsolete",  "abandoned", "deprecated", "proposed"]:
+    if status in unimportant_tag_status():
         return True # TODO - maybe consider as low importance?
 
 def is_key_reportable_as_completely_missing_in_template(key, page_name, template):
