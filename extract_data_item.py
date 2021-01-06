@@ -102,6 +102,7 @@ def turn_api_response_to_parsed(parsed_json):
 
     returned = {}
     if "id" not in entity:
+        return returned # some tags have no data item, see https://wiki.openstreetmap.org/wiki/Tag:cemetery%3Dsector
         print(json.dumps(entity, indent = 4))
     returned['data_item_id'] = entity['id']
     value = extract_wikibase_item.extract_string(entity, "P28")
