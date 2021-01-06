@@ -295,7 +295,7 @@ def valid_wikidata(page_name):
 
 site = pywikibot.Site('en', 'osm')
 compare_data("Tag:amenity=trolley_bay")
-skip_until = "Tag:landuse=plantation" # None
+skip_until = "Tag:amenity=rescue_station" # None
 processed = 0
 reported_something = False
 for infobox in ["Template:ValueDescription", "Template:KeyDescription"]:
