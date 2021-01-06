@@ -138,6 +138,14 @@ def compare_data(page_name):
                 # do not bother, at least for now, with this
                 normalized_in_template = "de facto"
 
+            if normalized_in_template == "import":
+                # do not bother, at least for now, with this
+                normalized_in_template = "imported"
+
+            if normalized_in_template == "inuse":
+                # do not bother, at least for now, with this
+                normalized_in_template = "in use"
+
             # obsolete and deprecated are not worth distinguishing
             if normalized_in_data_item != normalized_in_template:
                 dead = ["obsolete", "deprecated", "abandoned"]
