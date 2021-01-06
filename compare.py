@@ -73,15 +73,21 @@ def compare_data(page_name):
     if template == {}:
         return # for example, on pages where Template:Deprecated calls it internally
     mandatory = ["onNode", "onWay", "onArea", "onRelation", "image", "description", "status"]
+    report = {"issues": []}
     for key in mandatory:
         if key in data_item.keys():
             # it is in data item, warning about copying will appear
             continue
         if is_key_reportable_as_completely_missing_in_template(key, page_name, template):
-            print(":", url, key, "is missing and not present even as empty parameter")
-            written_something = True
+            report["issues"].append({"type": "missing_key_in_infobox", "key": key})
         elif is_key_reportable_as_missing_in_template(key, page_name, template):
-            print(":", url, key, "value is missing in the infobox template")
+            report["issues"].append({"type": "missing_value_in_infobox_with_key_present", "key": key})
+    for issue in report["issues"]:
+        if issue["type"] == "missing_key_in_infobox":
+            print(":", url, issue["key"], "is missing and not present even as empty parameter")
+            written_something = True
+        if issue["type"] == "missing_value_in_infobox_with_key_present":
+            print(":", url, issue["key"], "value is missing in the infobox template")
             written_something = True
     for key in set(set(data_item.keys()) | set(template.keys())):
         if key in ["data_item_id"]:
