@@ -35,7 +35,7 @@ def status_for_geometry(entity, claim_id):
         if magic_status_code == 8000:
             return "yes"
         print(magic_status_code)
-        print("invalid status code for geometry")
+        print("invalid status code for geometry in https://wiki.openstreetmap.org/wiki/Item:" + entity["id"])
     else:
         print(json.dumps(entity, indent = 4))
         print(magic_status_code_object)
