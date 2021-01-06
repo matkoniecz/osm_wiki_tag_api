@@ -295,6 +295,7 @@ def valid_wikidata(page_name):
 
 site = pywikibot.Site('en', 'osm')
 compare_data("Tag:amenity=trolley_bay")
+compare_data("Tag:cemetery=sector")
 skip_until = "Tag:amenity=rescue_station" # None
 processed = 0
 reported_something = False
