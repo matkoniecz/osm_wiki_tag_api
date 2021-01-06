@@ -306,7 +306,7 @@ for infobox in ["Template:ValueDescription", "Template:KeyDescription"]:
             if page.title() == skip_until.replace("_", " "):
                 skip_until = None
             else:
-                print("skipped", page.title())
+                #print("skipped", page.title())
                 continue
         if page.title().find("Tag:") == 0 or page.title().find("Key:") == 0: #No translated pages as data items are borked there
             if compare_data(page.title()) == True:
@@ -314,7 +314,7 @@ for infobox in ["Template:ValueDescription", "Template:KeyDescription"]:
                     print("processed", processed, "before showing anything")
                 reported_something = True
         processed += 1
-        if processed % 100 == 0:
+        if processed % 1000 == 0:
             print("processed", processed)
 
 """
