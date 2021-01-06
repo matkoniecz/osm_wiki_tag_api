@@ -316,6 +316,7 @@ for infobox in ["Template:ValueDescription", "Template:KeyDescription"]:
         processed += 1
         if processed % 1000 == 0:
             print("processed", processed)
+print("processed all!")
 
 """
 # list namespaces
