@@ -303,7 +303,7 @@ for infobox in ["Template:ValueDescription", "Template:KeyDescription"]:
     root_page = pywikibot.Page(site, infobox)
     for page in root_page.getReferences(namespaces=[0], content=True):
         if skip_until != None:
-            if page.title() == skip_until:
+            if page.title() == skip_until.replace("_", " "):
                 skip_until = None
             else:
                 print("skipped", page.title())
