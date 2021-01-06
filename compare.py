@@ -183,12 +183,12 @@ def compare_data(page_name):
                 continue # do not report mismatches here
             if normalized_in_template != normalized_in_data_item:
                 if key == "description":
-                    print(":", url, data_item["data_item_id"], "-", key, "are mismatched between OSM Wiki and data item")
+                    print(":", url, "https://wiki.openstreetmap.org/wiki/Item:" + data_item["data_item_id"], "-", key, "are mismatched between OSM Wiki and data item")
                     print("::", in_template)
                     print("::", in_data_item)
                     written_something = True
                 elif "?" not in in_data_item:
-                    print(":", url, data_item["data_item_id"], "-", key, "are mismatched between OSM Wiki and data item (", in_template, "vs", in_data_item, ")")
+                    print(":", url, "https://wiki.openstreetmap.org/wiki/Item:" + data_item["data_item_id"], "-", key, "are mismatched between OSM Wiki and data item (", in_template, "vs", in_data_item, ")")
                     written_something = True
     if written_something:
         print()
