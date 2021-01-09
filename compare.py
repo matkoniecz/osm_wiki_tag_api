@@ -291,44 +291,52 @@ def valid_wikidata(page_name):
         "Tag:historic=tomb": "Q381885",
     }
     return wikidata.get(page_name)
-"ab".removeprefix("a") # quick check that we are running python 3.9+
 
-site = pywikibot.Site('en', 'osm')
-compare_data("Tag:amenity=trolley_bay")
-compare_data("Tag:cemetery=sector")
-skip_until = "Tag:amenity=rescue_station" # None
-processed = 0
-reported_something = False
-for infobox in ["Template:ValueDescription", "Template:KeyDescription"]:
-    root_page = pywikibot.Page(site, infobox)
-    for page in root_page.getReferences(namespaces=[0], content=True):
-        if skip_until != None:
-            if page.title() == skip_until.replace("_", " "):
-                skip_until = None
-            else:
-                #print("skipped", page.title())
-                continue
-        if page.title().find("Tag:") == 0 or page.title().find("Key:") == 0: #No translated pages as data items are borked there
-            if compare_data(page.title()) == True:
-                if reported_something == False:
-                    print("processed", processed, "before showing anything")
-                reported_something = True
-        processed += 1
-        if processed % 1000 == 0:
-            print("processed", processed)
-print("processed all!")
+def main():
+    "ab".removeprefix("a") # quick check that we are running python 3.9+
+    site = pywikibot.Site('en', 'osm')
+    compare_data("Tag:amenity=trolley_bay")
+    compare_data("Tag:cemetery=sector")
+    skip_until = "Tag:amenity=rescue_station" # None
+    processed = 0
+    reported_something = False
+    missing_images_template_ready_for_adding = []
+    for infobox in ["Template:ValueDescription", "Template:KeyDescription"]:
+        root_page = pywikibot.Page(site, infobox)
+        for page in root_page.getReferences(namespaces=[0], content=True):
+            if skip_until != None:
+                if page.title() == skip_until.replace("_", " "):
+                    skip_until = None
+                else:
+                    #print("skipped", page.title())
+                    continue
+            if page.title().find("Tag:") == 0 or page.title().find("Key:") == 0: #No translated pages as data items are borked there
+                if compare_data(page.title()) == True:
+                    if reported_something == False:
+                        print("processed", processed, "before showing anything")
+                    reported_something = True
+                for issue in report["issues"]:
+                    if issue["type"] == "missing_value_in_infobox_with_key_present":
+                        missing_images_template_ready_for_adding.append(issue)
+                        written_something = True
+            processed += 1
+            if processed % 1000 == 0:
+                print("processed", processed)
+    print("processed all!")
 
-"""
-# list namespaces
-for n in site.namespaces:
-    print(n)
-    print(site.namespaces[n])
-    print(site.namespaces[n].canonical_prefix())
-    print(site.namespaces[n].normalize_name(site.namespaces[n].canonical_prefix()))
-    print(type(site.namespaces[n]))
+    """
+    # list namespaces
+    for n in site.namespaces:
+        print(n)
+        print(site.namespaces[n])
+        print(site.namespaces[n].canonical_prefix())
+        print(site.namespaces[n].normalize_name(site.namespaces[n].canonical_prefix()))
+        print(type(site.namespaces[n]))
 
-# all pages in main namespace
-for page in site.allpages(namespace = [0]):
-    print(page)
-    print(page.title())
-"""
+    # all pages in main namespace
+    for page in site.allpages(namespace = [0]):
+        print(page)
+        print(page.title())
+    """
+
+main()
