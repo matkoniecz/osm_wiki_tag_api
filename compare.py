@@ -2,6 +2,7 @@ import pywikibot
 import extract_data_item
 import extract_infobox_data
 import re
+import links
 
 # https://www.mediawiki.org/wiki/Manual:Pywikibot/Installation#Install_Pywikibot
 # I followed it, run script, and recopied it here
@@ -65,8 +66,7 @@ def is_key_reportable_as_missing_in_template(key, page_name, template):
     return True
 
 def compare_data(page_name):
-    url = "https://wiki.openstreetmap.org/wiki/" + page_name
-    url = url.replace(" ", "_")
+    url = links.osm_wiki_page_link(page_name)
     data_item = extract_data_item.page_data(page_name)
     template = extract_infobox_data.page_data(page_name)
     written_something = False

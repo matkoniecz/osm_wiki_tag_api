@@ -1,10 +1,12 @@
 import mwparserfromhell
 import pywikibot
+import links
 
 def page_data(page_title):
     page = pywikibot.Page(pywikibot.Site('en', 'osm'), page_title)
+    url = links.osm_wiki_page_link(page_title)
     if "DISPLAYTITLE" in page.text:
-        print(page_title, "has unneded DISPLYTITLE template")
+        print(url, "has unneded DISPLYTITLE template")
     return turn_page_text_to_parsed(page.text)
 
 def tag_data(key, value=None):
