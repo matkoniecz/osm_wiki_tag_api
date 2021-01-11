@@ -222,7 +222,8 @@ def compare_data(page_name):
                     written_something = True
     if written_something:
         print()
-    return written_something
+        report["written_something"] = written_something
+    return report
 
 def normalize_description(description):
     if description == None:
@@ -323,6 +324,7 @@ def main():
     processed = 0
     reported_something = False
     missing_images_template_ready_for_adding = []
+    missing_status_template_ready_for_adding = []
     for infobox in ["Template:ValueDescription", "Template:KeyDescription"]:
         root_page = pywikibot.Page(site, infobox)
         for page in root_page.getReferences(namespaces=[0], content=True):
@@ -333,17 +335,40 @@ def main():
                     #print("skipped", page.title())
                     continue
             if page.title().find("Tag:") == 0 or page.title().find("Key:") == 0: #No translated pages as data items are borked there
-                if compare_data(page.title()) == True:
+                report = compare_data(page.title())
+                if report != None and "written_something" in report and report["written_something"]:
+                    print(len(missing_images_template_ready_for_adding))
                     if reported_something == False:
                         print("processed", processed, "before showing anything")
                     reported_something = True
-                for issue in report["issues"]:
-                    if issue["type"] == "missing_value_in_infobox_with_key_present":
-                        missing_images_template_ready_for_adding.append(issue)
-                        written_something = True
+                if report != None:
+                    for issue in report["issues"]:
+                        if issue["type"] == "missing_value_in_infobox_with_key_present":
+                            if issue["key"] == "image":
+                                missing_images_template_ready_for_adding.append(issue)
+                            if issue["key"] == "status":
+                                missing_status_template_ready_for_adding.append(issue)
             processed += 1
             if processed % 1000 == 0:
                 print("processed", processed)
+            if len(missing_images_template_ready_for_adding) > 13:
+                break
+            if len(missing_status_template_ready_for_adding) > 13:
+                pass
+                #break
+
+    if len(missing_images_template_ready_for_adding) > 0:
+        print("images are missing in the infobox template:")
+        print("If someone want to help wiki a bit - you can help by finding a suitable image for one of this articles (if you want - you can just link something from https://commons.wikimedia.org/wiki/Main_Page and I will add it if you prefer to avoid editing part itself).")
+        for issue in missing_images_template_ready_for_adding:
+            print("*", issue["osm_wiki_url"])
+        print("(if you edit wiki - it is likely that this pages would benefit also from other improvements)")
+
+    if len(missing_status_template_ready_for_adding) > 0:
+        print("status info is missing in the infobox template:")
+        for issue in missing_status_template_ready_for_adding:
+            print("*", issue["osm_wiki_url"])
+
     print("processed all!")
 
     """
