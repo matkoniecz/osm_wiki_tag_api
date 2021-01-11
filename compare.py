@@ -3,6 +3,7 @@ import extract_data_item
 import extract_infobox_data
 import re
 import links
+import time
 
 # https://www.mediawiki.org/wiki/Manual:Pywikibot/Installation#Install_Pywikibot
 # I followed it, run script, and recopied it here
