@@ -111,9 +111,9 @@ def compare_data(page_name):
             # it is in data item, warning about copying will appear
             continue
         if is_key_reportable_as_completely_missing_in_template(key, page_name, template):
-            report["issues"].append({"type": "missing_key_in_infobox", "key": key})
+            report["issues"].append({"page_name": page_name, "osm_wiki_url": url, "type": "missing_key_in_infobox", "key": key})
         elif is_key_reportable_as_missing_in_template(key, page_name, template):
-            report["issues"].append({"type": "missing_value_in_infobox_with_key_present", "key": key})
+            report["issues"].append({"page_name": page_name, "osm_wiki_url": url, "type": "missing_value_in_infobox_with_key_present", "key": key})
     for issue in report["issues"]:
         if issue["type"] == "missing_key_in_infobox":
             print(":", url, issue["key"], "is missing and not present even as empty parameter")
