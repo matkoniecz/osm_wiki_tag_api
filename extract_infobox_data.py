@@ -10,7 +10,7 @@ def page_data(page_title):
     unwanted = ['Common tags to use in combination', "How to map as a node or area", "How to map as a building"]
     for template in unwanted:
         if template in page.text:
-            print(url, "has unwanted '" + template + "' template")
+            print(":", url, "has unwanted '" + template + "' template")
     return turn_page_text_to_parsed(page.text)
 
 def tag_data(key, value=None):
