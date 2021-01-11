@@ -74,7 +74,6 @@ def is_key_reportable_as_missing_in_template(key, page_name, template):
     if key == "image":
         if is_adding_image_important(page_name, template) == False:
             return False
-        return False # drop for now
     if key == "description":
         if is_page_skipped_for_now_from_missing_description(page_name, template):
             return False
