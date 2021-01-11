@@ -80,6 +80,21 @@ def is_key_reportable_as_missing_in_template(key, page_name, template):
             return False
     return True
 
+def normalize_status_string(status):
+    if status == None:
+        return None
+    status = status.lower()
+
+    if status == "defacto":
+        return "de facto"
+
+    if status == "import":
+        return "imported"
+
+    if status == "inuse":
+        return "in use"
+    return status
+
 def compare_data(page_name):
     url = links.osm_wiki_page_link(page_name)
     data_item = extract_data_item.page_data(page_name)
@@ -139,6 +154,8 @@ def compare_data(page_name):
                 normalized_in_data_item = normalized_in_data_item.replace("%22", '"')
                 normalized_in_data_item = normalized_in_data_item.replace("_", ' ')
 
+                normalized_in_template = normalized_in_template.replace("_", ' ')
+
         if key == "image":
             if normalized_in_template != None:
                 normalized_in_template = normalized_in_template.removeprefix("Image:")
@@ -146,20 +163,7 @@ def compare_data(page_name):
                 normalized_in_template = normalized_in_template.replace("_", " ")
 
         if key == "status":
-            if normalized_in_template != None:
-                normalized_in_template = normalized_in_template.lower()
-
-            if normalized_in_template == "defacto":
-                # do not bother, at least for now, with this
-                normalized_in_template = "de facto"
-
-            if normalized_in_template == "import":
-                # do not bother, at least for now, with this
-                normalized_in_template = "imported"
-
-            if normalized_in_template == "inuse":
-                # do not bother, at least for now, with this
-                normalized_in_template = "in use"
+            normalized_in_template = normalize_status_string(normalized_in_template)
 
             # obsolete and deprecated are not worth distinguishing
             if normalized_in_data_item != normalized_in_template:
