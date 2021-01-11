@@ -158,10 +158,13 @@ def turn_api_response_to_parsed(parsed_json):
     return returned
 
 def json_response_from_api(page_title):
+    url = "https://wiki.openstreetmap.org/w/api.php?action=wbgetentities&sites=wiki&titles=" + urllib.parse.quote(page_title) + "&languages=en|fr&format=json"
+    return json_response_from_url(url)
+
+def json_response_from_url(url):
     try:
-        url = "https://wiki.openstreetmap.org/w/api.php?action=wbgetentities&sites=wiki&titles=" + urllib.parse.quote(page_title) + "&languages=en|fr&format=json"
         data = urllib.request.urlopen(url).read()
         return json.loads(data)
     except UnicodeEncodeError:
-        print("failed to process", page_title)
+        print("failed to process", url)
         raise
