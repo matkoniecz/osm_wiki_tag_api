@@ -119,7 +119,8 @@ def compare_data(page_name):
             print(":", url, issue["key"], "is missing and not present even as empty parameter")
             written_something = True
         if issue["type"] == "missing_value_in_infobox_with_key_present":
-            print(":", url, issue["key"], "value is missing in the infobox template")
+            if key != "image": # try to delegate
+                print(":", url, issue["key"], "value is missing in the infobox template")
             written_something = True
     for key in set(set(data_item.keys()) | set(template.keys())):
         if key in ["data_item_id"]:
