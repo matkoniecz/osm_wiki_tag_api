@@ -14,6 +14,18 @@ def count_appearances_of_key(key):
     print(data)
     return data['data'][0]['count']
 
+def count_appearances_from_wiki_page_title(osm_wiki_page_title):
+    title = osm_wiki_page_title.replace(" ", "_")
+    if title.find("Tag:") == 0:
+        cleaned = title.replace("Tag:", "")
+        key, value = cleaned.split("=")
+        return count_appearances_of_tag(key, value)
+    elif title.find("Key:") == 0:
+        key = title.replace("Key:", "")
+        return count_appearances_of_key(key)
+    else:
+        raise "unhandled"
+
 def count_appearances_of_tag_historic_data(key, value, date): # offset in days??
     pass
 

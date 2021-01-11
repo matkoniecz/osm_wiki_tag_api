@@ -1,6 +1,7 @@
 import pywikibot
 import extract_data_item
 import extract_infobox_data
+import taginfo
 import re
 import links
 import time
@@ -344,10 +345,11 @@ def main():
                 if report != None:
                     for issue in report["issues"]:
                         if issue["type"] == "missing_value_in_infobox_with_key_present":
-                            if issue["key"] == "image":
-                                missing_images_template_ready_for_adding.append(issue)
-                            if issue["key"] == "status":
-                                missing_status_template_ready_for_adding.append(issue)
+                            if taginfo.count_appearances_from_wiki_page_title(page.title()) >= 1000:
+                                if issue["key"] == "image":
+                                    missing_images_template_ready_for_adding.append(issue)
+                                if issue["key"] == "status":
+                                    missing_status_template_ready_for_adding.append(issue)
             processed += 1
             if processed % 1000 == 0:
                 print("processed", processed)
