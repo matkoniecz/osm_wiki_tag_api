@@ -15,9 +15,9 @@ Ideally, open an issue first if you want to add something not listed below.
 
 * Full parsing of data items is missing.
 
-* Missing support for non-English descriptions
-
 * Missing documentation and proper tests
+
+It is also existing as bunch of code and is not published as `pip` library. If Python taginfo wrapper, OSM Wiki template extractiom, data item extraction or other code would be useful for you in a library - please open an issue for that.
 
 # Dependencies
 
