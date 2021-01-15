@@ -97,6 +97,9 @@ def normalize_status_string(status):
 
     if status == "inuse":
         return "in use"
+
+    if status in ["unspecified", "unknown", "undefined"]:
+        return None
     return status
 
 def compare_data(page_name):
