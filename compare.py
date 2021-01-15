@@ -5,6 +5,7 @@ import taginfo
 import re
 import links
 import time
+import missing_wiki_pages
 
 # https://www.mediawiki.org/wiki/Manual:Pywikibot/Installation#Install_Pywikibot
 # I followed it, run script, and recopied it here
@@ -388,4 +389,5 @@ def main():
         print(page.title())
     """
 
+print(missing_wiki_pages.missing_pages())
 main()
