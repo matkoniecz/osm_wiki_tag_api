@@ -5,6 +5,12 @@
 import extract_wikibase_item
 
 def json_response_from_api(entity_id):
+    if entity_id.strip() == "":
+        raise
+    if entity_id.strip() == None:
+        raise
+    if entity_id[0] != "Q":
+        raise
     url = "https://www.wikidata.org/wiki/Special:EntityData/" + entity_id + ".json"
     url = url.replace(" ", "%20")
     data = urllib.request.urlopen(url).read()
