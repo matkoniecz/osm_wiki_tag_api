@@ -65,6 +65,12 @@ def extract_description(entity, language_code = "en"):
             return entity["descriptions"][language_code]["value"]
     return None
 
+def extract_label(entity, language_code = "en"):
+    if "labels" in entity:
+        if language_code in entity["labels"]:
+            return entity["labels"][language_code]["value"]
+    return None
+
 def extract_entity_from_parsed_json(parsed_json):
     returned_ids = list(parsed_json['entities'].keys())
     if len(returned_ids) != 1:
