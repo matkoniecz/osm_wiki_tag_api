@@ -367,14 +367,24 @@ def main():
                     break
 
     if len(missing_images_template_ready_for_adding) > 0:
-        print("images are missing in the infobox template:")
-        print("If someone want to help wiki a bit - you can help by finding a suitable image for one of this articles (if you want - you can just link something from https://commons.wikimedia.org/wiki/Main_Page and I will add it if you prefer to avoid editing part itself).")
+        print()
+        print("images are missing in the infobox:")
+        print("------------")
+        print("Chcę się pochwalić że właśnie dodałem ilustracje do")
+        print("I just added images to")
+        print()
+        print()
+        print("Help with other would be appreciated, there are many other waiting")
+        print("Przy okazji OSM Wiki: gdyby ktoś dał radę znaleźć na https://commons.wikimedia.org/ ilustracje dla tych tagów to byłbym bardzo wdzięczny")
+        print("If someone want to help wiki a bit - you can help by finding a suitable image for one of this articles (if you want - you can just link something from https://commons.wikimedia.org/ and I will add it if you prefer to avoid editing part itself).")
+        print("https://wiki.openstreetmap.org/wiki/Creating_a_page_describing_key_or_value#Finding_a_good_image may have a bit more")
         for issue in missing_images_template_ready_for_adding:
             print("*", issue["osm_wiki_url"])
         print("(if you edit wiki - it is likely that this pages would benefit also from other improvements)")
-
+        print("jak ktoś podlinkuje dobre zdjęcie to na wiki mogę już dodać")
     if len(missing_status_template_ready_for_adding) > 0:
-        print("status info is missing in the infobox template:")
+        print()
+        print("status info is missing (see https://wiki.openstreetmap.org/wiki/Tag_status ):")
         for issue in missing_status_template_ready_for_adding:
             print("*", issue["osm_wiki_url"])
 
