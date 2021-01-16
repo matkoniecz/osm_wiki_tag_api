@@ -19,6 +19,9 @@ def unimportant_tag_status():
 def is_unimportant_tag_status(status):
     return normalize_status_string(status) in unimportant_tag_status()
 
+def is_imported_tag_status(status):
+    return normalize_status_string(status) in ["imported"]
+
 def is_there_embedded_image(tag_docs):
     if tag_docs.base_page_text().find("[[Image:") != -1:
         return True
