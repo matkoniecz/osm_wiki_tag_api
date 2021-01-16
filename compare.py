@@ -6,6 +6,7 @@ import re
 import links
 import time
 import missing_wiki_pages
+import random
 
 # https://www.mediawiki.org/wiki/Manual:Pywikibot/Installation#Install_Pywikibot
 # I followed it, run script, and recopied it here
@@ -461,40 +462,33 @@ def pages_grouped_by_tag_from_list(titles):
     print("above are supposedly invalid pages")
     return pages
 
-def main():
+def self_check_on_init():
     "ab".removeprefix("a") # quick check that we are running python 3.9+
-    site = pywikibot.Site('en', 'osm')
     compare_data(TagWithDocumentation(["Tag:amenity=trolley_bay"]))
     compare_data(TagWithDocumentation(["Key:right:country"]))
     entry = TagWithDocumentation(["Tag:utility=power"])
     text = entry.base_page_text()
     print(compare_data(entry))
-    print(compare_data(TagWithDocumentation(["Tag:shop=chandler"])))
-    entry = TagWithDocumentation(["Key:NHS"])
+    print(compare_data(TagWithDocumentation(["Tag:building=kindergarten"])))
+    entry = TagWithDocumentation(["Key:is_in"])
     print(compare_data(entry))
-    print(is_key_reportable_as_missing_in_template("image", entry))
-    skip_until = None # None
+    print("is_key_reportable_as_missing_in_template(\"image\", entry) =", is_key_reportable_as_missing_in_template("image", entry))
+    print("is_adding_image_important(entry) =", is_adding_image_important(entry))
+    print(entry.parsed_infobox())
+    print(entry.parsed_infobox()["status"])
+
+def main():
+    self_check_on_init()
+    site = pywikibot.Site('en', 'osm')
     processed = 0
     reported_something = False
     missing_images_template_ready_for_adding = []
     missing_status_template_ready_for_adding = []
     pages = pages_grouped_by_tag()
-    for index in pages.keys():
+    keys = list(pages.keys())
+    random.shuffle(keys)
+    for index in keys:
         group = pages[index]
-        print()
-        print(index)
-        print(group.base_page())
-        for entry in group.wiki_documentation:
-            print("         ", entry)
-
-    for index in pages.keys():
-        group = pages[index]
-        if skip_until != None:
-            if group.base_page() == skip_until.replace("_", " "):
-                skip_until = None
-            else:
-                #print("skipped", page.title())
-                continue
         report = compare_data(group)
         if report != None and "written_something" in report and report["written_something"]:
             print(len(missing_images_template_ready_for_adding))
