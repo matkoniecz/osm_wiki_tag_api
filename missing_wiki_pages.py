@@ -15,7 +15,7 @@ def new_popular(key, multiplier=1):
                 return returned # dropped into lower use
             if delta > 1000 * multiplier: # growing
                 identifier = key + "=" + value
-                if identifier not in ["bridge=yes"]:
+                if identifier not in ["bridge=yes", "tunnel=yes"]:
                     returned += key + "=" + value + " (increase by " + str(delta) + " in last " + str(offset) + " days):"
                     returned += "\n"
                     returned += links.osm_wiki_page_link_from_tag(key, value)
