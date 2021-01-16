@@ -14,11 +14,13 @@ def new_popular(key, multiplier=1):
             if delta == None:
                 return returned # dropped into lower use
             if delta > 1000 * multiplier: # growing
-                returned += key + "=" + value + " (increase by " + str(delta) + " in last " + str(offset) + " days):"
-                returned += "\n"
-                returned += links.osm_wiki_page_link_from_tag(key, value)
-                returned += "\n"
-                returned += "\n"
+                identifier = key + "=" + value
+                if identifier not in ["bridge=yes"]:
+                    returned += key + "=" + value + " (increase by " + str(delta) + " in last " + str(offset) + " days):"
+                    returned += "\n"
+                    returned += links.osm_wiki_page_link_from_tag(key, value)
+                    returned += "\n"
+                    returned += "\n"
     return returned
 
 def undocumented_values_among_popular_tags():
