@@ -27,8 +27,6 @@ def undocumented_values_among_popular_tags():
     returned = ""
     returned += new_popular("attraction")
     returned += new_popular("water")
-    returned += new_popular("tunnel")
-    returned += new_popular("public_transport")
     returned += new_popular("healthcare")
     returned += new_popular("building", 8)
     returned += new_popular("amenity")
@@ -46,11 +44,13 @@ def undocumented_values_among_popular_tags():
     returned += new_popular("tourism", 0.5)
     returned += new_popular("wall")
     returned += new_popular("footway")
+    returned += new_popular("tunnel")
     returned += new_popular("bridge")
     returned += new_popular("service")
     returned += new_popular("railway")
-    returned += new_popular("access", 0.1)
-    returned += new_popular("bridge")
+    returned += new_popular("public_transport")
+    returned += new_popular("access", 0.4)
+    #returned += new_popular("denomination") - https://wiki.openstreetmap.org/wiki/Key:denomination is not even linking to most of them
     if returned == "":
         raise "reduce base value in new_popular"
     return returned
