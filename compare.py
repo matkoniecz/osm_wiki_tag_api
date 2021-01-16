@@ -506,7 +506,7 @@ def main():
                             missing_status_template_ready_for_adding.append(issue)
         processed += 1
         if processed % 1000 == 0:
-            print("processed", processed)
+            print("processed", processed, "out of", len(keys))
         if len(missing_images_template_ready_for_adding) > 10:
             if len(missing_status_template_ready_for_adding) > 10:
                 break
