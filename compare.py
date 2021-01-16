@@ -36,12 +36,14 @@ def is_adding_image_important(tag_docs):
         if is_unimportant_tag_status(template["status"]):
             # TODO: detect marked as proposed with significant use
             return False
-        if template["status"] == "imported":
+        if is_imported_tag_status(template["status"]):
             return False # TODO - for now at least
-    banned_parts = ["source", "ref:", "is_in", "not:", "_ref"]
-    banned_parts += ["naptan:", "Tag:landmark=", "seamark", "code"] # TODO - for potential enabling
+    banned_parts = ["source", "ref:", "is_in", "not:", "_ref", "tiger:", "description", "operator"]
+    banned_parts += ["naptan:", "Tag:landmark=", "seamark", "code", "_id"] # TODO - for potential enabling
+    banned_parts += ["Key:nvdb:"] # looks like an import, TODO verification after everything else
+    banned_parts += ["Key:no"] # noaddress, noref etc - probably plenty of false positives...
     for ban in banned_parts:
-        if ban in page_name:
+        if ban.replace('_', ' ') in page_name.replace('_', ' '):
             return False
     if is_page_skipped_for_now_from_missing_parameters(tag_docs):
         return False
