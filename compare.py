@@ -498,7 +498,7 @@ def main():
         if report != None:
             for issue in report["issues"]:
                 if issue["type"] == "missing_value_in_infobox_with_key_present":
-                    if taginfo.count_appearances_from_wiki_page_title(group.base_page()) >= 1000:
+                    if taginfo.count_appearances_from_wiki_page_title(group.base_page()) >= 5000:
                         if issue["key"] == "image":
                             if issue["embedded_image_present"] == False:
                                 missing_images_template_ready_for_adding.append(issue)
