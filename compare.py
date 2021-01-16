@@ -188,7 +188,7 @@ def compare_data(tag_docs):
         return report
     else:
         url = links.osm_wiki_page_link(page_name)
-    data_item = extract_data_item.page_data(page_name)
+    data_item = tag_docs.parsed_data_item()
     template = tag_docs.parsed_infobox()
     tag_docs.spot_issues_in_page_text()
     written_something = False
@@ -370,9 +370,15 @@ class TagWithDocumentation():
     def __init__(self, pages):
         self.wiki_documentation = pages
         self.page_text = None
+        self.data_item = None
     
     def register_wiki_page(self, page_title):
         self.wiki_documentation.append(page_title)
+
+    def parsed_data_item(self):
+        if self.data_item == None:
+            self.data_item = extract_data_item.page_data(self.base_page())
+        return self.data_item
 
     def parsed_infobox(self): # TODO handle multiple languages
         self.load_page_text()
