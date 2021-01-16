@@ -201,7 +201,7 @@ def compare_data(tag_docs):
             continue
         if is_key_reportable_as_completely_missing_in_template(key, tag_docs):
             report["issues"].append({"page_name": page_name, "osm_wiki_url": url, "type": "missing_key_in_infobox", "key": key})
-        elif is_key_reportable_as_missing_in_template(key, tag_docs):
+        elif is_key_reportable_as_missing_in_template(key, tag_docs) and key not in data_item:
             report["issues"].append({"page_name": page_name, "osm_wiki_url": url, "type": "missing_value_in_infobox_with_key_present", "key": key})
             if key == "image":
                 report["issues"][-1]["embedded_image_present"] = is_there_embedded_image(tag_docs)
