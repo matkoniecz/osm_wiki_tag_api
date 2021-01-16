@@ -19,18 +19,34 @@ def unimportant_tag_status():
 def is_unimportant_tag_status(status):
     return normalize_status_string(status) in unimportant_tag_status()
 
-def is_adding_image_important(page_name, template_data):
-    if "status" in template_data:
-        if is_unimportant_tag_status(template_data["status"]):
+def is_there_embedded_image(tag_docs):
+    if tag_docs.base_page_text().find("[[Image:") != -1:
+        return True
+    if tag_docs.base_page_text().find("[[File:") != -1:
+        return True
+    return False
+
+def is_adding_image_important(tag_docs):
+    page_name = tag_docs.base_page()
+    template = tag_docs.parsed_infobox()
+    if "status" in template:
+        if is_unimportant_tag_status(template["status"]):
             # TODO: detect marked as proposed with significant use
             return False
-    if "Tag:landmark=" in page_name or "seamark" in page_name or "source" in page_name:
-        return False
-    if is_page_skipped_for_now_from_missing_parameters(page_name, template_data):
+        if template["status"] == "imported":
+            return False # TODO - for now at least
+    banned_parts = ["source", "ref:", "is_in", "not:", "_ref"]
+    banned_parts += ["naptan:", "Tag:landmark=", "seamark", "code"] # TODO - for potential enabling
+    for ban in banned_parts:
+        if ban in page_name:
+            return False
+    if is_page_skipped_for_now_from_missing_parameters(tag_docs):
         return False
     return True
 
-def is_page_skipped_for_now_from_missing_parameters(page_name, template):
+def is_page_skipped_for_now_from_missing_parameters(tag_docs):
+    page_name = tag_docs.base_page()
+    template = tag_docs.parsed_infobox()
     page_name = page_name.replace(" ", "_")
     if "Tag:seamark" in page_name or "Key:seamark" in page_name or "Tag:pilotage" in page_name or "Tag:landmark" in page_name or "Tag:type=" in page_name: # skip seamark mess, at least for now
         return True
@@ -52,7 +68,8 @@ def is_page_skipped_for_now_from_missing_parameters(page_name, template):
             return True
     return False
 
-def is_page_skipped_for_now_from_missing_description(page_name, template):
+def is_page_skipped_for_now_from_missing_description(tag_docs):
+    page_name = tag_docs.base_page()
     if "Tag:crop=" or "Tag:wood=" in page_name: # give up with this group 
         return True
     if "Tag:mooring=" in page_name: # give up with this group 
@@ -60,27 +77,30 @@ def is_page_skipped_for_now_from_missing_description(page_name, template):
     if is_unimportant_tag_status(status):
         return True # TODO - maybe consider as low importance?
 
-def is_key_reportable_as_completely_missing_in_template(key, page_name, template):
-    if is_page_skipped_for_now_from_missing_parameters(page_name, template):
+def is_key_reportable_as_completely_missing_in_template(key, tag_docs):
+    page_name = tag_docs.base_page()
+    if is_page_skipped_for_now_from_missing_parameters(tag_docs):
         return False
     if "Tag:source=" in page_name:
         if key == "image":
             return False
-    if key not in template.keys():
+    if key not in tag_docs.parsed_infobox().keys():
         return True
     return False
 
-def is_key_reportable_as_missing_in_template(key, page_name, template):
-    if is_page_skipped_for_now_from_missing_parameters(page_name, template):
+def is_key_reportable_as_missing_in_template(key, tag_docs):
+    page_name = tag_docs.base_page()
+    template = tag_docs.parsed_infobox()
+    if is_page_skipped_for_now_from_missing_parameters(tag_docs):
         return False
     if key in template.keys() and template[key].strip() != "":
         # it is not missing
         return False
     if key == "image":
-        if is_adding_image_important(page_name, template) == False:
+        if is_adding_image_important(tag_docs) == False:
             return False
     if key == "description":
-        if is_page_skipped_for_now_from_missing_description(page_name, template):
+        if is_page_skipped_for_now_from_missing_description(tag_docs):
             return False
     return True
 
@@ -152,29 +172,45 @@ def normalize(in_template, in_data_item, key):
 
     return normalized_in_template, normalized_in_data_item
 
-def compare_data(page_name):
-    url = links.osm_wiki_page_link(page_name)
+def compare_data(tag_docs):
+    report = {"issues": []}
+    page_name = tag_docs.base_page()
+    url = None
+    if page_name == None:
+        print(tag_docs.wiki_documentation, "has no English version")
+        page_name = tag_docs.wiki_documentation[0]
+        report["issues"].append({"page_name": page_name, "osm_wiki_url": links.osm_wiki_page_link(page_name), "type": "missing English article"})
+        return report
+    else:
+        url = links.osm_wiki_page_link(page_name)
     data_item = extract_data_item.page_data(page_name)
-    template = extract_infobox_data.page_data(page_name)
+    template = tag_docs.parsed_infobox()
+    tag_docs.spot_issues_in_page_text()
     written_something = False
     if template == {}:
         return # for example, on pages where Template:Deprecated calls it internally
     mandatory = ["onNode", "onWay", "onArea", "onRelation", "image", "description", "status"]
-    report = {"issues": []}
     for key in mandatory:
         if key in data_item.keys():
             # it is in data item, warning about copying will appear
             continue
-        if is_key_reportable_as_completely_missing_in_template(key, page_name, template):
+        if is_key_reportable_as_completely_missing_in_template(key, tag_docs):
             report["issues"].append({"page_name": page_name, "osm_wiki_url": url, "type": "missing_key_in_infobox", "key": key})
-        elif is_key_reportable_as_missing_in_template(key, page_name, template):
+        elif is_key_reportable_as_missing_in_template(key, tag_docs):
             report["issues"].append({"page_name": page_name, "osm_wiki_url": url, "type": "missing_value_in_infobox_with_key_present", "key": key})
+            if key == "image":
+                report["issues"][-1]["embedded_image_present"] = is_there_embedded_image(tag_docs)
     for issue in report["issues"]:
         if issue["type"] == "missing_key_in_infobox":
             print(":", url, issue["key"], "is missing and not present even as empty parameter")
             written_something = True
         if issue["type"] == "missing_value_in_infobox_with_key_present":
-            if key != "image": # try to delegate
+            if issue["key"] == "image":
+                if issue["embedded_image_present"]:
+                    print(":", url, issue["key"], "value is missing in the infobox template, but article has an image already")
+                else:
+                    pass # try to delegate
+            else:
                 print(":", url, issue["key"], "value is missing in the infobox template")
             written_something = True
     for key in set(set(data_item.keys()) | set(template.keys())):
@@ -325,46 +361,150 @@ def valid_wikidata(page_name):
     }
     return wikidata.get(page_name)
 
+class TagWithDocumentation():
+    def __init__(self, pages):
+        self.wiki_documentation = pages
+        self.page_text = None
+    
+    def register_wiki_page(self, page_title):
+        self.wiki_documentation.append(page_title)
+
+    def parsed_infobox(self): # TODO handle multiple languages
+        self.load_page_text()
+        return extract_infobox_data.turn_page_text_to_parsed(self.page_text)
+
+    def base_page(self):
+        for page_title in self.wiki_documentation:
+            if page_title.find("Tag:") == 0 or page_title.find("Key:") == 0:
+                return page_title
+    
+    def base_page_text(self):
+        self.load_page_text()
+        return self.page_text
+
+    def load_page_text(self):
+        if self.page_text == None:
+            self.page_text = pywikibot.Page(pywikibot.Site('en', 'osm'), self.base_page()).text
+
+    def spot_issues_in_page_text(self):
+        self.load_page_text()
+        url = links.osm_wiki_page_link(self.base_page())
+        if "DISPLAYTITLE" in self.page_text:
+            print(url, "has unneded DISPLAYTITLE template")
+        unwanted = ['Common tags to use in combination', "How to map as a node or area", "How to map as a building"]
+        for template in unwanted:
+            if template in self.page_text:
+                print(":", url, "has unwanted '" + template + "' template")
+
+def pages_grouped_by_tag():
+    titles = []
+    site = pywikibot.Site('en', 'osm')
+    for infobox in ["Template:KeyDescription", "Template:ValueDescription"]:
+        root_page = pywikibot.Page(site, infobox)
+        for page in root_page.getReferences(namespaces=[0], content=True):
+            titles.append(page.title())
+    return pages_grouped_by_tag_from_list(titles)
+
+
+def pages_grouped_by_tag_from_list(titles):
+    pages = {}
+    supposedly_invalid_pages = []
+    for title in titles:
+        if title.find("Tag:") == 0 or title.find("Key:") == 0:
+            index = title.replace("_", " ")
+            if index not in pages:
+                pages[index] = TagWithDocumentation([])
+            if title not in pages[index].wiki_documentation: # why it is needed? HACK TODO
+                pages[index].register_wiki_page(title)
+        elif title.find("Proposed features/") == 0:
+            pass
+        elif title.find("POI:") == 0:
+            pass
+        elif title in ["Wiki organisation", "Pl:Struktura Wiki", 'Taginfo/Parsing the Wiki', 'Data items',
+                                'Pl:Data items', 'Fa:Wiki organisation', 'Tag status', 'Uk:Data items',
+                                'Fa:Data items', 'Taginfo/Embedding', 'Uk:Організація Вікі', 'Pt:Cycle routes',
+                                "Machine-readable Map Feature list", 'Machine-readable Map Feature list/Archive',
+                                'Machine-readable Map Feature list/Tagwatch-libs', 'Roles for recreational route relations',
+                                'Fa:Wiki Translation', 'Pt:Organização da wiki', 'Philippines/Mapping Fire Hazard Zones',
+                                'WikiProject Water leisure', 'Taginfo/Taglists']:
+            pass
+        elif ":" in title:
+            language_prefix = title.split(":")[0]
+            root = title.removeprefix(language_prefix + ":")
+            if root.find("Tag:") == 0 or root.find("Key:") == 0:
+                index = root.replace("_", " ")
+                if index not in pages:
+                    """
+                    print(infobox, page, index)
+                    """
+                    pages[index] = TagWithDocumentation([])
+                if title not in pages[index].wiki_documentation: # why it is needed? HACK TODO
+                    pages[index].register_wiki_page(title)
+            else:
+                print("Invalid title:", title)
+                supposedly_invalid_pages.append(title)
+        else:
+            print("Invalid title:", title)
+            supposedly_invalid_pages.append(title)
+    print(supposedly_invalid_pages)
+    print("above are supposedly invalid pages")
+    return pages
+
 def main():
     "ab".removeprefix("a") # quick check that we are running python 3.9+
     site = pywikibot.Site('en', 'osm')
-    compare_data("Tag:amenity=trolley_bay")
-    compare_data("Tag:cemetery=sector")
-    skip_until = "Tag:amenity=rescue_station" # None
+    compare_data(TagWithDocumentation(["Tag:amenity=trolley_bay"]))
+    compare_data(TagWithDocumentation(["Key:right:country"]))
+    entry = TagWithDocumentation(["Tag:utility=power"])
+    text = entry.base_page_text()
+    print(compare_data(entry))
+    print(compare_data(TagWithDocumentation(["Tag:shop=chandler"])))
+    entry = TagWithDocumentation(["Key:NHS"])
+    print(compare_data(entry))
+    print(is_key_reportable_as_missing_in_template("image", entry))
+    skip_until = None # None
     processed = 0
     reported_something = False
     missing_images_template_ready_for_adding = []
     missing_status_template_ready_for_adding = []
-    for infobox in ["Template:ValueDescription", "Template:KeyDescription"]:
-        root_page = pywikibot.Page(site, infobox)
-        for page in root_page.getReferences(namespaces=[0], content=True):
-            if skip_until != None:
-                if page.title() == skip_until.replace("_", " "):
-                    skip_until = None
-                else:
-                    #print("skipped", page.title())
-                    continue
-            if page.title().find("Tag:") == 0 or page.title().find("Key:") == 0: #No translated pages as data items are borked there
-                report = compare_data(page.title())
-                if report != None and "written_something" in report and report["written_something"]:
-                    print(len(missing_images_template_ready_for_adding))
-                    if reported_something == False:
-                        print("processed", processed, "before showing anything")
-                    reported_something = True
-                if report != None:
-                    for issue in report["issues"]:
-                        if issue["type"] == "missing_value_in_infobox_with_key_present":
-                            if taginfo.count_appearances_from_wiki_page_title(page.title()) >= 1000:
-                                if issue["key"] == "image":
-                                    missing_images_template_ready_for_adding.append(issue)
-                                if issue["key"] == "status":
-                                    missing_status_template_ready_for_adding.append(issue)
-            processed += 1
-            if processed % 1000 == 0:
-                print("processed", processed)
-            if len(missing_images_template_ready_for_adding) > 10:
-                if len(missing_status_template_ready_for_adding) > 10:
-                    break
+    pages = pages_grouped_by_tag()
+    for index in pages.keys():
+        group = pages[index]
+        print()
+        print(index)
+        print(group.base_page())
+        for entry in group.wiki_documentation:
+            print("         ", entry)
+
+    for index in pages.keys():
+        group = pages[index]
+        if skip_until != None:
+            if group.base_page() == skip_until.replace("_", " "):
+                skip_until = None
+            else:
+                #print("skipped", page.title())
+                continue
+        report = compare_data(group)
+        if report != None and "written_something" in report and report["written_something"]:
+            print(len(missing_images_template_ready_for_adding))
+            if reported_something == False:
+                print("processed", processed, "before showing anything")
+            reported_something = True
+        if report != None:
+            for issue in report["issues"]:
+                if issue["type"] == "missing_value_in_infobox_with_key_present":
+                    if taginfo.count_appearances_from_wiki_page_title(group.base_page()) >= 1000:
+                        if issue["key"] == "image":
+                            if issue["embedded_image_present"] == False:
+                                missing_images_template_ready_for_adding.append(issue)
+                        if issue["key"] == "status":
+                            missing_status_template_ready_for_adding.append(issue)
+        processed += 1
+        if processed % 1000 == 0:
+            print("processed", processed)
+        if len(missing_images_template_ready_for_adding) > 10:
+            if len(missing_status_template_ready_for_adding) > 10:
+                break
 
     if len(missing_images_template_ready_for_adding) > 0:
         print()
@@ -405,6 +545,9 @@ def main():
         print(page.title())
     """
 
+pages = pages_grouped_by_tag_from_list(['Key:highway', 'Key:natural', 'Key:aeroway', 'Pl:Key:aeroway'])
+for key in pages.keys():
+    print(key, pages[key].wiki_documentation)
 main()
 header = ""
 header += "List of obviously needed improvements to OSM Wiki\n"
