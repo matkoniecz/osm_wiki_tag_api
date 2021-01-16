@@ -14,7 +14,7 @@ import missing_wiki_pages
 # TODO: detect incomplete skeleton (distinguish missing parameter and no parameter set)
 
 def unimportant_tag_status():
-    return ["obsolete", "abandoned", "deprecated", "proposed", "draft"]
+    return ["obsolete", "abandoned", "deprecated", "proposed", "draft", "discardable"]
 
 def is_unimportant_tag_status(status):
     return normalize_status_string(status) in unimportant_tag_status()
