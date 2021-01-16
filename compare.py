@@ -102,6 +102,56 @@ def normalize_status_string(status):
         return None
     return status
 
+def normalize(in_template, in_data_item, key):
+    normalized_in_data_item = in_data_item
+    normalized_in_template = in_template
+    if normalized_in_template != None:
+        # for comparison skip comments in template
+        normalized_in_template = re.sub('<!--.*-->', '', normalized_in_template)
+
+    if normalized_in_template != None:
+        normalized_in_template = normalized_in_template.strip()
+        if normalized_in_template == "":
+            normalized_in_template = None
+
+    if key == "wikidata":
+        if in_data_item == None and in_template != None:
+            print(":", url, "Wikidata link is not mentioned in data item, it should be present there to make future elimination of wikidata from infobox easier")
+            written_something = True
+        if normalized_in_template == None and normalized_in_data_item != None:
+            normalized_in_template = valid_wikidata(page_name)
+
+    if key == "statuslink":
+        if normalized_in_data_item != None:
+            normalized_in_data_item = normalized_in_data_item.removeprefix("https://wiki.openstreetmap.org/wiki/")
+            normalized_in_data_item = normalized_in_data_item.replace("%22", '"')
+            normalized_in_data_item = normalized_in_data_item.replace("_", ' ')
+
+            normalized_in_template = normalized_in_template.replace("_", ' ')
+
+    if key == "image":
+        if normalized_in_template != None:
+            normalized_in_template = normalized_in_template.removeprefix("Image:")
+            normalized_in_template = normalized_in_template.removeprefix("File:")
+            normalized_in_template = normalized_in_template.replace("_", " ")
+
+    if key == "status":
+        normalized_in_template = normalize_status_string(normalized_in_template)
+
+        # obsolete and deprecated are not worth distinguishing
+        if normalized_in_data_item != normalized_in_template:
+            dead = ["obsolete", "deprecated", "abandoned"]
+            if normalized_in_data_item in dead:
+                if normalized_in_template in dead:
+                    normalized_in_data_item = normalized_in_template
+
+    if key == "description":
+        if normalized_in_template != None:
+            normalized_in_template = normalize_description(normalized_in_template)
+            normalized_in_data_item = normalize_description(normalized_in_data_item)
+
+    return normalized_in_template, normalized_in_data_item
+
 def compare_data(page_name):
     url = links.osm_wiki_page_link(page_name)
     data_item = extract_data_item.page_data(page_name)
@@ -130,61 +180,16 @@ def compare_data(page_name):
     for key in set(set(data_item.keys()) | set(template.keys())):
         if key in ["data_item_id"]:
             continue
-        in_data_item = data_item.get(key)
-        normalized_in_data_item = in_data_item
-        in_template = template.get(key)
-        normalized_in_template = in_template
-
         if key == "seeAlso" or key == "combination":
-            # implement parsing that in future to make copying easier
+            # TODO implement parsing that in future to make copying easier
             continue
-
-        if normalized_in_template != None:
-            # for comparison skip comments in template
-            normalized_in_template = re.sub('<!--.*-->', '', normalized_in_template)
-
-        if normalized_in_template != None:
-            normalized_in_template = normalized_in_template.strip()
-            if normalized_in_template == "":
-                normalized_in_template = None
-
         if key == "wikidata":
             continue # big time sing, it would be smarter to work on removal it from infoboxes
-            if in_data_item == None and in_template != None:
-                print(":", url, "Wikidata link is not mentioned in data item, it should be present there to make future elimination of wikidata from infobox easier")
-                written_something = True
-            if normalized_in_template == None and normalized_in_data_item != None:
-                normalized_in_template = valid_wikidata(page_name)
+
+        in_data_item = data_item.get(key)
+        in_template = template.get(key)
+        normalized_in_template, normalized_in_data_item = normalize(in_template, in_data_item, key)
         
-        if key == "statuslink":
-            if normalized_in_data_item != None:
-                normalized_in_data_item = normalized_in_data_item.removeprefix("https://wiki.openstreetmap.org/wiki/")
-                normalized_in_data_item = normalized_in_data_item.replace("%22", '"')
-                normalized_in_data_item = normalized_in_data_item.replace("_", ' ')
-
-                normalized_in_template = normalized_in_template.replace("_", ' ')
-
-        if key == "image":
-            if normalized_in_template != None:
-                normalized_in_template = normalized_in_template.removeprefix("Image:")
-                normalized_in_template = normalized_in_template.removeprefix("File:")
-                normalized_in_template = normalized_in_template.replace("_", " ")
-
-        if key == "status":
-            normalized_in_template = normalize_status_string(normalized_in_template)
-
-            # obsolete and deprecated are not worth distinguishing
-            if normalized_in_data_item != normalized_in_template:
-                dead = ["obsolete", "deprecated", "abandoned"]
-                if normalized_in_data_item in dead:
-                    if normalized_in_template in dead:
-                        normalized_in_data_item = normalized_in_template
-
-        if key == "description":
-            if normalized_in_template != None:
-                normalized_in_template = normalize_description(normalized_in_template)
-                normalized_in_data_item = normalize_description(normalized_in_data_item)
-
         if normalized_in_template == None:
             if key == "group":
                 continue # do not report leaks here (for now - TODO!)
