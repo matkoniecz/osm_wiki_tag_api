@@ -151,7 +151,7 @@ def normalize(in_template, in_data_item, key):
             normalized_in_data_item = normalized_in_data_item.removeprefix("https://wiki.openstreetmap.org/wiki/")
             normalized_in_data_item = normalized_in_data_item.replace("%22", '"')
             normalized_in_data_item = normalized_in_data_item.replace("_", ' ')
-
+        if normalized_in_template != None:
             normalized_in_template = normalized_in_template.replace("_", ' ')
 
     if key == "image":
