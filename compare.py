@@ -357,11 +357,9 @@ def main():
             processed += 1
             if processed % 1000 == 0:
                 print("processed", processed)
-            if len(missing_images_template_ready_for_adding) > 13:
-                break
-            if len(missing_status_template_ready_for_adding) > 13:
-                pass
-                #break
+            if len(missing_images_template_ready_for_adding) > 10:
+                if len(missing_status_template_ready_for_adding) > 10:
+                    break
 
     if len(missing_images_template_ready_for_adding) > 0:
         print("images are missing in the infobox template:")
