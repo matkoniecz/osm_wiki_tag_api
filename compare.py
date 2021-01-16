@@ -395,5 +395,19 @@ def main():
         print(page.title())
     """
 
-print(missing_wiki_pages.missing_pages())
 main()
+header = ""
+header += "List of obviously needed improvements to OSM Wiki\n"
+header += "\n"
+header += "OSM Wiki includes plenty of useful documentation, but more is needed.\n"
+header += "Help would be highly welcomed - there is need to both improve existing wiki pages and to document tags that are not documented right now.\n"
+header += "\n"
+header += "Tags with quickly growing usage but without own page\n"
+header += "------------\n"
+header += "see https://wiki.openstreetmap.org/wiki/Creating_a_page_describing_key_or_value for some info how OSM Wiki pages are created\n"
+header += "note: linked page is in a very early draft, edits, contributions are greatly appreciated!\n"
+header += "Even comments about what is unclear or missing greatly increase chance of further improvements.\n"
+header += "For example comment which TODO is especially important is very likely to result in edit fixing it.\n"
+missing_pages = missing_wiki_pages.missing_pages()
+print(header)
+print(missing_pages)
