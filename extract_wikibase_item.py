@@ -88,12 +88,12 @@ def turn_api_response_to_parsed(parsed_json):
     
     description = extract_description(entity)
 
-def extract_string(entity, claim_id):
+def extract_string(entity, claim_id, ignore_qualifier_list=[]):
     if "claims" not in entity:
         return None
     if claim_id not in entity["claims"]:
         return None
-    statement = extract_unqualified_statement(entity, claim_id)
+    statement = extract_statement(entity, claim_id, ignore_qualifier_list)
     if statement == None:
         return None
     return statement["datavalue"]["value"]
@@ -101,6 +101,20 @@ def extract_string(entity, claim_id):
 def extract_url(entity, claim_id):
     # maybe implementing whatever type matches should be done...
     return extract_string(entity, claim_id)
+
+def extract_statement(entity, claim_id, ignore_qualifier_list):
+    if ignore_qualifier_list == []:
+        return extract_unqualified_statement(entity, claim_id)
+    statements = entity["claims"][claim_id]
+    for statement in statements:
+        if "qualifiers" in statement:
+            for key in statement["qualifiers"]:
+                if key not in ignore_qualifier_list:
+                    continue
+        # returns first value if there are multiple ones
+        # skips on not ignored qualifiers
+        return statement["mainsnak"]
+    return None
 
 def extract_unqualified_statement(entity, claim_id):
     if "claims" not in entity:
