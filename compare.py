@@ -469,9 +469,6 @@ def self_check_on_init():
     entry = TagWithDocumentation(["Tag:utility=power"])
     text = entry.base_page_text()
     print(compare_data(entry))
-    print(compare_data(TagWithDocumentation(["Tag:building=kindergarten"])))
-    entry = TagWithDocumentation(["Key:is_in"])
-    print(compare_data(entry))
     print("is_key_reportable_as_missing_in_template(\"image\", entry) =", is_key_reportable_as_missing_in_template("image", entry))
     print("is_adding_image_important(entry) =", is_adding_image_important(entry))
     print(entry.parsed_infobox())
@@ -552,9 +549,6 @@ def main():
         print(page.title())
     """
 
-pages = pages_grouped_by_tag_from_list(['Key:highway', 'Key:natural', 'Key:aeroway', 'Pl:Key:aeroway'])
-for key in pages.keys():
-    print(key, pages[key].wiki_documentation)
 main()
 header = ""
 header += "List of obviously needed improvements to OSM Wiki\n"
