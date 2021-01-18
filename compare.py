@@ -521,13 +521,27 @@ def self_check_on_init():
     print(entry.parsed_infobox())
     print(entry.parsed_infobox()["status"])
 
+def update_reports(reports_for_display, report):
+    if report != None:
+        for issue in report["issues"]:
+            if issue["type"] == "missing_value_in_infobox_with_key_present":
+                if taginfo.count_appearances_from_wiki_page_title(group.base_page()) >= 5000:
+                    if issue["key"] == "image":
+                        if issue["embedded_image_present"] == False:
+                            reports_for_display['missing_images_template_ready_for_adding'].append(issue)
+                    if issue["key"] == "status":
+                        reports_for_display['missing_status_template_ready_for_adding'].append(issue)
+    return missing_images_template_ready_for_adding
+
 def main():
     self_check_on_init()
     site = pywikibot.Site('en', 'osm')
     processed = 0
     reported_something = False
-    missing_images_template_ready_for_adding = []
-    missing_status_template_ready_for_adding = []
+    reports_for_display = {
+        'missing_images_template_ready_for_adding': [],
+        'missing_status_template_ready_for_adding': [],
+    }
     pages = pages_grouped_by_tag()
     keys = list(pages.keys())
     random.shuffle(keys)
@@ -539,25 +553,15 @@ def main():
             if reported_something == False:
                 print("processed", processed, "before showing anything")
             reported_something = True
-        if report != None:
-            for issue in report["issues"]:
-                if issue["type"] == "missing_value_in_infobox_with_key_present":
-                    if taginfo.count_appearances_from_wiki_page_title(group.base_page()) >= 5000:
-                        if issue["key"] == "image":
-                            if issue["embedded_image_present"] == False:
-                                missing_images_template_ready_for_adding.append(issue)
-                        if issue["key"] == "status":
-                            missing_status_template_ready_for_adding.append(issue)
+        reports_for_display = update_reports(reports_for_display, report)
         processed += 1
         if processed % 1000 == 0:
             print("processed", processed, "out of", len(keys))
-        if len(missing_images_template_ready_for_adding) > 10:
-            if len(missing_status_template_ready_for_adding) > 10:
+        if len(reports_for_display['missing_images_template_ready_for_adding']) > 10:
+            if len(reports_for_display['missing_status_template_ready_for_adding']) > 10:
                 break
-        if len(missing_images_template_ready_for_adding) > 50:
-            break
 
-    if len(missing_images_template_ready_for_adding) > 0:
+    if len(reports_for_display['missing_images_template_ready_for_adding']) > 0:
         report = "\n"
         report += "images are missing in the infobox:\n"
         report += "------------\n"
@@ -569,14 +573,14 @@ def main():
         report += "Przy okazji OSM Wiki: gdyby ktoś dał radę znaleźć na https://commons.wikimedia.org/ ilustracje dla tych tagów to byłbym bardzo wdzięczny\n"
         report += "If someone want to help wiki a bit - you can help by finding a suitable image for one of articles listed below (if you want - you can just link something from https://commons.wikimedia.org/ and I will add it if you prefer to avoid editing part itself).\n"
         report += "https://wiki.openstreetmap.org/wiki/Creating_a_page_describing_key_or_value#Image has a bit more\n"
-        for issue in missing_images_template_ready_for_adding:
+        for issue in reports_for_display['missing_images_template_ready_for_adding']:
             report += "* " + issue["osm_wiki_url"] + "\n"
         report += "(if you edit wiki - it is likely that this pages would benefit also from other improvements)\n"
         report += "jak ktoś podlinkuje dobre zdjęcie to na wiki mogę już dodać\n"
-    if len(missing_status_template_ready_for_adding) > 0:
+    if len(reports_for_display['missing_status_template_ready_for_adding']) > 0:
         print()
         report += "status info is missing and should be added (see https://wiki.openstreetmap.org/wiki/Tag_status ):\n"
-        for issue in missing_status_template_ready_for_adding:
+        for issue in reports_for_display['missing_status_template_ready_for_adding']:
             report += "* " + issue["osm_wiki_url"] + "\n"
     print(report)
     print("processed all!")
