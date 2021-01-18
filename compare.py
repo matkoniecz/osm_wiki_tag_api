@@ -7,6 +7,7 @@ import links
 import time
 import missing_wiki_pages
 import random
+import mwparserfromhell
 
 # https://www.mediawiki.org/wiki/Manual:Pywikibot/Installation#Install_Pywikibot
 # I followed it, run script, and recopied it here
@@ -399,13 +400,63 @@ class TagWithDocumentation():
 
     def spot_issues_in_page_text(self):
         self.load_page_text()
-        url = links.osm_wiki_page_link(self.base_page())
-        if "DISPLAYTITLE" in self.page_text:
+        self.spot_issues_in_a_given_page(self.page_text, self.base_page())
+    
+    def spot_issues_in_a_given_page(self, text, page_name):
+        url = links.osm_wiki_page_link(page_name)
+        if "DISPLAYTITLE" in text:
             print(url, "has unneded DISPLAYTITLE template")
         unwanted = ['Common tags to use in combination', "How to map as a node or area", "How to map as a building"]
         for template in unwanted:
-            if template in self.page_text:
+            if template in text:
                 print(":", url, "has unwanted '" + template + "' template")
+
+        wikicode = mwparserfromhell.parse(text)
+        self.detect_invalidly_disabled_linking(wikicode, page_name)
+        self.detect_repeated_parameters(wikicode, page_name)
+
+    def detect_invalidly_disabled_linking(self, parsed_text, page_name):
+        url = links.osm_wiki_page_link(page_name)
+        templates = wikicode.filter_templates()
+        for template in templates:
+            keys = []
+            for param in template.params:
+                if param != '' and "=" in param:
+                    key = param.split("=")[0]
+                    if key in keys:
+                        print(url, template.name, "repeats parameter", key)
+                    keys.append(key)
+
+    def detect_invalidly_disabled_linking(self, parsed_text, page_name):
+        url = links.osm_wiki_page_link(page_name)
+        templates = wikicode.filter_templates()
+        for template in templates:
+            if template.name.lower() == "tag":
+                if len(template.params) > 2:
+                    if template.params[1] == '':
+                        if self.is_parameter_with_linkable_value(template.params[0])
+                            if "/" not in template.params[2] and "user defined" not in template.params[2]:
+                                target = "Tag:" + template.params[0] + ":" + template.params[2]
+                                if target != page_name: # TODO use remove_language_prefix_if_present
+                                    if template.params[0] in missing_wiki_pages.keys_where_values_should_be_documented()
+                                        print(url, 'has invalidly not active link in Tag template', template.params)
+                                    else:
+                                        pass # maybe enable in future
+                    else:
+                        pass
+                        #print(url, 'has weird tag template', template.params)
+
+    def is_parameter_with_linkable_value(self, parameter):
+        for banned_prefix in ['name', 'operator', 'description', 'maxspeed', 'species', 'genus', 'opening_hours', 'ref',
+            'old_ref', "is_in", 'plant:output:', 'height', 'start_date', 'frequency', 'capacity', 'max_age', 'min_age',
+            'width', 'brand', 'wikidata', 'wikipedia', 'maxheight', 'maxweight', 'created_by', 'population', 'addr:',
+            'int_ref', 'old_ref', 'colour', 'incline']:
+            if parameter.find(banned_prefix) == 0:
+                return False
+        for banned_anywhere in ['wikidata']:
+            if banned_anywhere in parameter:
+                return False
+        return True
 
 def pages_grouped_by_tag():
     titles = []
@@ -417,43 +468,40 @@ def pages_grouped_by_tag():
     return pages_grouped_by_tag_from_list(titles)
 
 
+def remove_language_prefix_if_present(title):
+    if title.find("Tag:") == 0 or title.find("Key:") == 0:
+        return title
+    language_prefix = title.split(":")[0]
+    root = title.removeprefix(language_prefix + ":")
+    if root.find("Tag:") == 0 or root.find("Key:") == 0:
+        return root
+    else:
+        print("Invalid title:", title)
+        return None
+
 def pages_grouped_by_tag_from_list(titles):
     pages = {}
     supposedly_invalid_pages = []
     for title in titles:
-        if title.find("Tag:") == 0 or title.find("Key:") == 0:
-            index = title.replace("_", " ")
-            if index not in pages:
-                pages[index] = TagWithDocumentation([])
-            if title not in pages[index].wiki_documentation: # why it is needed? HACK TODO
-                pages[index].register_wiki_page(title)
-        elif title.find("Proposed features/") == 0:
-            pass
-        elif title.find("POI:") == 0:
-            pass
-        elif title in ["Wiki organisation", "Pl:Struktura Wiki", 'Taginfo/Parsing the Wiki', 'Data items',
+        if title in ["Wiki organisation", "Pl:Struktura Wiki", 'Taginfo/Parsing the Wiki', 'Data items',
                                 'Pl:Data items', 'Fa:Wiki organisation', 'Tag status', 'Uk:Data items',
                                 'Fa:Data items', 'Taginfo/Embedding', 'Uk:Організація Вікі', 'Pt:Cycle routes',
                                 "Machine-readable Map Feature list", 'Machine-readable Map Feature list/Archive',
                                 'Machine-readable Map Feature list/Tagwatch-libs', 'Roles for recreational route relations',
                                 'Fa:Wiki Translation', 'Pt:Organização da wiki', 'Philippines/Mapping Fire Hazard Zones',
                                 'WikiProject Water leisure', 'Taginfo/Taglists']:
+            continue
+        if title.find("Proposed features/") == 0:
             pass
-        elif ":" in title:
-            language_prefix = title.split(":")[0]
-            root = title.removeprefix(language_prefix + ":")
-            if root.find("Tag:") == 0 or root.find("Key:") == 0:
-                index = root.replace("_", " ")
-                if index not in pages:
-                    """
-                    print(infobox, page, index)
-                    """
-                    pages[index] = TagWithDocumentation([])
-                if title not in pages[index].wiki_documentation: # why it is needed? HACK TODO
-                    pages[index].register_wiki_page(title)
-            else:
-                print("Invalid title:", title)
-                supposedly_invalid_pages.append(title)
+        if title.find("POI:") == 0:
+            pass
+        root = remove_language_prefix_if_present(title)
+        if root != None:
+            index = root.replace("_", " ")
+            if index not in pages:
+                pages[index] = TagWithDocumentation([])
+            if title not in pages[index].wiki_documentation: # why it is needed? HACK TODO
+                pages[index].register_wiki_page(title)
         else:
             print("Invalid title:", title)
             supposedly_invalid_pages.append(title)
