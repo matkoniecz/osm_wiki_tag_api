@@ -23,34 +23,45 @@ def new_popular(key, multiplier=1):
                     returned += "\n"
     return returned
 
+def keys_where_values_should_be_documented():
+    returned = []
+    for entry in keys_where_values_should_be_documented_with_weights():
+        returned.append(entry['key'])
+
+def keys_where_values_should_be_documented_with_weights():
+    return [
+    {'key': "attraction", 'scaling': 1},
+    {'key': "water", 'scaling': 1},
+    {'key': "healthcare", 'scaling': 1},
+    {'key': "building", 'scaling': 8},
+    {'key': "amenity", 'scaling': 1},
+    {'key': "man_made", 'scaling': 4},
+    {'key': "highway", 'scaling': 1},
+    {'key': "natural", 'scaling': 0.5},
+    {'key': "landuse", 'scaling': 1},
+    {'key': "shop", 'scaling': 0},
+    {'key': "historic", 'scaling': 4},
+    {'key': "power", 'scaling': 1},
+    {'key': "leisure", 'scaling': 1},
+    {'key': "waterway", 'scaling': 1},
+    {'key': "barrier", 'scaling': 0.5},
+    {'key': "place", 'scaling': 0.1},
+    {'key': "tourism", 'scaling': 0.5},
+    {'key': "wall", 'scaling': 1},
+    {'key': "footway", 'scaling': 1},
+    {'key': "tunnel", 'scaling': 1},
+    {'key': "bridge", 'scaling': 1},
+    {'key': "service", 'scaling': 1},
+    {'key': "railway", 'scaling': 1},
+    {'key': "public_transport", 'scaling': 1},
+    {'key': "access", 'scaling': 0.4},
+    {'key': "denomination", 'scaling': 2},
+    ]
+
 def undocumented_values_among_popular_tags():
     returned = ""
-    returned += new_popular("attraction")
-    returned += new_popular("water")
-    returned += new_popular("healthcare")
-    returned += new_popular("building", 8)
-    returned += new_popular("amenity")
-    returned += new_popular("man_made", 4)
-    returned += new_popular("highway")
-    returned += new_popular("natural", 0.5)
-    returned += new_popular("landuse")
-    returned += new_popular("shop", 0)
-    returned += new_popular("historic", 4)
-    returned += new_popular("power")
-    returned += new_popular("leisure")
-    returned += new_popular("waterway")
-    returned += new_popular("barrier", 0.5)
-    returned += new_popular("place", 0.1)
-    returned += new_popular("tourism", 0.5)
-    returned += new_popular("wall")
-    returned += new_popular("footway")
-    returned += new_popular("tunnel")
-    returned += new_popular("bridge")
-    returned += new_popular("service")
-    returned += new_popular("railway")
-    returned += new_popular("public_transport")
-    returned += new_popular("access", 0.4)
-    #returned += new_popular("denomination") - https://wiki.openstreetmap.org/wiki/Key:denomination is not even linking to most of them
+    for entry in keys_where_values_should_be_documented_with_weights():
+        returned += new_popular(entry['key'], entry['scaling'])
     if returned == "":
         raise "reduce base value in new_popular"
     return returned
