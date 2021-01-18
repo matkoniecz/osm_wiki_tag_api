@@ -415,9 +415,9 @@ class TagWithDocumentation():
         self.detect_invalidly_disabled_linking(wikicode, page_name)
         self.detect_repeated_parameters(wikicode, page_name)
 
-    def detect_invalidly_disabled_linking(self, parsed_text, page_name):
+    def detect_repeated_parameters(self, parsed_text, page_name):
         url = links.osm_wiki_page_link(page_name)
-        templates = wikicode.filter_templates()
+        templates = parsed_text.filter_templates()
         for template in templates:
             keys = []
             for param in template.params:
@@ -429,16 +429,16 @@ class TagWithDocumentation():
 
     def detect_invalidly_disabled_linking(self, parsed_text, page_name):
         url = links.osm_wiki_page_link(page_name)
-        templates = wikicode.filter_templates()
+        templates = parsed_text.filter_templates()
         for template in templates:
             if template.name.lower() == "tag":
                 if len(template.params) > 2:
                     if template.params[1] == '':
-                        if self.is_parameter_with_linkable_value(template.params[0])
+                        if self.is_parameter_with_linkable_value(template.params[0]):
                             if "/" not in template.params[2] and "user defined" not in template.params[2]:
-                                target = "Tag:" + template.params[0] + ":" + template.params[2]
+                                target = "Tag:" + str(template.params[0]) + ":" + str(template.params[2])
                                 if target != page_name: # TODO use remove_language_prefix_if_present
-                                    if template.params[0] in missing_wiki_pages.keys_where_values_should_be_documented()
+                                    if template.params[0] in missing_wiki_pages.keys_where_values_should_be_documented():
                                         print(url, 'has invalidly not active link in Tag template', template.params)
                                     else:
                                         pass # maybe enable in future
@@ -492,9 +492,9 @@ def pages_grouped_by_tag_from_list(titles):
                                 'WikiProject Water leisure', 'Taginfo/Taglists']:
             continue
         if title.find("Proposed features/") == 0:
-            pass
+            continue
         if title.find("POI:") == 0:
-            pass
+            continue
         root = remove_language_prefix_if_present(title)
         if root != None:
             index = root.replace("_", " ")
@@ -531,7 +531,7 @@ def update_reports(reports_for_display, report):
                             reports_for_display['missing_images_template_ready_for_adding'].append(issue)
                     if issue["key"] == "status":
                         reports_for_display['missing_status_template_ready_for_adding'].append(issue)
-    return missing_images_template_ready_for_adding
+    return reports_for_display
 
 def main():
     self_check_on_init()
@@ -549,7 +549,6 @@ def main():
         group = pages[index]
         report = compare_data(group)
         if report != None and "written_something" in report and report["written_something"]:
-            print(len(missing_images_template_ready_for_adding))
             if reported_something == False:
                 print("processed", processed, "before showing anything")
             reported_something = True

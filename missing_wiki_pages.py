@@ -27,6 +27,7 @@ def keys_where_values_should_be_documented():
     returned = []
     for entry in keys_where_values_should_be_documented_with_weights():
         returned.append(entry['key'])
+    return returned
 
 def keys_where_values_should_be_documented_with_weights():
     return [
