@@ -521,7 +521,8 @@ def self_check_on_init():
     print(entry.parsed_infobox())
     print(entry.parsed_infobox()["status"])
 
-def update_reports(reports_for_display, report):
+def update_reports(reports_for_display, group):
+    report = compare_data(group)
     if report != None:
         for issue in report["issues"]:
             if issue["type"] == "missing_value_in_infobox_with_key_present":
@@ -533,11 +534,29 @@ def update_reports(reports_for_display, report):
                         reports_for_display['missing_status_template_ready_for_adding'].append(issue)
     return reports_for_display
 
-def main():
-    self_check_on_init()
+
+def images_help_prefix():
+    report = "\n"
+    report += "images are missing in the infobox:\n"
+    report += "------------\n"
+    report += "Chcę się pochwalić że właśnie dodałem ilustracje do\n"
+    report += "I just added images to\n"
+    report += "\n"
+    report += "\n"
+    report += "Help with other would be appreciated, there are many other waiting\n"
+    report += "Przy okazji OSM Wiki: gdyby ktoś dał radę znaleźć na https://commons.wikimedia.org/ ilustracje dla tych tagów to byłbym bardzo wdzięczny\n"
+    report += "If someone want to help wiki a bit - you can help by finding a suitable image for one of articles listed below (if you want - you can just link something from https://commons.wikimedia.org/ and I will add it if you prefer to avoid editing part itself).\n"
+    report += "https://wiki.openstreetmap.org/wiki/Creating_a_page_describing_key_or_value#Image has a bit more\n"
+    return report
+
+def images_help_suffix():
+    report += "(if you edit wiki - it is likely that this pages would benefit also from other improvements)\n"
+    report += "jak ktoś podlinkuje dobre zdjęcie to na wiki mogę już dodać\n"
+    return report
+
+def collect_reports():
     site = pywikibot.Site('en', 'osm')
     processed = 0
-    reported_something = False
     reports_for_display = {
         'missing_images_template_ready_for_adding': [],
         'missing_status_template_ready_for_adding': [],
@@ -547,71 +566,50 @@ def main():
     random.shuffle(keys)
     for index in keys:
         group = pages[index]
-        report = compare_data(group)
-        if report != None and "written_something" in report and report["written_something"]:
-            if reported_something == False:
-                print("processed", processed, "before showing anything")
-            reported_something = True
-        reports_for_display = update_reports(reports_for_display, report)
+        reports_for_display = update_reports(reports_for_display, group)
         processed += 1
         if processed % 1000 == 0:
             print("processed", processed, "out of", len(keys))
         if len(reports_for_display['missing_images_template_ready_for_adding']) > 10:
             if len(reports_for_display['missing_status_template_ready_for_adding']) > 10:
                 break
+    return reports_for_display
 
+def osm_wiki_improvements_prefix():
+    header = ""
+    header += "List of obviously needed improvements to OSM Wiki\n"
+    header += "\n"
+    header += "OSM Wiki includes plenty of useful documentation, but more is needed.\n"
+    header += "Help would be highly welcomed - there is need to both improve existing wiki pages and to document tags that are not documented right now.\n"
+    header += "\n"
+    return header
+
+def missing_pages_report():
+    header = ""
+    header += "Tags with quickly growing usage but without own page\n"
+    header += "------------\n"
+    header += "see https://wiki.openstreetmap.org/wiki/Creating_a_page_describing_key_or_value for some info how OSM Wiki pages are created\n"
+    header += "note: linked page is in a very early draft, edits, contributions are greatly appreciated!\n"
+    header += "Even comments about what is unclear or missing greatly increase chance of further improvements.\n"
+    header += "For example comment which TODO is especially important is very likely to result in edit fixing it.\n"
+    missing_pages = missing_wiki_pages.missing_pages()
+    return header + missing_pages
+
+def main():
+    self_check_on_init()
+    report = osm_wiki_improvements_prefix()
+    report += missing_pages_report()
+    reports_for_display = collect_reports()
     if len(reports_for_display['missing_images_template_ready_for_adding']) > 0:
-        report = "\n"
-        report += "images are missing in the infobox:\n"
-        report += "------------\n"
-        report += "Chcę się pochwalić że właśnie dodałem ilustracje do\n"
-        report += "I just added images to\n"
-        report += "\n"
-        report += "\n"
-        report += "Help with other would be appreciated, there are many other waiting\n"
-        report += "Przy okazji OSM Wiki: gdyby ktoś dał radę znaleźć na https://commons.wikimedia.org/ ilustracje dla tych tagów to byłbym bardzo wdzięczny\n"
-        report += "If someone want to help wiki a bit - you can help by finding a suitable image for one of articles listed below (if you want - you can just link something from https://commons.wikimedia.org/ and I will add it if you prefer to avoid editing part itself).\n"
-        report += "https://wiki.openstreetmap.org/wiki/Creating_a_page_describing_key_or_value#Image has a bit more\n"
+        report = images_help_prefix()
         for issue in reports_for_display['missing_images_template_ready_for_adding']:
             report += "* " + issue["osm_wiki_url"] + "\n"
-        report += "(if you edit wiki - it is likely that this pages would benefit also from other improvements)\n"
-        report += "jak ktoś podlinkuje dobre zdjęcie to na wiki mogę już dodać\n"
+        report += images_help_suffix()
     if len(reports_for_display['missing_status_template_ready_for_adding']) > 0:
         print()
         report += "status info is missing and should be added (see https://wiki.openstreetmap.org/wiki/Tag_status ):\n"
         for issue in reports_for_display['missing_status_template_ready_for_adding']:
             report += "* " + issue["osm_wiki_url"] + "\n"
     print(report)
-    print("processed all!")
-
-    """
-    # list namespaces
-    for n in site.namespaces:
-        print(n)
-        print(site.namespaces[n])
-        print(site.namespaces[n].canonical_prefix())
-        print(site.namespaces[n].normalize_name(site.namespaces[n].canonical_prefix()))
-        print(type(site.namespaces[n]))
-
-    # all pages in main namespace
-    for page in site.allpages(namespace = [0]):
-        print(page)
-        print(page.title())
-    """
 
 main()
-header = ""
-header += "List of obviously needed improvements to OSM Wiki\n"
-header += "\n"
-header += "OSM Wiki includes plenty of useful documentation, but more is needed.\n"
-header += "Help would be highly welcomed - there is need to both improve existing wiki pages and to document tags that are not documented right now.\n"
-header += "\n"
-header += "Tags with quickly growing usage but without own page\n"
-header += "------------\n"
-header += "see https://wiki.openstreetmap.org/wiki/Creating_a_page_describing_key_or_value for some info how OSM Wiki pages are created\n"
-header += "note: linked page is in a very early draft, edits, contributions are greatly appreciated!\n"
-header += "Even comments about what is unclear or missing greatly increase chance of further improvements.\n"
-header += "For example comment which TODO is especially important is very likely to result in edit fixing it.\n"
-missing_pages = missing_wiki_pages.missing_pages()
-print(header)
-print(missing_pages)
