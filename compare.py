@@ -520,15 +520,15 @@ def main():
         report += "\n"
         report += "Help with other would be appreciated, there are many other waiting\n"
         report += "Przy okazji OSM Wiki: gdyby ktoś dał radę znaleźć na https://commons.wikimedia.org/ ilustracje dla tych tagów to byłbym bardzo wdzięczny\n"
-        report += "If someone want to help wiki a bit - you can help by finding a suitable image for one of this articles (if you want - you can just link something from https://commons.wikimedia.org/ and I will add it if you prefer to avoid editing part itself).\n"
-        report += "https://wiki.openstreetmap.org/wiki/Creating_a_page_describing_key_or_value#Finding_a_good_image may have a bit more\n"
+        report += "If someone want to help wiki a bit - you can help by finding a suitable image for one of articles listed below (if you want - you can just link something from https://commons.wikimedia.org/ and I will add it if you prefer to avoid editing part itself).\n"
+        report += "https://wiki.openstreetmap.org/wiki/Creating_a_page_describing_key_or_value#Image has a bit more\n"
         for issue in missing_images_template_ready_for_adding:
             report += "* " + issue["osm_wiki_url"] + "\n"
         report += "(if you edit wiki - it is likely that this pages would benefit also from other improvements)\n"
         report += "jak ktoś podlinkuje dobre zdjęcie to na wiki mogę już dodać\n"
     if len(missing_status_template_ready_for_adding) > 0:
         print()
-        report += "status info is missing (see https://wiki.openstreetmap.org/wiki/Tag_status ):\n"
+        report += "status info is missing and should be added (see https://wiki.openstreetmap.org/wiki/Tag_status ):\n"
         for issue in missing_status_template_ready_for_adding:
             report += "* " + issue["osm_wiki_url"] + "\n"
     print(report)
