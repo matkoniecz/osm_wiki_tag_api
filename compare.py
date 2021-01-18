@@ -221,10 +221,9 @@ def compare_data(tag_docs):
             written_something = True
     for key in set(set(data_item.keys()) | set(template.keys())):
         if key in ["data_item_id"]:
-            continue
+            continue # not actual data
         if key == "seeAlso" or key == "combination":
-            # TODO implement parsing that in future to make copying easier
-            continue
+            continue # TODO implement parsing that in future to make copying easier
         if key == "wikidata":
             continue # big time sing, it would be smarter to work on removal it from infoboxes
 
