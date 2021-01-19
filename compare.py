@@ -77,12 +77,14 @@ def is_page_skipped_for_now_from_missing_parameters(tag_docs):
 
 def is_page_skipped_for_now_from_missing_description(tag_docs):
     page_name = tag_docs.base_page()
+    template = tag_docs.parsed_infobox()
     if "Tag:crop=" or "Tag:wood=" in page_name: # give up with this group 
         return True
     if "Tag:mooring=" in page_name: # give up with this group 
         return True
-    if is_unimportant_tag_status(status):
-        return True # TODO - maybe consider as low importance?
+    if "status" in template:
+        if is_unimportant_tag_status(template["status"]):
+            return True # TODO - maybe consider as low importance?
 
 def is_key_reportable_as_completely_missing_in_template(key, tag_docs):
     page_name = tag_docs.base_page()
