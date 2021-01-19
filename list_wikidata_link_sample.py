@@ -30,8 +30,11 @@ def get_wikidata_description(wikidata_id):
 
 "ab".removeprefix("a") # quick check that we are running python 3.9+
 site = pywikibot.Site('en', 'osm')
+print("loading started")
 values = pywikibot.Page(site, "Template:ValueDescription").getReferences(namespaces=[0], content=True)
+print("values list loaded")
 keys = pywikibot.Page(site, "Template:KeyDescription").getReferences(namespaces=[0], content=True)
+print("keys list loaded")
 values = list(values)
 keys = list(keys)
 remaining_wanted_examples = 400
