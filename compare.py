@@ -15,31 +15,12 @@ import mwparserfromhell
 
 # TODO: detect incomplete skeleton (distinguish missing parameter and no parameter set)
 
-def unimportant_tag_status():
-    return ["obsolete", "abandoned", "deprecated", "proposed", "draft", "discardable"]
-
-def is_unimportant_tag_status(status):
-    return normalize_status_string(status) in unimportant_tag_status()
-
-def is_imported_tag_status(status):
-    return normalize_status_string(status) in ["imported"]
-
-def is_there_embedded_image(tag_docs):
-    if tag_docs.base_page_text().find("[[Image:") != -1:
-        return True
-    if tag_docs.base_page_text().find("[[File:") != -1:
-        return True
-    return False
-
 def is_adding_image_important(tag_docs):
-    page_name = tag_docs.base_page()
-    template = tag_docs.parsed_infobox()
-    if "status" in template:
-        if is_unimportant_tag_status(template["status"]):
-            # TODO: detect marked as proposed with significant use
-            return False
-        if is_imported_tag_status(template["status"]):
-            return False # TODO - for now at least
+    page_name = tag_docs.base_title()
+    if tag_docs.is_dying_tag():
+        return False
+    if tag_docs.is_import_tag():
+        return False
     banned_parts = ["source", "ref:", "is_in", "not:", "_ref", "tiger:", "description", "operator"]
     banned_parts += ["naptan:", "Tag:landmark=", "seamark", "code", "_id"] # TODO - for potential enabling
     banned_parts += ["Key:nvdb:"] # looks like an import, TODO verification after everything else
@@ -52,8 +33,7 @@ def is_adding_image_important(tag_docs):
     return True
 
 def is_page_skipped_for_now_from_missing_parameters(tag_docs):
-    page_name = tag_docs.base_page()
-    template = tag_docs.parsed_infobox()
+    page_name = tag_docs.base_title()
     page_name = page_name.replace(" ", "_")
     if "Tag:seamark" in page_name or "Key:seamark" in page_name or "Tag:pilotage" in page_name or "Tag:landmark" in page_name or "Tag:type=" in page_name: # skip seamark mess, at least for now
         return True
@@ -69,37 +49,31 @@ def is_page_skipped_for_now_from_missing_parameters(tag_docs):
         return True
     if page_name in ["Tag:seamark:conspicuity=conspicuous", "Tag:waterway=deep+well"]:
         return True
-    if "status" in template:
-        if is_unimportant_tag_status(template["status"]):
-            # TODO: detect marked as obsolete/abandoned with some real use (>100?)
-            return True
+    if tag_docs.is_dying_tag():
+        return True
     return False
 
 def is_page_skipped_for_now_from_missing_description(tag_docs):
-    page_name = tag_docs.base_page()
-    template = tag_docs.parsed_infobox()
-    if "Tag:crop=" or "Tag:wood=" in page_name: # give up with this group 
+    root_page_name = tag_docs.base_title()
+    if "Tag:crop=" or "Tag:wood=" or "Tag:mooring=" in root_page_name: # give up with this group 
         return True
-    if "Tag:mooring=" in page_name: # give up with this group 
-        return True
-    if "status" in template:
-        if is_unimportant_tag_status(template["status"]):
-            return True # TODO - maybe consider as low importance?
+    if tag_docs.is_dying_tag():
+        return True # TODO - maybe consider as low importance?
 
-def is_key_reportable_as_completely_missing_in_template(key, tag_docs):
-    page_name = tag_docs.base_page()
+def is_key_reportable_as_completely_missing_in_template(key, tag_docs, language):
+    root_page_name = tag_docs.base_title()
     if is_page_skipped_for_now_from_missing_parameters(tag_docs):
         return False
-    if "Tag:source=" in page_name:
+    if "Tag:source=" in root_page_name:
         if key == "image":
             return False
-    if key not in tag_docs.parsed_infobox().keys():
+    if key not in tag_docs.parsed_infobox(language).keys():
         return True
     return False
 
-def is_key_reportable_as_missing_in_template(key, tag_docs):
-    page_name = tag_docs.base_page()
-    template = tag_docs.parsed_infobox()
+def is_key_reportable_as_missing_in_template(key, tag_docs, language):
+    page_name = tag_docs.base_title()
+    template = tag_docs.parsed_infobox(language)
     if is_page_skipped_for_now_from_missing_parameters(tag_docs):
         return False
     if key in template.keys() and template[key].strip() != "":
@@ -181,34 +155,44 @@ def normalize(in_template, in_data_item, key):
 
     return normalized_in_template, normalized_in_data_item
 
+def add_missing_parameters_and_missing_values_report(report, tag_docs, language):
+    mandatory = ["onNode", "onWay", "onArea", "onRelation", "image", "description", "status"]
+    page_name = tag_docs.title_in_language(language)
+    if page_name == None:
+        return report # no page to check
+    url = links.osm_wiki_page_link(page_name)
+    for key in mandatory:
+        if key in tag_docs.parsed_data_item().keys():
+            # it is in data item, warning about copying will appear
+            continue
+        if is_key_reportable_as_completely_missing_in_template(key, tag_docs, language):
+            report["issues"].append({"page_name": page_name, "osm_wiki_url": url, "type": "missing_key_in_infobox", "key": key})
+        elif is_key_reportable_as_missing_in_template(key, tag_docs, language) and key not in tag_docs.parsed_data_item():
+            report["issues"].append({"page_name": page_name, "osm_wiki_url": url, "type": "missing_value_in_infobox_with_key_present", "key": key})
+            if key == "image":
+                report["issues"][-1]["embedded_image_present"] = tag_docs.is_there_embedded_image(language) # which lanaguage should be used?
+    return report
+
 def compare_data(tag_docs):
     report = {"issues": []}
-    page_name = tag_docs.base_page()
+    page_name = tag_docs.base_title()
+    # title_in_language("Pl")
     url = None
     if page_name == None:
-        print(tag_docs.wiki_documentation, "has no English version")
         page_name = tag_docs.wiki_documentation[0]
-        report["issues"].append({"page_name": page_name, "osm_wiki_url": links.osm_wiki_page_link(page_name), "type": "missing English article"})
+        url = links.osm_wiki_page_link(page_name)
+        print(url, "has no English version")
+        report["issues"].append({"page_name": page_name, "osm_wiki_url": url, "type": "missing English article"})
         return report
     else:
         url = links.osm_wiki_page_link(page_name)
-    data_item = tag_docs.parsed_data_item()
-    template = tag_docs.parsed_infobox()
-    tag_docs.spot_issues_in_page_text()
+    tag_docs.spot_issues_in_page_text('en')
     written_something = False
+    template = tag_docs.parsed_infobox('en')
     if template == {}:
         return # for example, on pages where Template:Deprecated calls it internally
-    mandatory = ["onNode", "onWay", "onArea", "onRelation", "image", "description", "status"]
-    for key in mandatory:
-        if key in data_item.keys():
-            # it is in data item, warning about copying will appear
-            continue
-        if is_key_reportable_as_completely_missing_in_template(key, tag_docs):
-            report["issues"].append({"page_name": page_name, "osm_wiki_url": url, "type": "missing_key_in_infobox", "key": key})
-        elif is_key_reportable_as_missing_in_template(key, tag_docs) and key not in data_item:
-            report["issues"].append({"page_name": page_name, "osm_wiki_url": url, "type": "missing_value_in_infobox_with_key_present", "key": key})
-            if key == "image":
-                report["issues"][-1]["embedded_image_present"] = is_there_embedded_image(tag_docs)
+    report = add_missing_parameters_and_missing_values_report(report, tag_docs, 'en')
+    report = add_missing_parameters_and_missing_values_report(report, tag_docs, 'Pl')
     for issue in report["issues"]:
         if issue["type"] == "missing_key_in_infobox":
             print(":", url, issue["key"], "is missing and not present even as empty parameter")
@@ -222,7 +206,7 @@ def compare_data(tag_docs):
             else:
                 print(":", url, issue["key"], "value is missing in the infobox template")
             written_something = True
-    for key in set(set(data_item.keys()) | set(template.keys())):
+    for key in set(set(tag_docs.parsed_data_item().keys()) | set(template.keys())):
         if key in ["data_item_id"]:
             continue # not actual data
         if key == "seeAlso" or key == "combination":
@@ -230,7 +214,7 @@ def compare_data(tag_docs):
         if key == "wikidata":
             continue # big time sing, it would be smarter to work on removal it from infoboxes
 
-        in_data_item = data_item.get(key)
+        in_data_item = tag_docs.parsed_data_item().get(key)
         in_template = template.get(key)
         normalized_in_template, normalized_in_data_item = normalize(in_template, in_data_item, key)
         
@@ -267,12 +251,12 @@ def compare_data(tag_docs):
                 continue # do not report mismatches here
             if normalized_in_template != normalized_in_data_item:
                 if key == "description":
-                    print(":", url, "https://wiki.openstreetmap.org/wiki/Item:" + data_item["data_item_id"], "-", key, "are mismatched between OSM Wiki and data item")
+                    print(":", url, "https://wiki.openstreetmap.org/wiki/Item:" + tag_docs.parsed_data_item()["data_item_id"], "-", key, "are mismatched between OSM Wiki and data item")
                     print("::", in_template)
                     print("::", in_data_item)
                     written_something = True
                 elif "?" not in in_data_item:
-                    print(":", url, "https://wiki.openstreetmap.org/wiki/Item:" + data_item["data_item_id"], "-", key, "are mismatched between OSM Wiki and data item (", in_template, "vs", in_data_item, ")")
+                    print(":", url, "https://wiki.openstreetmap.org/wiki/Item:" + tag_docs.parsed_data_item()["data_item_id"], "-", key, "are mismatched between OSM Wiki and data item (", in_template, "vs", in_data_item, ")")
                     written_something = True
     if written_something:
         print()
@@ -372,7 +356,7 @@ def valid_wikidata(page_name):
 class TagWithDocumentation():
     def __init__(self, pages):
         self.wiki_documentation = pages
-        self.page_text = None
+        self.page_texts = {}
         self.data_item = None
     
     def register_wiki_page(self, page_title):
@@ -380,29 +364,70 @@ class TagWithDocumentation():
 
     def parsed_data_item(self):
         if self.data_item == None:
-            self.data_item = extract_data_item.page_data(self.base_page())
+            self.data_item = extract_data_item.page_data(self.base_title())
         return self.data_item
 
-    def parsed_infobox(self): # TODO handle multiple languages
-        self.load_page_text()
-        return extract_infobox_data.turn_page_text_to_parsed(self.page_text)
+    def parsed_infobox(self, language): # TODO handle multiple languages
+        self.load_page_text(language)
+        return extract_infobox_data.turn_page_text_to_parsed(self.page_texts[language])
+    
+    def is_there_embedded_image(self, language):
+        text = self.language_page_text(language)
+        if text.find("[[Image:") != -1:
+            return True
+        if text.find("[[File:") != -1:
+            return True
+        return False
 
-    def base_page(self):
+    # TODO: detect marked as obsolete/abandoned with some real use (>100?)
+    def is_dying_tag(self):
+        template = self.parsed_infobox('en') # no matter what translation declares
+        if "status" in template:
+            return normalize_status_string(template["status"]) in self.unimportant_tag_status()
+        return False
+
+    def is_import_tag(self):
+        template = self.parsed_infobox('en') # no matter what translation declares
+        if "status" in template:
+            return normalize_status_string(template["status"]) in ["imported"]
+        return False
+
+    def unimportant_tag_status(self):
+        return ["obsolete", "abandoned", "deprecated", "proposed", "draft", "discardable"]
+
+    def base_title(self):
         for page_title in self.wiki_documentation:
             if page_title.find("Tag:") == 0 or page_title.find("Key:") == 0:
                 return page_title
     
+    def title_in_language(self, lang_code):
+        if lang_code == self.base_language():
+            return self.base_title()
+        for page_title in self.wiki_documentation:
+            root_page_title = page_title.removeprefix(lang_code)
+            if page_title != root_page_title:
+                if root_page_title.find("Tag:") == 0 or root_page_title.find("Key:") == 0:
+                    return page_title
+    
     def base_page_text(self):
-        self.load_page_text()
-        return self.page_text
+        self.load_page_text(self.base_language())
+        return self.page_texts[self.base_language()]
+    
+    def language_page_text(self, language):
+        self.load_page_text(language)
+        return self.page_texts[language]
 
-    def load_page_text(self):
-        if self.page_text == None:
-            self.page_text = pywikibot.Page(pywikibot.Site('en', 'osm'), self.base_page()).text
+    def base_language(self):
+        return 'en'
 
-    def spot_issues_in_page_text(self):
-        self.load_page_text()
-        self.spot_issues_in_a_given_page(self.page_text, self.base_page())
+    def load_page_text(self, language):
+        if language not in self.page_texts:
+            connection = pywikibot.Site('en', 'osm')
+            self.page_texts[language] = pywikibot.Page(connection, self.title_in_language(language)).text
+
+    def spot_issues_in_page_text(self, language):
+        self.load_page_text(language)
+        self.spot_issues_in_a_given_page(self.page_texts[language], self.title_in_language(language))
     
     def spot_issues_in_a_given_page(self, text, page_name):
         url = links.osm_wiki_page_link(page_name)
@@ -513,22 +538,23 @@ def pages_grouped_by_tag_from_list(titles):
 
 def self_check_on_init():
     "ab".removeprefix("a") # quick check that we are running python 3.9+
+    compare_data(TagWithDocumentation(["Tag:amenity=townhall", "Tag:railway=subway"]))
     compare_data(TagWithDocumentation(["Tag:amenity=trolley_bay"]))
     compare_data(TagWithDocumentation(["Key:right:country"]))
     entry = TagWithDocumentation(["Tag:utility=power"])
     text = entry.base_page_text()
     print(compare_data(entry))
-    print("is_key_reportable_as_missing_in_template(\"image\", entry) =", is_key_reportable_as_missing_in_template("image", entry))
+    print("is_key_reportable_as_missing_in_template(\"image\", entry) =", is_key_reportable_as_missing_in_template("image", entry, 'en'))
     print("is_adding_image_important(entry) =", is_adding_image_important(entry))
-    print(entry.parsed_infobox())
-    print(entry.parsed_infobox()["status"])
+    print(entry.parsed_infobox('en'))
+    print(entry.parsed_infobox('en')["status"])
 
 def update_reports(reports_for_display, group):
     report = compare_data(group)
     if report != None:
         for issue in report["issues"]:
             if issue["type"] == "missing_value_in_infobox_with_key_present":
-                if taginfo.count_appearances_from_wiki_page_title(group.base_page()) >= 5000:
+                if taginfo.count_appearances_from_wiki_page_title(group.base_title()) >= 5000:
                     if issue["key"] == "image":
                         if issue["embedded_image_present"] == False:
                             reports_for_display['missing_images_template_ready_for_adding'].append(issue)
@@ -552,6 +578,7 @@ def images_help_prefix():
     return report
 
 def images_help_suffix():
+    report = ""
     report += "(if you edit wiki - it is likely that this pages would benefit also from other improvements)\n"
     report += "jak ktoś podlinkuje dobre zdjęcie to na wiki mogę już dodać\n"
     return report
