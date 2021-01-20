@@ -25,6 +25,7 @@ def is_adding_image_important(tag_docs):
     banned_parts += ["naptan:", "Tag:landmark=", "seamark", "code", "_id"] # TODO - for potential enabling
     banned_parts += ["Key:nvdb:"] # looks like an import, TODO verification after everything else
     banned_parts += ["Key:no"] # noaddress, noref etc - probably plenty of false positives...
+    banned_parts += ["IBGE:"] # chance for images, but Brazille specific
     for ban in banned_parts:
         if ban.replace('_', ' ') in page_name.replace('_', ' '):
             return False
