@@ -57,6 +57,8 @@ def keys_where_values_should_be_documented_with_weights():
     {'key': "public_transport", 'scaling': 1},
     {'key': "access", 'scaling': 0.4},
     {'key': "denomination", 'scaling': 2},
+    {'key': "location", 'scaling': 1},
+    {'key': "entrance", 'scaling': 0.1},
     ]
 
 def undocumented_values_among_popular_tags():
