@@ -1,3 +1,7 @@
+def osm_wiki_page_name_from_link(url):
+    url = url.removeprefix("https://wiki.openstreetmap.org/wiki/")
+    return url
+
 def osm_wiki_page_link(page_name):
     url = "https://wiki.openstreetmap.org/wiki/" + page_name
     url = url.replace(" ", "_")

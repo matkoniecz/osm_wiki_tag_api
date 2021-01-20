@@ -193,19 +193,6 @@ def compare_data(tag_docs):
         return # for example, on pages where Template:Deprecated calls it internally
     report = add_missing_parameters_and_missing_values_report(report, tag_docs, 'en')
     report = add_missing_parameters_and_missing_values_report(report, tag_docs, 'Pl')
-    for issue in report["issues"]:
-        if issue["type"] == "missing_key_in_infobox":
-            print(":", url, issue["key"], "is missing and not present even as empty parameter")
-            written_something = True
-        if issue["type"] == "missing_value_in_infobox_with_key_present":
-            if issue["key"] == "image":
-                if issue["embedded_image_present"]:
-                    print(":", url, issue["key"], "value is missing in the infobox template, but article has an image already")
-                else:
-                    pass # try to delegate
-            else:
-                print(":", url, issue["key"], "value is missing in the infobox template")
-            written_something = True
     for key in set(set(tag_docs.parsed_data_item().keys()) | set(template.keys())):
         if key in ["data_item_id"]:
             continue # not actual data
@@ -250,18 +237,41 @@ def compare_data(tag_docs):
             if key == "description":
                 continue # do not report mismatches here
             if normalized_in_template != normalized_in_data_item:
-                if key == "description":
-                    print(":", url, "https://wiki.openstreetmap.org/wiki/Item:" + tag_docs.parsed_data_item()["data_item_id"], "-", key, "are mismatched between OSM Wiki and data item")
-                    print("::", in_template)
-                    print("::", in_data_item)
-                    written_something = True
-                elif "?" not in in_data_item:
-                    print(":", url, "https://wiki.openstreetmap.org/wiki/Item:" + tag_docs.parsed_data_item()["data_item_id"], "-", key, "are mismatched between OSM Wiki and data item (", in_template, "vs", in_data_item, ")")
-                    written_something = True
+                if "?" not in in_data_item: # skip not parsed data items
+                    data_item_url = "https://wiki.openstreetmap.org/wiki/Item:" + tag_docs.parsed_data_item()["data_item_id"]
+                    report["issues"].append({"page_name": page_name, "osm_wiki_url": url, 'data_item_url': data_item_url, "type": "mismatch between OSM Wiki and data item", "key": key, 'osm_wiki_value': in_template, 'data_item_value': in_data_item})
+    if print_report_to_stdout(report):
+        written_something = True
     if written_something:
         print()
         report["written_something"] = written_something
     return report
+
+def print_report_to_stdout(report):
+    written_something = False
+    for issue in report["issues"]:
+        if issue["type"] == "missing_key_in_infobox":
+            print(":", issue['osm_wiki_url'], issue["key"], "is missing and not present even as empty parameter")
+            written_something = True
+        if issue["type"] == "missing_value_in_infobox_with_key_present":
+            if issue["key"] == "image":
+                if issue["embedded_image_present"]:
+                    print(":", issue['osm_wiki_url'], issue["key"], "value is missing in the infobox template, but article has an image already")
+                else:
+                    pass # try to delegate
+            else:
+                print(":", issue['osm_wiki_url'], issue["key"], "value is missing in the infobox template")
+            written_something = True
+        if issue["type"] == "mismatch between OSM Wiki and data item":
+            if issue["key"] == "description":
+                print(":", issue["osm_wiki_url"], issue["data_item_url"], "-", issue["key"], "are mismatched between OSM Wiki and data item")
+                print("::", issue['osm_wiki_value'])
+                print("::", issue['data_item_value'])
+                written_something = True
+            else:
+                print(":", issue["osm_wiki_url"], issue["data_item_url"], "-", issue["key"], "are mismatched between OSM Wiki and data item (", issue['osm_wiki_value'], "vs", issue['data_item_value'], ")")
+                written_something = True
+    return written_something
 
 def normalize_description(description):
     if description == None:
@@ -589,6 +599,7 @@ def collect_reports():
     reports_for_display = {
         'missing_images_template_ready_for_adding': [],
         'missing_status_template_ready_for_adding': [],
+        'mismatches_between_wikidata_and_data_items': [],
     }
     pages = pages_grouped_by_tag()
     keys = list(pages.keys())
@@ -601,7 +612,8 @@ def collect_reports():
             print("processed", processed, "out of", len(keys))
         if len(reports_for_display['missing_images_template_ready_for_adding']) > 10:
             if len(reports_for_display['missing_status_template_ready_for_adding']) > 10:
-                break
+                if len(reports_for_display['mismatches_between_wikidata_and_data_items']) >= 1:
+                    break
     return reports_for_display
 
 def osm_wiki_improvements_prefix():
@@ -624,21 +636,46 @@ def missing_pages_report():
     missing_pages = missing_wiki_pages.missing_pages()
     return header + missing_pages
 
+def ascii_url_formatter(url):
+    return url
+
+def mediawiki_url_formatter(url):
+    return "[" + url + " " + links.osm_wiki_page_name_from_link(url) + "]"
+
 def main():
     self_check_on_init()
-    report = osm_wiki_improvements_prefix()
-    report += missing_pages_report()
+
     reports_for_display = collect_reports()
+    missing_pages = missing_pages_report()
+
+    print(osm_wiki_improvements_prefix())
+    print(missing_pages)
+    display_reports(reports_for_display, ascii_url_formatter)
+
+    print()
+    print()
+    print()
+
+    print(osm_wiki_improvements_prefix())
+    print(missing_pages)
+    display_reports(reports_for_display, mediawiki_url_formatter)
+
+def display_reports(reports_for_display, url_formatter):
     if len(reports_for_display['missing_images_template_ready_for_adding']) > 0:
         report = images_help_prefix()
         for issue in reports_for_display['missing_images_template_ready_for_adding']:
-            report += "* " + issue["osm_wiki_url"] + "\n"
+            report += "* " + url_formatter(issue["osm_wiki_url"]) + "\n"
         report += images_help_suffix()
     if len(reports_for_display['missing_status_template_ready_for_adding']) > 0:
-        print()
+        report += "\n"
         report += "status info is missing and should be added (see https://wiki.openstreetmap.org/wiki/Tag_status ):\n"
         for issue in reports_for_display['missing_status_template_ready_for_adding']:
-            report += "* " + issue["osm_wiki_url"] + "\n"
+            report += "* " + url_formatter(issue["osm_wiki_url"]) + "\n"
+    if len(reports_for_display['mismatches_between_wikidata_and_data_items']) > 0:
+        report += "\n"
+        report += "mismatch between [[data item]] and OSM Wiki:\n"
+        for issue in reports_for_display['missing_status_template_ready_for_adding']:
+            report += "* " + url_formatter(issue["osm_wiki_url"]) + " " + url_formatter(issue["osm_wiki_url"]) + " " + issue["key"] + "(", issue['osm_wiki_value'], "vs", issue['data_item_value'], ")" + "\n"
     print(report)
 
 main()
