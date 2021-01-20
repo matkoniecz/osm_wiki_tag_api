@@ -549,20 +549,6 @@ def self_check_on_init():
     print(entry.parsed_infobox('en'))
     print(entry.parsed_infobox('en')["status"])
 
-def update_reports(reports_for_display, group):
-    report = compare_data(group)
-    if report != None:
-        for issue in report["issues"]:
-            if issue["type"] == "missing_value_in_infobox_with_key_present":
-                if taginfo.count_appearances_from_wiki_page_title(group.base_title()) >= 5000:
-                    if issue["key"] == "image":
-                        if issue["embedded_image_present"] == False:
-                            reports_for_display['missing_images_template_ready_for_adding'].append(issue)
-                    if issue["key"] == "status":
-                        reports_for_display['missing_status_template_ready_for_adding'].append(issue)
-    return reports_for_display
-
-
 def images_help_prefix():
     report = "\n"
     report += "images are missing in the infobox:\n"
@@ -582,6 +568,20 @@ def images_help_suffix():
     report += "(if you edit wiki - it is likely that this pages would benefit also from other improvements)\n"
     report += "jak ktoś podlinkuje dobre zdjęcie to na wiki mogę już dodać\n"
     return report
+
+def update_reports(reports_for_display, group):
+    report = compare_data(group)
+    if report != None:
+        for issue in report["issues"]:
+            if issue["type"] == "missing_value_in_infobox_with_key_present":
+                if taginfo.count_appearances_from_wiki_page_title(group.base_title()) >= 5000:
+                    if issue["key"] == "image":
+                        if issue["embedded_image_present"] == False:
+                            reports_for_display['missing_images_template_ready_for_adding'].append(issue)
+                    if issue["key"] == "status":
+                        reports_for_display['missing_status_template_ready_for_adding'].append(issue)
+    return reports_for_display
+
 
 def collect_reports():
     site = pywikibot.Site('en', 'osm')
