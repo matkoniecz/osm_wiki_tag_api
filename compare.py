@@ -444,7 +444,7 @@ class TagWithDocumentation():
         url = links.osm_wiki_page_link(page_name)
         if "DISPLAYTITLE" in text:
             print(url, "has unneded DISPLAYTITLE template")
-        unwanted = ['Common tags to use in combination', "How to map as a node or area", "How to map as a building"]
+        unwanted = ['Common tags to use in combination', "How to map as a node or area", "How to map as a building", "How to map as grounds"]
         for template in unwanted:
             if template in text:
                 print(":", url, "has unwanted '" + template + "' template")
