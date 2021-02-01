@@ -394,6 +394,8 @@ class TagWithDocumentation():
     def is_dying_tag(self):
         template = self.parsed_infobox('en') # no matter what translation declares
         if "status" in template:
+            if template["status"] == None:
+                return False
             return normalize_status_string(template["status"]) in self.unimportant_tag_status()
         return False
 
