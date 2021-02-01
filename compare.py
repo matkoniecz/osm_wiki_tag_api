@@ -444,16 +444,57 @@ class TagWithDocumentation():
     
     def spot_issues_in_a_given_page(self, text, page_name):
         url = links.osm_wiki_page_link(page_name)
+        parsed_text = mwparserfromhell.parse(text)
+
         if "DISPLAYTITLE" in text:
             print(url, "has unneded DISPLAYTITLE template")
-        unwanted = ['Common tags to use in combination', "How to map as a node or area", "How to map as a building", "How to map as grounds"]
-        for template in unwanted:
+
+        unwanted_mapping_format = ["How to map as a node or area", "How to map as a building", "How to map as grounds"]
+        for template in unwanted_mapping_format:
             if template in text:
                 print(":", url, "has unwanted '" + template + "' template")
+                print(":: Draw [[area]] marking this feature. It is also OK to set a [[node]] at its center.")
+                print(":: Set a node at the center of the feature or [[area]] along its outline.")
+  
+        self.detect_magic_tag_lister_mentioning_common_tags(parsed_text, page_name) # detects {{Common tags to use in combination}}
+        self.detect_invalidly_disabled_linking(parsed_text, page_name) # detects {{building|church}}
+        self.detect_repeated_parameters(parsed_text, page_name) # detects {{ambox|text=Ala|text=Kasia}}
 
-        wikicode = mwparserfromhell.parse(text)
-        self.detect_invalidly_disabled_linking(wikicode, page_name)
-        self.detect_repeated_parameters(wikicode, page_name)
+    def detect_magic_tag_lister_mentioning_common_tags(self, parsed_text, page_name):
+        url = links.osm_wiki_page_link(page_name)
+        for template in parsed_text.filter_templates():
+            if template.name.lower() == "common tags to use in combination":
+                template_is_not_weird = True
+                print(":", url, 'Common tags to use in combination - unwanted template detected')
+                print(":Edit description")
+                parameters_available_in_common_tags_template = ['addr', 'name', 'opening_hours', 'wheelchair', 'phone', 'email', 'website', 'wikipedia', 'drive_through', 'operator', 'brand']
+                for param in template.params:
+                    if param != '' and "=" in param:
+                        key = param.split("=")[0]
+                        if key not in parameters_available_in_common_tags_template:
+                            print(": Weird parameter", key)
+                            template_is_not_weird = False
+                        value = template.get(key).value
+                        if value.strip() != "yes":
+                            print(": Unexplained weird value")
+                            print(":", url, param)
+                            print(":", url, template.params)
+                            template_is_not_weird = False
+                    else:
+                        print(": Unexplained weird positional parameters in", template.name.strip())
+                        print(":", url, param)
+                        print(":", url, template.params)
+                        template_is_not_weird = False
+                if template_is_not_weird:
+                    # at this point we got standard template :)
+                     print(":Making page easier to edit by turning magic template into standard tag list")
+                     for parameter in parameters_available_in_common_tags_template:
+                        value = template.get(key).value
+                        if value.strip() != "yes":
+                            raise
+                        else:
+                            # https://wiki.openstreetmap.org/wiki/User:Mateusz_Konieczny/improve_editability
+                            print("* {{Tag|" + value + "}}")
 
     def detect_repeated_parameters(self, parsed_text, page_name):
         url = links.osm_wiki_page_link(page_name)
