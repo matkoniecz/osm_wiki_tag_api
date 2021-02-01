@@ -512,7 +512,7 @@ class TagWithDocumentation():
                 if param != '' and "=" in param:
                     key = param.split("=")[0]
                     if key in keys:
-                        print(url, template.name, "repeats parameter", key)
+                        print(url, template.name.strip(), "repeats parameter \"" + key + '"')
                     keys.append(key)
 
     def detect_invalidly_disabled_linking(self, parsed_text, page_name):
