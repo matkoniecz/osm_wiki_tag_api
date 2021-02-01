@@ -4,7 +4,10 @@ import links
 
 def page_data(page_title):
     page = pywikibot.Page(pywikibot.Site('en', 'osm'), page_title)
-    return turn_page_text_to_parsed(page.text)
+    try:
+        returned = turn_page_text_to_parsed(page.text, page_title)
+    except ValueError:
+        return None
 
 def tag_data(key, value=None):
     if value == None:
@@ -32,18 +35,43 @@ not sure is it actually a parser, not tested usefullness
 https://www.mediawiki.org/wiki/Parsoid - PHP, old version in JS
 """
 
-def turn_page_text_to_parsed(text):
+def turn_page_text_to_parsed(text, page_title):
     wikicode = mwparserfromhell.parse(text)
     templates = wikicode.filter_templates()
     returned = {}
+    template_found_already = False
+    expected_keys = ["image", "description", "status", "statuslink", "onNode", "onWay", "onArea", "onRelation",
+                     "requires", "implies", "combination", "seeAlso", "wikidata", "group"]
+    also_expected_but_ignored_keys = ['osmcarto-rendering', 'osmcarto-rendering-size', 'nativekey']
     for template in templates:
         #print(template.name)
         #print(template.params)
         if template.name.strip() in ["ValueDescription", "KeyDescription"]:
-            for fetched in ["image", "description", "status", "statuslink",
-                            "onNode", "onWay", "onArea", "onRelation",
-                            "requires", "implies", "combination", "seeAlso",
-                            "wikidata", "group"]:
+            if template_found_already:
+                print("MULTIPLE MATCHING TEMPLATES")
+                raise ValueError("Multiple matching templates")
+            template_found_already = True
+            for fetched in expected_keys:
                 if template.has(fetched):
                     returned[fetched] = template.get(fetched).value.strip()
+            for param in template.params:
+                if param != '' and "=" in param:
+                    key = param.split("=")[0].strip()
+                    if key == "key":
+                        continue # TODO check match
+                    if key == "value" and template.name.strip() == "ValueDescription":
+                        continue # TODO check match
+                    if key not in expected_keys and key not in also_expected_but_ignored_keys:
+                        print(": Unexplained weird parameter (" + key + ") in", template.name.strip(), "on", links.osm_wiki_page_link(page_title))
+                        raise ValueError("Unexplained weird unhandled <" + key + "> parameter")
+                elif param == "":
+                    print(": Unexplained empty parameter in", template.name.strip(), "on", links.osm_wiki_page_link(page_title))
+                    raise ValueError("Empty parameter")
+                else:
+                    print(": Unexplained weird parameters in", template.name.strip(), "on", links.osm_wiki_page_link(page_title))
+                    print(":", param)
+                    print(":", template.params)
+                    raise ValueError("Unexplained weird parameter")
+
+
     return returned

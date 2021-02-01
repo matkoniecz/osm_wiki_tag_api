@@ -380,7 +380,12 @@ class TagWithDocumentation():
 
     def parsed_infobox(self, language): # TODO handle multiple languages
         self.load_page_text(language)
-        return extract_infobox_data.turn_page_text_to_parsed(self.page_texts[language])
+        try:
+            return extract_infobox_data.turn_page_text_to_parsed(self.page_texts[language], self.title_in_language(language))
+        except ValueError:
+            print(":", language, self.base_title(), "parsing failed")
+            print(links.osm_wiki_page_link(self.base_title()))
+            return None
     
     def is_there_embedded_image(self, language):
         text = self.language_page_text(language)

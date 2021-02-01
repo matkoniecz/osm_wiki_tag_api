@@ -25,5 +25,5 @@ text_for_group_bug = """{{ValueDescription
 |unrelated=group
 }}"""
 
-print(extract_infobox_data.turn_page_text_to_parsed(text))
-print(extract_infobox_data.turn_page_text_to_parsed(text_for_group_bug))
+print(extract_infobox_data.turn_page_text_to_parsed(text, "dummy title"))
+print(extract_infobox_data.turn_page_text_to_parsed(text_for_group_bug, "dummy title"))
