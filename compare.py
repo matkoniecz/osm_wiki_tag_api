@@ -56,7 +56,9 @@ def is_page_skipped_for_now_from_missing_parameters(tag_docs):
 
 def is_page_skipped_for_now_from_missing_description(tag_docs):
     root_page_name = tag_docs.base_title()
-    if "Tag:crop=" or "Tag:wood=" or "Tag:mooring=" in root_page_name: # give up with this group 
+    if "Tag:crop=" or "Tag:wood=" or "Tag:mooring=" in root_page_name: # give up with this groups
+        return True
+    if "Tag:name=": # pages from failed NSI attempt done as wiki pages without editor integration
         return True
     if tag_docs.is_dying_tag():
         return True # TODO - maybe consider as low importance?
