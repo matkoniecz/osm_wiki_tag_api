@@ -514,13 +514,25 @@ class TagWithDocumentation():
         for template in templates:
             if template.name.lower() == "tag":
                 if len(template.params) > 2:
-                    if template.params[1] == '':
+                    if template.params[1] == '' and len(template.params) == 3:
                         if self.is_parameter_with_linkable_value(template.params[0]):
-                            if "/" not in template.params[2] and "user defined" not in template.params[2]:
-                                target = "Tag:" + str(template.params[0]) + ":" + str(template.params[2])
-                                if target != page_name: # TODO use remove_language_prefix_if_present
+                            if "/" in template.params[2]:
+                                continue
+                            if ";" in template.params[2]:
+                                # TODO still complain if page exists for such tag
+                                continue
+                            if "user defined" in template.params[2]:
+                                continue
+                            if "type of" in template.params[2]:
+                                continue
+                            if "name of" in template.params[2]:
+                                continue
+                            tag = str(template.params[0]) + "=" + str(template.params[2])
+                            target = "Tag:" + tag.replace("_", " ")
+                            if target != page_name: # TODO use remove_language_prefix_if_present
+                                if tag not in missing_wiki_pages.blacklisted_tags_that_do_not_need_pages():
                                     if template.params[0] in missing_wiki_pages.keys_where_values_should_be_documented():
-                                        print(url, 'has invalidly not active link in Tag template', template.params)
+                                        print(":", url, 'has disabled link that should be active in <nowiki>{{Tag|' + str(template.params[0]) + "||" + str(template.params[2]) + "}}</nowiki> template")
                                     else:
                                         pass # maybe enable in future
                     else:

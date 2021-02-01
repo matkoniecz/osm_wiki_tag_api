@@ -15,13 +15,16 @@ def new_popular(key, multiplier=1):
                 return returned # dropped into lower use
             if delta > 1000 * multiplier: # growing
                 identifier = key + "=" + value
-                if identifier not in ["bridge=yes", "tunnel=yes"]:
+                if identifier not in blacklisted_tags_that_do_not_need_pages():
                     returned += key + "=" + value + " (increase by " + str(delta) + " in last " + str(offset) + " days):"
                     returned += "\n"
                     returned += links.osm_wiki_page_link_from_tag(key, value)
                     returned += "\n"
                     returned += "\n"
     return returned
+
+def blacklisted_tags_that_do_not_need_pages():
+    return ["bridge=yes", "tunnel=yes"]
 
 def keys_where_values_should_be_documented():
     returned = []
