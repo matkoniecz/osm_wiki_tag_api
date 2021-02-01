@@ -605,8 +605,9 @@ def pages_grouped_by_tag_from_list(titles):
         else:
             print("Invalid title:", title)
             supposedly_invalid_pages.append(title)
-    print(supposedly_invalid_pages)
-    print("above are supposedly invalid pages")
+    if len(supposedly_invalid_pages) > 0:
+        print(supposedly_invalid_pages)
+        print("above are supposedly invalid pages")
     return pages
 
 def self_check_on_init():
