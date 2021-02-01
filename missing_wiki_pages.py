@@ -51,6 +51,7 @@ def keys_where_values_should_be_documented_with_weights():
     {'key': "barrier", 'scaling': 0.5},
     {'key': "place", 'scaling': 0.1},
     {'key': "tourism", 'scaling': 0.5},
+    {'key': "surface", 'scaling': 1},
     {'key': "wall", 'scaling': 1},
     {'key': "footway", 'scaling': 1},
     {'key': "tunnel", 'scaling': 1},
@@ -59,9 +60,13 @@ def keys_where_values_should_be_documented_with_weights():
     {'key': "railway", 'scaling': 1},
     {'key': "public_transport", 'scaling': 1},
     {'key': "access", 'scaling': 0.4},
-    {'key': "denomination", 'scaling': 2},
+    {'key': "bicycle", 'scaling': 1},
+    {'key': "foot", 'scaling': 1},
+    {'key': "vehicle", 'scaling': 1},
+    #'key': "denomination", 'scaling': 2},
     {'key': "location", 'scaling': 1},
     {'key': "entrance", 'scaling': 0.1},
+    {'key': "usage", 'scaling': 1},
     ]
 
 def undocumented_values_among_popular_tags():
