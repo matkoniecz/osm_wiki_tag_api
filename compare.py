@@ -171,7 +171,7 @@ def add_missing_parameters_and_missing_values_report(report, tag_docs, language)
         elif is_key_reportable_as_missing_in_template(key, tag_docs, language) and key not in tag_docs.parsed_data_item():
             report["issues"].append({"page_name": page_name, "osm_wiki_url": url, "type": "missing_value_in_infobox_with_key_present", "key": key})
             if key == "image":
-                report["issues"][-1]["embedded_image_present"] = tag_docs.is_there_embedded_image(language) # which lanaguage should be used?
+                report["issues"][-1]["embedded_image_present"] = tag_docs.is_there_embedded_image(language) # which language should be used?
     return report
 
 def compare_data(tag_docs):
