@@ -42,7 +42,13 @@ def turn_page_text_to_parsed(text, page_title):
     template_found_already = False
     expected_keys = ["image", "description", "status", "statuslink", "onNode", "onWay", "onArea", "onRelation",
                      "requires", "implies", "combination", "seeAlso", "wikidata", "group"]
-    also_expected_but_ignored_keys = ['osmcarto-rendering', 'osmcarto-rendering-size', 'nativekey']
+    also_expected_but_ignored_keys = ['osmcarto-rendering', 'osmcarto-rendering-size',
+                                      'osmcarto-rendering-node', 'osmcarto-rendering-area-node',
+                                      'osmcarto-rendering-way', 'osmcarto-rendering-area-way',
+                                      'osmcarto-rendering-area', 'osmcarto-rendering-area-size',
+                                      'nativekey', # not copied into data items
+                                      'onChangeset', # not used but makes sense
+                                      ]
     for template in templates:
         #print(template.name)
         #print(template.params)
