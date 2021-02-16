@@ -34,6 +34,7 @@ def keys_where_values_should_be_documented():
 
 def keys_where_values_should_be_documented_with_weights():
     return [
+    # scaling - higher means that higher usage is required to appear on the list
     {'key': "attraction", 'scaling': 1},
     {'key': "water", 'scaling': 1},
     {'key': "healthcare", 'scaling': 1},
