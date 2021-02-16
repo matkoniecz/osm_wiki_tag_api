@@ -1,5 +1,23 @@
 def osm_wiki_page_name_from_link(url):
-    url = url.removeprefix("https://wiki.openstreetmap.org/wiki/")
+    prefix = "https://wiki.openstreetmap.org/wiki/"
+    if url.find(prefix) != 0:
+        return None
+    url = url.removeprefix(prefix)
+    return url
+
+def osm_data_item_code_from_link(url):
+    prefix = "https://wiki.openstreetmap.org/wiki/Item:"
+    if url.find(prefix) != 0:
+        return None
+    url = url.removeprefix(prefix)
+    return url
+
+def osm_data_entity_code_from_link(url):
+    # may be item, property, etc
+    prefix = "https://wiki.openstreetmap.org/wiki/"
+    if url.find(prefix) != 0:
+        return None
+    url = url.removeprefix(prefix)
     return url
 
 def osm_wiki_page_link(page_name):
