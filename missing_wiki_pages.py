@@ -24,7 +24,9 @@ def new_popular(key, multiplier=1):
     return returned
 
 def blacklisted_tags_that_do_not_need_pages():
-    return ["bridge=yes", "tunnel=yes"]
+    return ["bridge=yes", "tunnel=yes", "man_made=tar_kiln",
+        "highway=removed:street_lamp", # https://www.openstreetmap.org/note/2535136
+        ]
 
 def keys_where_values_should_be_documented():
     returned = []
