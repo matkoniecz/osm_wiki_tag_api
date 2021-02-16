@@ -539,7 +539,7 @@ class TagWithDocumentation():
                             if target != page_name: # TODO use remove_language_prefix_if_present
                                 if tag not in missing_wiki_pages.blacklisted_tags_that_do_not_need_pages():
                                     if template.params[0] in missing_wiki_pages.keys_where_values_should_be_documented():
-                                        print(":", url, 'has disabled link that should be active in <nowiki>{{Tag|' + str(template.params[0]) + "||" + str(template.params[2]) + "}}</nowiki> template")
+                                        print(":", url, 'has disabled link that should be active in <nowiki>{{Tag|' + str(template.params[0]) + "||" + str(template.params[2]) + "}}</nowiki> template (replace double line with single line to activate it)")
                                     else:
                                         pass # maybe enable in future
                     else:
