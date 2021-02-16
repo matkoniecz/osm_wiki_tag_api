@@ -65,11 +65,14 @@ def keys_where_values_should_be_documented_with_weights():
     {'key': "access", 'scaling': 0.4},
     {'key': "bicycle", 'scaling': 1},
     {'key': "foot", 'scaling': 1},
-    {'key': "vehicle", 'scaling': 1},
+    {'key': "vehicle", 'scaling': 3},
+    {'key': "motor_vehicle", 'scaling': 10},
+    {'key': "mofa", 'scaling': 10},
     #'key': "denomination", 'scaling': 2},
-    {'key': "location", 'scaling': 1},
-    {'key': "entrance", 'scaling': 0.1},
-    {'key': "usage", 'scaling': 1},
+    {'key': "location", 'scaling': 2},
+    {'key': "entrance", 'scaling': 0.2},
+    {'key': "usage", 'scaling': 2},
+    {'key': "segregated", 'scaling': 1},
     ]
 
 def undocumented_values_among_popular_tags():
