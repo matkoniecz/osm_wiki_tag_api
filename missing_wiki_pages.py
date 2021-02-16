@@ -2,25 +2,41 @@ import taginfo
 import links
 import time
 
-def new_popular(key, multiplier=1):
-    returned = ""
+def list_of_new_popular_values_for_key(key, multiplier, offset):
+    new_popular_values = []
     values = taginfo.get_all_values_of_key(key)
     for entry in values:
         value = entry["value"]
         description = entry["description"]
         if description == "" or description == None:
-            offset = 100
             delta = taginfo.count_new_appearances_of_tag_historic_data(key, value, offset)
             if delta == None:
-                return returned # dropped into lower use
+                return new_popular_values # dropped into lower use
             if delta > 1000 * multiplier: # growing
-                identifier = key + "=" + value
-                if identifier not in blacklisted_tags_that_do_not_need_pages():
-                    returned += key + "=" + value + " (increase by " + str(delta) + " in last " + str(offset) + " days):"
-                    returned += "\n"
-                    returned += links.osm_wiki_page_link_from_tag(key, value)
-                    returned += "\n"
-                    returned += "\n"
+                new_popular_values.append({"key": key, "value": value, "delta": delta, "delta_offset_in_days": offset})
+    return new_popular_values
+
+
+def new_popular_report_text(new_popular_values):
+    returned = ""
+    for entry in new_popular_values:
+        identifier = entry["key"] + "=" + entry["value"]
+        if identifier not in blacklisted_tags_that_do_not_need_pages():
+            returned += identifier + " (increase by " + str(entry["delta"]) + " in last " + str(entry["delta_offset_in_days"]) + " days):"
+            returned += "\n"
+            returned += links.osm_wiki_page_link_from_tag(entry["key"], entry["value"])
+            returned += "\n"
+            returned += "\n"
+    return returned
+
+def new_popular_report_wikicode_text(new_popular_values):
+    returned = ""
+    for entry in new_popular_values:
+        identifier = entry["key"] + "=" + entry["value"]
+        if identifier not in blacklisted_tags_that_do_not_need_pages():
+            returned += "|-\n"
+            returned += "| {{tag|" + entry["key"] + "|" + entry["value"] + "}} || " + str(entry["delta"]) + "\n"
+            returned += "\n"
     return returned
 
 def blacklisted_tags_that_do_not_need_pages():
@@ -75,13 +91,20 @@ def keys_where_values_should_be_documented_with_weights():
     {'key': "segregated", 'scaling': 1},
     ]
 
-def undocumented_values_among_popular_tags():
-    returned = ""
+def undocumented_values_among_popular_tags_reports():
+    data = []
+    offset_in_days = 100
     for entry in keys_where_values_should_be_documented_with_weights():
-        returned += new_popular(entry['key'], entry['scaling'])
-    if returned == "":
+        data += list_of_new_popular_values_for_key(entry['key'], entry['scaling'], offset=offset_in_days)
+    
+    if len(data) == 0:
         raise "reduce base value in new_popular"
+    returned = ""
+    returned += new_popular_report_text(data)
+    returned += "\n\n\n"
+    returned += "{| class=\"wikitable sortable\"\n"
+    returned += "|-\n"
+    returned += "! Tag !! Increase in past " + str(offset_in_days) + " days\n"
+    returned += new_popular_report_wikicode_text(data)
+    returned += "|}"
     return returned
-
-def missing_pages():
-    return undocumented_values_among_popular_tags()

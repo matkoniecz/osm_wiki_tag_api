@@ -8,6 +8,7 @@ import time
 import missing_wiki_pages
 import random
 import mwparserfromhell
+import pprint
 
 # https://www.mediawiki.org/wiki/Manual:Pywikibot/Installation#Install_Pywikibot
 # I followed it, run script, and recopied it here
@@ -657,6 +658,9 @@ def update_reports(reports_for_display, group):
                             reports_for_display['missing_images_template_ready_for_adding'].append(issue)
                     if issue["key"] == "status":
                         reports_for_display['missing_status_template_ready_for_adding'].append(issue)
+            if issue["type"] == "mismatch between OSM Wiki and data item":
+                reports_for_display['mismatches_between_osm_wiki_and_data_items'].append(issue)
+
     return reports_for_display
 
 
@@ -666,7 +670,7 @@ def collect_reports():
     reports_for_display = {
         'missing_images_template_ready_for_adding': [],
         'missing_status_template_ready_for_adding': [],
-        'mismatches_between_wikidata_and_data_items': [],
+        'mismatches_between_osm_wiki_and_data_items': [],
     }
     pages = pages_grouped_by_tag()
     keys = list(pages.keys())
@@ -679,7 +683,7 @@ def collect_reports():
             print("processed", processed, "out of", len(keys))
         if len(reports_for_display['missing_images_template_ready_for_adding']) > 10:
             if len(reports_for_display['missing_status_template_ready_for_adding']) > 10:
-                if len(reports_for_display['mismatches_between_wikidata_and_data_items']) >= 1:
+                if len(reports_for_display['mismatches_between_osm_wiki_and_data_items']) >= 1:
                     break
     return reports_for_display
 
@@ -700,14 +704,28 @@ def missing_pages_report():
     header += "note: linked page is in a very early draft, edits, contributions are greatly appreciated!\n"
     header += "Even comments about what is unclear or missing greatly increase chance of further improvements.\n"
     header += "For example comment which TODO is especially important is very likely to result in edit fixing it.\n"
-    missing_pages = missing_wiki_pages.missing_pages()
+    header += "\n"
+    header += "------------\n"
+    header += "\n"
+    header += "Following are tags with growing usage without their wiki page. Either fixing that tagging or creating page documenting de facto use is needed.\n"
+    header += "\n"
+    header += "Note also that pages may exist as just redirects! If page redirects to place where it is explained it may be still useful to create a separate page for it.\n"
+    missing_pages = missing_wiki_pages.undocumented_values_among_popular_tags_reports()
     return header + missing_pages
 
 def ascii_url_formatter(url):
     return url
 
 def mediawiki_url_formatter(url):
-    return "[" + url + " " + links.osm_wiki_page_name_from_link(url) + "]"
+    human_readable = links.osm_wiki_page_name_from_link(url)
+    if human_readable != None:
+        return "[" + url + " " + human_readable + "]"
+
+    human_readable = links.osm_data_entity_code_from_link(url)
+    if human_readable != None:
+        return "[" + url + " " + human_readable + "]"
+    
+    raise ValueError("impossible happened with " + url)        
 
 def main():
     self_check_on_init()
@@ -728,21 +746,56 @@ def main():
     display_reports(reports_for_display, mediawiki_url_formatter)
 
 def display_reports(reports_for_display, url_formatter):
-    if len(reports_for_display['missing_images_template_ready_for_adding']) > 0:
-        report = images_help_prefix()
-        for issue in reports_for_display['missing_images_template_ready_for_adding']:
-            report += "* " + url_formatter(issue["osm_wiki_url"]) + "\n"
+    # dump due to bug
+    #print(reports_for_display)
+    #pprint.pp(reports_for_display)
+    # dump due to bug
+
+    report = ""
+    report += "== Organised overview of major issues =="
+
+    report_segment = reports_for_display['missing_images_template_ready_for_adding']
+    if len(report_segment) > 0:
+        report += images_help_prefix()
+        for issue in report_segment:
+            try:
+                report += "* " + url_formatter(issue["osm_wiki_url"]) + "\n"
+            except KeyError:
+                print(issue)
+                raise
         report += images_help_suffix()
-    if len(reports_for_display['missing_status_template_ready_for_adding']) > 0:
+    report_segment = reports_for_display['missing_status_template_ready_for_adding']
+    if len(report_segment) > 0:
         report += "\n"
-        report += "status info is missing and should be added (see https://wiki.openstreetmap.org/wiki/Tag_status ):\n"
-        for issue in reports_for_display['missing_status_template_ready_for_adding']:
-            report += "* " + url_formatter(issue["osm_wiki_url"]) + "\n"
-    if len(reports_for_display['mismatches_between_wikidata_and_data_items']) > 0:
+        report += "missing status parameter in the infobox, adding it would be useful"
+        report += "see https://wiki.openstreetmap.org/wiki/Template:Tag_status_values for documentation of meaning of values and their list"
+        for issue in report_segment:
+            try:
+                report += "* " + url_formatter(issue["osm_wiki_url"]) + "\n"
+            except KeyError:
+                print(issue)
+                raise
+    report_segment = reports_for_display['mismatches_between_osm_wiki_and_data_items']
+    if len(report_segment) > 0:
         report += "\n"
         report += "mismatch between [[data item]] and OSM Wiki:\n"
-        for issue in reports_for_display['missing_status_template_ready_for_adding']:
-            report += "* " + url_formatter(issue["osm_wiki_url"]) + " " + url_formatter(issue["osm_wiki_url"]) + " " + issue["key"] + "(", issue['osm_wiki_value'], "vs", issue['data_item_value'], ")" + "\n"
+        for issue in report_segment:
+            try:
+                line = ""
+                line += "* "
+                line += url_formatter(issue["osm_wiki_url"]) + " "
+                line += url_formatter(issue["data_item_url"]) + " "
+                line += issue["key"] + "( <code>" + issue['osm_wiki_value'] + "</code> vs <code>" + issue['data_item_value'] + "</code> )" 
+                line += "\n"
+                report += line
+            except KeyError:
+                print(issue)
+                print("mismatches_between_osm_wiki_and_data_items have incomplete data")
+                raise
+            except TypeError:
+                print(issue)
+                print("type handling bug")
+                raise
     print(report)
 
 main()
