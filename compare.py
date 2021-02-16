@@ -254,7 +254,7 @@ def print_report_to_stdout(report):
     written_something = False
     for issue in report["issues"]:
         if issue["type"] == "missing_key_in_infobox":
-            print(":", issue['osm_wiki_url'], issue["key"], "is missing and not present even as empty parameter")
+            print(":", issue['osm_wiki_url'], issue["key"], "is missing and not present even as an empty parameter")
             written_something = True
         if issue["type"] == "missing_value_in_infobox_with_key_present":
             if issue["key"] == "image":
