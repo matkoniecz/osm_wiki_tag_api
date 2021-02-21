@@ -22,11 +22,14 @@ def is_adding_image_important(tag_docs):
         return False
     if tag_docs.is_import_tag():
         return False
-    banned_parts = ["source", "ref:", "is_in", "not:", "_ref", "tiger:", "description", "operator"]
+    banned_parts = ["source", "ref:", "is_in", "not:", "_ref", "tiger:", "description", "operator", "Key:ISO3166"]
     banned_parts += ["naptan:", "Tag:landmark=", "seamark", "code", "_id"] # TODO - for potential enabling
     banned_parts += ["Key:nvdb:"] # looks like an import, TODO verification after everything else
     banned_parts += ["Key:no"] # noaddress, noref etc - probably plenty of false positives...
     banned_parts += ["IBGE:"] # chance for images, but Brazille specific
+    banned_parts += ["Key:fvst:"] # not bothering for now - https://wiki.openstreetmap.org/wiki/Key:fvst:navnelbnr
+    banned_parts += ["Key:old_"] # by definition unsigned...
+
     for ban in banned_parts:
         if ban.replace('_', ' ') in page_name.replace('_', ' '):
             return False
