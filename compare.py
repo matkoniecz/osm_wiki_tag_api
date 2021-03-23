@@ -18,11 +18,16 @@ import pprint
 
 def is_adding_image_important(tag_docs):
     page_name = tag_docs.base_title()
+    if page_name in ["Key:public_transport:version", "Key:import_uuid"]:
+        # no idea what would fit as an image
+        return False
     if tag_docs.is_dying_tag():
         return False
     if tag_docs.is_import_tag():
         return False
-    banned_parts = ["source", "ref:", "is_in", "not:", "_ref", "tiger:", "description", "operator", "Key:ISO3166"]
+    banned_parts = []
+    banned_parts += ["species:", "note:", "ref:", "tiger:"]
+    banned_parts += ["source", "identifier", "import", "is_in", "_ref", "description", "operator", "Key:ISO3166"]
     banned_parts += ["naptan:", "Tag:landmark=", "seamark", "code", "_id"] # TODO - for potential enabling
     banned_parts += ["Key:nvdb:"] # looks like an import, TODO verification after everything else
     banned_parts += ["Key:no"] # noaddress, noref etc - probably plenty of false positives...
