@@ -409,6 +409,9 @@ class TagWithDocumentation():
     # TODO: detect marked as obsolete/abandoned with some real use (>100?)
     def is_dying_tag(self):
         template = self.parsed_infobox('en') # no matter what translation declares
+        if template == None:
+            print("failed to process template :(")
+            return False
         if "status" in template:
             if template["status"] == None:
                 return False
