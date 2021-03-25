@@ -623,7 +623,7 @@ def pages_grouped_by_tag_from_list(titles):
                                 'Fa:Wiki Translation', 'Pt:Organização da wiki', 'Philippines/Mapping Fire Hazard Zones',
                                 'WikiProject Water leisure', 'Taginfo/Taglists', 'Public transport in Barrie',
                                 'Ar:مفتاح:المجرى المائي', # instead of Ar:Key:waterway https://wiki.openstreetmap.org/wiki/Talk:Ar:%D9%85%D9%81%D8%AA%D8%A7%D8%AD:%D8%A7%D9%84%D9%85%D8%AC%D8%B1%D9%89_%D8%A7%D9%84%D9%85%D8%A7%D8%A6%D9%8A
-                                'Ar:مفتاح:طبيعي',
+                                'Ar:مفتاح:طبيعي', 'Creating a page describing key or value',
                                 ]:
             continue
         if title.find("Proposed features/") == 0:
