@@ -550,24 +550,28 @@ class TagWithDocumentation():
             if template.name.lower() == "tag":
                 if len(template.params) > 2:
                     if template.params[1] == '' and len(template.params) == 3:
-                        if self.is_parameter_with_linkable_value(template.params[0]):
-                            if "/" in template.params[2]:
+                        key = template.params[0]
+                        value =  template.params[2]
+                        if self.is_parameter_with_linkable_value(key):
+                            if key in ["location"]: # TODO - enable
                                 continue
-                            if ";" in template.params[2]:
+                            if "/" in value:
+                                continue
+                            if ";" in value:
                                 # TODO still complain if page exists for such tag
                                 continue
-                            if "user defined" in template.params[2]:
+                            if "user defined" in value.lower():
                                 continue
-                            if "type of" in template.params[2]:
+                            if "type of" in value.lower():
                                 continue
-                            if "name of" in template.params[2]:
+                            if "name of" in value.lower():
                                 continue
-                            tag = str(template.params[0]) + "=" + str(template.params[2])
+                            tag = str(template.params[0]) + "=" + str(value)
                             target = "Tag:" + tag.replace("_", " ")
                             if target != page_name: # TODO use remove_language_prefix_if_present
                                 if tag not in missing_wiki_pages.blacklisted_tags_that_do_not_need_pages():
                                     if template.params[0] in missing_wiki_pages.keys_where_values_should_be_documented():
-                                        print(":", url, 'has disabled link that should be active in <nowiki>{{Tag|' + str(template.params[0]) + "||" + str(template.params[2]) + "}}</nowiki> template (replace double line with single line to activate it)")
+                                        print(":", url, 'has disabled link that should be active in <nowiki>{{Tag|' + str(key) + "||" + str(value) + "}}</nowiki> template (replace double line with single line to activate it)")
                                     else:
                                         pass # maybe enable in future
                     else:
