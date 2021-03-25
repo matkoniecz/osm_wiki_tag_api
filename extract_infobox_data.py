@@ -42,12 +42,19 @@ def turn_page_text_to_parsed(text, page_title):
     template_found_already = False
     expected_keys = ["image", "description", "status", "statuslink", "onNode", "onWay", "onArea", "onRelation",
                      "requires", "implies", "combination", "seeAlso", "wikidata", "group"]
-    also_expected_but_ignored_keys = ['osmcarto-rendering', 'osmcarto-rendering-size',
-                                      'osmcarto-rendering-node', 'osmcarto-rendering-area-node',
-                                      'osmcarto-rendering-way', 'osmcarto-rendering-area-way',
+    also_expected_but_ignored_keys = [
+                                      # TODO: check whatever following are appearing in data items, start tracking
+                                      # without requirement of having them present
+                                      'osmcarto-rendering', 'osmcarto-rendering-size',
+                                      'osmcarto-rendering-node', 'osmcarto-rendering-node-size',
+                                      'osmcarto-rendering-way', 'osmcarto-rendering-way-size',
                                       'osmcarto-rendering-area', 'osmcarto-rendering-area-size',
+                                      'website',
                                       'nativekey', # not copied into data items
                                       'onChangeset', # not used but makes sense
+                                      'image_caption', # popular, eliminate with bot, not worth manual removal (some may be valid! make list?)
+                                      'onClosedWay', # popular on network pages - leave removal for bot edit
+                                      'url_pattern', # pointless, maybe I will also eleiminate it some day
                                       ]
     for template in templates:
         #print(template.name)
