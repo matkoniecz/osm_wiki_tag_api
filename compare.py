@@ -159,6 +159,10 @@ def normalize(in_template, in_data_item, key):
             if normalized_in_data_item in dead:
                 if normalized_in_template in dead:
                     normalized_in_data_item = normalized_in_template
+            proposed = ["proposed", "draft"]
+            if normalized_in_data_item in proposed:
+                if normalized_in_template in proposed:
+                    normalized_in_data_item = normalized_in_template
 
     if key == "description":
         if normalized_in_template != None:
