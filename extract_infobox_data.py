@@ -5,7 +5,7 @@ import links
 def page_data(page_title):
     page = pywikibot.Page(pywikibot.Site('en', 'osm'), page_title)
     try:
-        returned = turn_page_text_to_parsed(page.text, page_title)
+        return turn_page_text_to_parsed(page.text, page_title)
     except ValueError:
         return None
 
