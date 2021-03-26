@@ -84,11 +84,21 @@ def keys_where_values_should_be_documented_with_weights():
     {'key': "vehicle", 'scaling': 3},
     {'key': "motor_vehicle", 'scaling': 10},
     {'key': "mofa", 'scaling': 10},
+    {'key': "taxi", 'scaling': 10},
+    {'key': "psv", 'scaling': 10},
+    {'key': "motorcycle", 'scaling': 10},
+    {'key': "roadtrain", 'scaling': 10},
+    {'key': "hgv", 'scaling': 10},
+    {'key': "tourist_bus", 'scaling': 10},
+    {'key': "snowmobile", 'scaling': 10},
     #'key': "denomination", 'scaling': 2},
     {'key': "location", 'scaling': 2},
     {'key': "entrance", 'scaling': 0.2},
     {'key': "usage", 'scaling': 2},
-    {'key': "segregated", 'scaling': 1},
+    {'key': "segregated", 'scaling': 0.01},
+    {'key': "construction", 'scaling': 0.5},
+    {'key': "fee", 'scaling': 1},
+    #{'key': "type", 'scaling': 1}, disabled due to a bug
     ]
 
 def undocumented_values_among_popular_tags_reports():
