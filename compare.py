@@ -819,8 +819,9 @@ def display_reports(reports_for_display, url_formatter):
     report_segment = reports_for_display['missing_status_template_ready_for_adding']
     if len(report_segment) > 0:
         report += "\n"
-        report += "missing status parameter in the infobox, adding it would be useful"
-        report += "see https://wiki.openstreetmap.org/wiki/Template:Tag_status_values for documentation of meaning of values and their list"
+        report += "====Missing status====\n"
+        report += "missing status parameter in the infobox, adding it would be useful\n"
+        report += "see https://wiki.openstreetmap.org/wiki/Template:Tag_status_values for documentation of meaning of values and their list\n"
         for issue in report_segment:
             try:
                 report += "* " + url_formatter(issue["osm_wiki_url"]) + "\n"
@@ -830,14 +831,20 @@ def display_reports(reports_for_display, url_formatter):
     report_segment = reports_for_display['mismatches_between_osm_wiki_and_data_items']
     if len(report_segment) > 0:
         report += "\n"
+        report += "====Mismatch with data items====\n"
         report += "mismatch between [[data item]] and OSM Wiki:\n"
         for issue in report_segment:
             try:
                 line = ""
                 line += "* "
                 line += url_formatter(issue["osm_wiki_url"]) + " "
-                line += url_formatter(issue["data_item_url"]) + " "
-                line += issue["key"] + "( <code>" + issue['osm_wiki_value'] + "</code> vs <code>" + issue['data_item_value'] + "</code> )" 
+                if issue["data_item_url"] == None:
+                    line += "-misising data item-"
+                else:
+                    line += url_formatter(issue["data_item_url"]) + " "
+                line += issue["key"]
+                line += "( <code>" + issue['osm_wiki_value']
+                line += "</code> vs <code>" + issue['data_item_value'] + "</code> )" 
                 line += "\n"
                 report += line
             except KeyError:
