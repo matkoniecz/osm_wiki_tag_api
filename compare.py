@@ -129,12 +129,10 @@ def normalize(in_template, in_data_item, key):
         if normalized_in_template == "":
             normalized_in_template = None
 
-    if key == "wikidata":
-        if in_data_item == None and in_template != None:
-            print(":", url, "Wikidata link is not mentioned in data item, it should be present there to make future elimination of wikidata from infobox easier")
-            written_something = True
-        if normalized_in_template == None and normalized_in_data_item != None:
-            normalized_in_template = valid_wikidata(page_name)
+    #if key == "wikidata":
+        #not used for now, missing wikidata in template is simply not reported
+        #if normalized_in_template == None and normalized_in_data_item != None:
+        #    normalized_in_template = valid_wikidata(page_name)
 
     if key == "statuslink":
         if normalized_in_data_item != None:
@@ -216,14 +214,26 @@ def compare_data(tag_docs):
             continue # not actual data
         if key == "seeAlso" or key == "combination":
             continue # TODO implement parsing that in future to make copying easier
-        if key == "wikidata":
-            continue # big time sing, it would be smarter to work on removal it from infoboxes
 
         in_data_item = tag_docs.parsed_data_item().get(key)
         in_template = template.get(key)
         normalized_in_template, normalized_in_data_item = normalize(in_template, in_data_item, key)
         
+        if normalized_in_template != None:
+            if normalized_in_data_item == None:
+                # ignore everything else - I am improving OSM Wiki, not Data Items. 
+                # And this is for https://wiki.openstreetmap.org/wiki/Proposed_features/remove_link_to_Wikidata_from_infoboxes
+                data_item_url = None
+                if key == "wikidata":
+                    data_item_data = tag_docs.parsed_data_item()
+                    if data_item_data != None and "data_item_id" in data_item_data:
+                        data_item_url = "https://wiki.openstreetmap.org/wiki/Item:" + data_item_data["data_item_id"]
+                    report["issues"].append({"page_name": page_name, "osm_wiki_url": url, 'data_item_url': data_item_url, "type": "data item content may be copied from OSM Wiki", "key": key, 'osm_wiki_value': in_template, 'data_item_value': in_data_item})
+
         if normalized_in_template == None:
+            if key == "wikidata":
+                continue # big time sing, it would be smarter to work on removal it from infoboxes
+
             if key == "group":
                 continue # do not report leaks here (for now - TODO!)
             if in_data_item == None:
@@ -289,6 +299,9 @@ def print_report_to_stdout(report):
             else:
                 print(":", issue["osm_wiki_url"], issue["data_item_url"], "-", issue["key"], "are mismatched between OSM Wiki and data item (", issue['osm_wiki_value'], "vs", issue['data_item_value'], ")")
                 written_something = True
+        if issue["type"] == "data item content may be copied from OSM Wiki":
+            print(":", issue["osm_wiki_url"], issue["data_item_url"], "-", issue["key"], "can be copied from OSM Wiki to data item (", issue['osm_wiki_value'], "vs", issue['data_item_value'], ")")
+            written_something = True
     return written_something
 
 def normalize_description(description):
@@ -714,6 +727,8 @@ def update_reports(reports_for_display, group):
                         reports_for_display['missing_status_template_ready_for_adding'].append(issue)
             if issue["type"] == "mismatch between OSM Wiki and data item":
                 reports_for_display['mismatches_between_osm_wiki_and_data_items'].append(issue)
+            if issue["type"] == "data item content may be copied from OSM Wiki":
+                reports_for_display['data_not_copied_to_data_items'].append(issue)
 
     return reports_for_display
 
@@ -725,20 +740,26 @@ def collect_reports():
         'missing_images_template_ready_for_adding': [],
         'missing_status_template_ready_for_adding': [],
         'mismatches_between_osm_wiki_and_data_items': [],
+        'data_not_copied_to_data_items': [],
     }
     pages = pages_grouped_by_tag()
     keys = list(pages.keys())
     random.shuffle(keys)
     for index in keys:
         group = pages[index]
-        reports_for_display = update_reports(reports_for_display, group)
+        try:
+            reports_for_display = update_reports(reports_for_display, group)
+        except KeyError:
+            print("faliure while processing", index)
+            raise
         processed += 1
         if processed % 1000 == 0:
             print("processed", processed, "out of", len(keys))
         if len(reports_for_display['missing_images_template_ready_for_adding']) > 10:
             if len(reports_for_display['missing_status_template_ready_for_adding']) > 10:
                 if len(reports_for_display['mismatches_between_osm_wiki_and_data_items']) >= 1:
-                    break
+                    if len(reports_for_display['data_not_copied_to_data_items']) >= 1:
+                        break
     return reports_for_display
 
 def osm_wiki_improvements_prefix():
@@ -852,6 +873,34 @@ def display_reports(reports_for_display, url_formatter):
             except KeyError:
                 print(issue)
                 print("mismatches_between_osm_wiki_and_data_items have incomplete data")
+                raise
+            except TypeError:
+                print(issue)
+                print("type handling bug")
+                raise
+    report_segment = reports_for_display['data_not_copied_to_data_items']
+    if len(report_segment) > 0:
+        report += "\n"
+        report += "====Data not copied to data items====\n"
+        report += "data can be copied from OSM Wiki to data items:\n"
+        for issue in report_segment:
+            try:
+                line = ""
+                line += "* "
+                line += url_formatter(issue["osm_wiki_url"]) + " "
+                if issue["data_item_url"] == None:
+                    line += "-misising data item-"
+                else:
+                    line += url_formatter(issue["data_item_url"]) + " "
+                line += issue["key"]
+                line += "( wiki has <code>" 
+                line += issue['osm_wiki_value'] 
+                line += "</code>)" 
+                line += "\n"
+                report += line
+            except KeyError:
+                print(issue)
+                print("data_not_copied_to_data_items have incomplete data")
                 raise
             except TypeError:
                 print(issue)
