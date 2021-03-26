@@ -54,7 +54,8 @@ for page in (values + keys):
     if title.find("Tag:") == 0 or title.find("Key:") == 0:
         if remaining_wanted_examples > random.randrange(remaining_total_count):
             template = extract_infobox_data.page_data(page.title())
-
+            if template == None:
+                print(page.title(), "skipped, infobox parsing failed")
             tag_link = None
             if title.find("Tag:") == 0:
                 cleaned = title.replace("Tag:", "")
