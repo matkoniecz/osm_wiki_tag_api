@@ -646,6 +646,27 @@ def pages_grouped_by_tag_from_list(titles):
     return pages
 
 def self_check_on_init():
+    print("https://taginfo.openstreetmap.org/api/4/tag/chronology?key=type&value=associated_address")
+    print("requires parsing dates https://taginfo.openstreetmap.org/api/4/tag/chronology?key=type&value=associated_address ")
+
+    print("taginfo.count_new_appearances_of_tag_historic_data - it counts datapoints! Not days! Arghhhhh.")
+    print("https://taginfo.openstreetmap.org/tags/?key=type&value=associated_address#chronology")
+    print(taginfo.count_new_appearances_of_tag_historic_data("type", "associated_address", 1))
+    print(taginfo.count_new_appearances_of_tag_historic_data("type", "associated_address", 10))
+    print(taginfo.count_new_appearances_of_tag_historic_data("type", "associated_address", 20))
+    print(taginfo.count_new_appearances_of_tag_historic_data("type", "associated_address", 30))
+    print(taginfo.count_new_appearances_of_tag_historic_data("type", "associated_address", 40))
+    print(taginfo.count_new_appearances_of_tag_historic_data("type", "associated_address", 50))
+    print(taginfo.count_new_appearances_of_tag_historic_data("type", "associated_address", 60))
+    print(taginfo.count_new_appearances_of_tag_historic_data("type", "associated_address", 70))
+    print(taginfo.count_new_appearances_of_tag_historic_data("type", "associated_address", 80))
+    print(taginfo.count_new_appearances_of_tag_historic_data("type", "associated_address", 90))
+    print(taginfo.count_new_appearances_of_tag_historic_data("type", "associated_address", 100))
+    print()
+    print("after fixing enable type tag in missing_wiki_pages")
+    print("================================")
+    print("https://wiki.openstreetmap.org/wiki/Pl:Tag:building%3Dkiosk - status mismatches main version, should be detected!")
+    print("================================")
     "ab".removeprefix("a") # quick check that we are running python 3.9+
     compare_data(TagWithDocumentation(["Tag:amenity=townhall", "Tag:railway=subway"]))
     compare_data(TagWithDocumentation(["Tag:amenity=trolley_bay"]))
