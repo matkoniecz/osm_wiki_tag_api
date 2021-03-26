@@ -25,6 +25,11 @@ def osm_wiki_page_link(page_name):
     url = url.replace(" ", "_")
     return url
 
+def osm_wiki_page_edit_link(page_name):
+    url = "https://wiki.openstreetmap.org/wiki?title=" + page_name + "&action=edit"
+    url = url.replace(" ", "_")
+    return url
+
 def osm_wiki_page_link_from_tag(key, value):
     url = "https://wiki.openstreetmap.org/wiki/Tag:" + key + "=" + value
     url = url.replace(" ", "_")
