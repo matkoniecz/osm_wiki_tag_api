@@ -205,6 +205,8 @@ def compare_data(tag_docs):
     tag_docs.spot_issues_in_page_text('en')
     written_something = False
     template = tag_docs.parsed_infobox('en')
+    if template == None:
+        return # parsing failed
     if template == {}:
         return # for example, on pages where Template:Deprecated calls it internally
     report = add_missing_parameters_and_missing_values_report(report, tag_docs, 'en')
