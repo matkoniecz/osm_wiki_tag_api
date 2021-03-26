@@ -77,7 +77,7 @@ def turn_page_text_to_parsed(text, page_title):
                     if key not in expected_keys and key not in also_expected_but_ignored_keys:
                         print(": Unexplained weird parameter (" + key + ") in", template.name.strip(), "on", links.osm_wiki_page_link(page_title))
                         raise ValueError("Unexplained weird unhandled <" + key + "> parameter")
-                elif param == "":
+                elif param.strip() == "":
                     print(": Unexplained empty parameter in", template.name.strip(), "on", links.osm_wiki_page_link(page_title))
                     raise ValueError("Empty parameter")
                 else:
