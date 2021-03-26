@@ -817,6 +817,8 @@ def main():
     print()
 
     print(osm_wiki_improvements_prefix())
+    print("=== Organised overview of major issues ===")
+    print("==== Tags with quickly growing usage but without own page ====")
     print(missing_pages)
     display_reports(reports_for_display, mediawiki_url_formatter)
 
@@ -827,7 +829,6 @@ def display_reports(reports_for_display, url_formatter):
     # dump due to bug
 
     report = ""
-    report += "== Organised overview of major issues =="
 
     report_segment = reports_for_display['missing_images_template_ready_for_adding']
     if len(report_segment) > 0:
