@@ -89,6 +89,7 @@ def keys_where_values_should_be_documented_with_weights():
     {'key': "motorcycle", 'scaling': 10},
     {'key': "roadtrain", 'scaling': 10},
     {'key': "hgv", 'scaling': 10},
+    {'key': "bus", 'scaling': 10},
     {'key': "tourist_bus", 'scaling': 10},
     {'key': "snowmobile", 'scaling': 10},
     #'key': "denomination", 'scaling': 2},
