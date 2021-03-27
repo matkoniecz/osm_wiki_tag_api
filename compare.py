@@ -9,6 +9,7 @@ import missing_wiki_pages
 import random
 import mwparserfromhell
 import pprint
+import webbrowser
 
 # https://www.mediawiki.org/wiki/Manual:Pywikibot/Installation#Install_Pywikibot
 # I followed it, run script, and recopied it here
@@ -821,6 +822,51 @@ def main():
     print("==== Tags with quickly growing usage but without own page ====")
     print(missing_pages)
     display_reports(reports_for_display, mediawiki_url_formatter)
+    detect_images_with_missing_licences()
+
+
+def detect_images_with_missing_licences():
+    reported_remaining_count = 20
+    print("AAAAAAAAAAAA - NOT REALLY TESTES")
+    site = pywikibot.Site('en', 'osm')
+    # list namespaces
+    for n in site.namespaces:
+        print(n)
+        print(site.namespaces[n])
+        print(site.namespaces[n].canonical_prefix())
+        print(site.namespaces[n].normalize_name(site.namespaces[n].canonical_prefix()))
+        print(type(site.namespaces[n]))
+
+    # use https://gerrit.wikimedia.org/g/pywikibot/core/+/HEAD/scripts/unusedfiles.py ???
+    valid_licencing_templates = [
+        "{{PD}}", # in far future it may be worth replacing
+        "{{delete", # active deletion request waiting for processing means that page is processed for now
+        "{{PD-shape}}",
+        "{{PD-text}}",
+        "{{PD-textlogo}}",
+        "{{PD-self}}",
+        # https://wiki.openstreetmap.org/wiki/Category:Media_license_templates
+    ]
+    # all pages in file namespace
+    for page in site.allpages(namespace = [6]):
+        if reported_remaining_count <= 0:
+            return
+        if ".pdf" in page.title().lower():
+            continue # TODO, enable
+        unused = True
+        for usage_page in page.getReferences():
+            print("       ", page.title(), "is used, will be skipped:", usage_page.title())
+            unused = False
+        if unused:
+            if page.text == None:
+                print("none? here?")
+            if page.text == "":
+                print(page)
+                print(page.title())
+                print(page.text)
+                webbrowser.open(links.osm_wiki_page_link(page.title()), new=2)
+                webbrowser.open(links.osm_wiki_page_edit_link(page.title()), new=2)
+                reported_remaining_count -= 1
 
 def display_reports(reports_for_display, url_formatter):
     # dump due to bug
