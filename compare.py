@@ -901,8 +901,8 @@ def display_reports(reports_for_display, url_formatter):
     report_segment = reports_for_display['mismatches_between_osm_wiki_and_data_items']
     if len(report_segment) > 0:
         report += "\n"
-        report += "====Mismatch with data items====\n"
-        report += "mismatch between [[data item]] and OSM Wiki:\n"
+        report += "====Important mismatch of OSM Wiki and data items====\n"
+        report += "Important mismatches between [[data item]]s and OSM Wiki that are worth spending time on fixing them (minor ones are skipped, see [[:Category:Data item issues]] if you want all of them):\n"
         for issue in report_segment:
             try:
                 line = ""
@@ -929,7 +929,7 @@ def display_reports(reports_for_display, url_formatter):
     if len(report_segment) > 0:
         report += "\n"
         report += "====Data not copied to data items====\n"
-        report += "data can be copied from OSM Wiki to data items:\n"
+        report += "data can be copied from OSM Wiki to data items ([https://wiki.openstreetmap.org/wiki/Special:ItemByTitle?site=wiki you can use this page to create missing data items]):\n"
         for issue in report_segment:
             try:
                 line = ""
