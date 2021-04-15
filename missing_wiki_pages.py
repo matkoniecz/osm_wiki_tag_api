@@ -42,6 +42,7 @@ def new_popular_report_wikicode_text(new_popular_values):
 def blacklisted_tags_that_do_not_need_pages():
     return ["bridge=yes", "tunnel=yes", "man_made=tar_kiln",
         "highway=removed:street_lamp", # https://www.openstreetmap.org/note/2535136
+        "oneway=yes", "historic=yes", # redirects and page creation is of dubious utility
         ]
 
 def keys_where_values_should_be_documented():
@@ -99,6 +100,8 @@ def keys_where_values_should_be_documented_with_weights():
     {'key': "segregated", 'scaling': 0.01},
     {'key': "construction", 'scaling': 0.5},
     {'key': "fee", 'scaling': 1},
+    {'key': "oneway", 'scaling': 1},
+    {'key': "water", 'scaling': 1},
     #{'key': "type", 'scaling': 1}, disabled due to a bug
     ]
 
