@@ -205,6 +205,7 @@ def compare_data(tag_docs):
     written_something = False
     template = tag_docs.parsed_infobox('en')
     if template == None:
+        # TODO report errors
         return # parsing failed
     if template == {}:
         return # for example, on pages where Template:Deprecated calls it internally
