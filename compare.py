@@ -539,7 +539,7 @@ class TagWithDocumentation():
                 print(":", url, "has unwanted '" + template + "' template. Following text may be used as a base for replacement:")
                 print(":: <nowiki>Draw an [[area]] marking this feature. It is also OK to set a [[node]] at its center.</nowiki>")
                 print(":: <nowiki>Draw an [[area]] marking this feature. It is also OK to set a [[node]] at its center, if mapping as area is impossible.</nowiki>")
-                print(":: <nowiki>Set a [[node]] at the center of the feature or an [[area]] along its outline.</nowiki>")
+                print(":: <nowiki>Set a [[node]] at the center of the feature or draw an [[area]] along its outline.</nowiki>")
   
         self.detect_magic_tag_lister_mentioning_common_tags(parsed_text, page_name) # detects {{Common tags to use in combination}}
         self.detect_invalidly_disabled_linking(parsed_text, page_name) # detects {{building|church}}
