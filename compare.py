@@ -209,8 +209,8 @@ def compare_data(tag_docs):
         return # parsing failed
     if template == {}:
         return # for example, on pages where Template:Deprecated calls it internally
-    report = add_missing_parameters_and_missing_values_report(report, tag_docs, 'en')
-    report = add_missing_parameters_and_missing_values_report(report, tag_docs, 'Pl')
+    #report = add_missing_parameters_and_missing_values_report(report, tag_docs, 'en') # it should be reported only when data item is leaking, TODO: fix it with bot
+    #report = add_missing_parameters_and_missing_values_report(report, tag_docs, 'Pl') # it should be reported only when data item is leaking, TODO: fix it with bot
     for key in set(set(tag_docs.parsed_data_item().keys()) | set(template.keys())):
         if key in ["data_item_id"]:
             continue # not actual data
