@@ -673,7 +673,10 @@ def pages_grouped_by_tag_from_list(titles):
                                 'Fa:Wiki Translation', 'Pt:Organização da wiki', 'Philippines/Mapping Fire Hazard Zones',
                                 'WikiProject Water leisure', 'Taginfo/Taglists', 'Public transport in Barrie',
                                 'Ar:مفتاح:المجرى المائي', # instead of Ar:Key:waterway https://wiki.openstreetmap.org/wiki/Talk:Ar:%D9%85%D9%81%D8%AA%D8%A7%D8%AD:%D8%A7%D9%84%D9%85%D8%AC%D8%B1%D9%89_%D8%A7%D9%84%D9%85%D8%A7%D8%A6%D9%8A
-                                'Ar:مفتاح:طبيعي', 'Creating a page describing key or value',
+                                'Ar:مفتاح:طبيعي', 'Creating a page describing key or value', 'Seamarks/Virtual AtoNs',
+                                'York Region Transit', 'Toronto Transit Commission', 'Sandbox Jemily1 sala 1',
+                                'Simcoe County transit agencies', 'York Region Transit', 'Toronto Transit Commission', 'Simcoe County transit agencies',
+                                "Fire Path", # quite not standard but I like it...
                                 ]:
             continue
         if title.find("Proposed features/") == 0:
