@@ -210,6 +210,7 @@ def compare_data(tag_docs):
     page_name = tag_docs.title_in_language('Pl')
     if page_name != None:
         pl_template = tag_docs.parsed_infobox('pl')
+        # TODO compare with en version
         if template == None:
             # TODO report problem
             return # parsing failed in Polish
