@@ -520,14 +520,15 @@ class TagWithDocumentation():
 
         # TODO specifically detect its presence in both how to tag section and in the sidebar
         if self.is_dying_tag() == False:
+            #if self.parsed_infobox('en')['description'] == "???": # https://wiki.openstreetmap.org/wiki/Tag:shop=hobby
             base_page_name = remove_language_prefix_if_present(page_name)
             if base_page_name.find("Tag:shop=") == 0:
-                if base_page_name not in ["Tag:shop=no", "Tag:shop=vacant"]:
+                if base_page_name not in ["Tag:shop=no", "Tag:shop=vacant", "Tag:shop=shopping_centre"]:
                     if "common tags to use in combination" not in text.lower(): # detected later
                         if "{{tag|opening_hours" not in text.lower():
                             if "{{key|opening_hours" not in text.lower():
                                 if "{{deprecated" not in text.lower(): # see for example https://wiki.openstreetmap.org/w/index.php?title=Tag:shop%3Dfast_food&action=edit
-                                    print(":", url, "Page describing shop should mention opening_hours tag!")
+                                    print(":", url, "Page describing shop should mention opening_hours tag! https://wiki.openstreetmap.org/w/index.php?title=Tag:shop%3Dnuts&action=edit&section=2 may be useful source of properties")
 
         if "DISPLAYTITLE" in text:
             print(url, "has unneded DISPLAYTITLE template")
