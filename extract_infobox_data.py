@@ -36,6 +36,8 @@ https://www.mediawiki.org/wiki/Parsoid - PHP, old version in JS
 """
 
 def turn_page_text_to_parsed(text, page_title):
+    if page_title == None:
+        raise Exception("page_title cannot be None")
     wikicode = mwparserfromhell.parse(text)
     templates = wikicode.filter_templates()
     returned = {}

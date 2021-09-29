@@ -413,7 +413,10 @@ class TagWithDocumentation():
     def parsed_infobox(self, language): # TODO handle multiple languages
         self.load_page_text(language)
         try:
-            return extract_infobox_data.turn_page_text_to_parsed(self.page_texts[language], self.title_in_language(language))
+            title = self.title_in_language(language, debug=True)
+            if title == None:
+                raise Exception("no title for language " + language)
+            return extract_infobox_data.turn_page_text_to_parsed(self.page_texts[language], title)
         except ValueError:
             print(":", language, self.base_title(), "parsing failed")
             print(links.osm_wiki_page_link(self.base_title()))
@@ -452,15 +455,34 @@ class TagWithDocumentation():
         for page_title in self.wiki_documentation:
             if page_title.find("Tag:") == 0 or page_title.find("Key:") == 0:
                 return page_title
-    
-    def title_in_language(self, lang_code):
+
+    def find_title_in_given_language_among_matching(self, lang_code, title_pool, debug=False):
+        if debug:
+            print("searching for", lang_code, "in", title_pool, "search failed")
+        for candidate in title_pool:
+            main_candidate_part = candidate.lower().removeprefix(lang_code.lower() + ":") # this allows to use both Pl and pl (and pL etc)
+            if candidate.lower() != main_candidate_part.lower():
+                if main_candidate_part.lower().find("tag:") == 0 or main_candidate_part.lower().find("key:") == 0:
+                    return candidate
+                else:
+                    if debug:
+                        print("main_candidate_part", main_candidate_part)
+                        print("main_candidate_part.lower().find(\"tag:\")", main_candidate_part.lower().find("tag:"))
+                        print("main_candidate_part.lower().find(\"key:\")", main_candidate_part.lower().find("key:"))
+            else:
+                if debug:
+                    print(candidate.lower(), "vs", main_candidate_part.lower())
+
+    def title_in_language(self, lang_code, debug=False):
         if lang_code == self.base_language():
             return self.base_title()
-        for page_title in self.wiki_documentation:
-            root_page_title = page_title.removeprefix(lang_code)
-            if page_title != root_page_title:
-                if root_page_title.find("Tag:") == 0 or root_page_title.find("Key:") == 0:
-                    return page_title
+        returned = self.find_title_in_given_language_among_matching(lang_code, self.wiki_documentation)
+        if returned != None:
+            return returned
+        if debug:
+            if self.find_title_in_given_language_among_matching(lang_code, self.wiki_documentation, debug) != None:
+                raise "should never happen"
+        return None
     
     def base_page_text(self):
         self.load_page_text(self.base_language())
@@ -476,7 +498,10 @@ class TagWithDocumentation():
     def load_page_text(self, language):
         if language not in self.page_texts:
             connection = pywikibot.Site('en', 'osm')
-            self.page_texts[language] = pywikibot.Page(connection, self.title_in_language(language)).text
+            title = self.title_in_language(language, debug=True)
+            if title == None:
+                raise Exception("no page in language " + language)
+            self.page_texts[language] = pywikibot.Page(connection, title).text
 
     def spot_issues_in_page_text(self, language):
         self.load_page_text(language)
@@ -663,6 +688,8 @@ def pages_grouped_by_tag_from_list(titles):
     return pages
 
 def self_check_on_init():
+    if TagWithDocumentation([]).find_title_in_given_language_among_matching('pl', ['Pl:Tag:wood=deciduous'], debug=True) != 'Pl:Tag:wood=deciduous':
+        raise Exception("failed to extract correct title")
     print("https://taginfo.openstreetmap.org/api/4/tag/chronology?key=type&value=associated_address")
     print("requires parsing dates https://taginfo.openstreetmap.org/api/4/tag/chronology?key=type&value=associated_address ")
 
