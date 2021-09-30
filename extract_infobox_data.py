@@ -35,6 +35,23 @@ not sure is it actually a parser, not tested usefullness
 https://www.mediawiki.org/wiki/Parsoid - PHP, old version in JS
 """
 
+def allowed_and_ignored_keys():
+    return [
+            # TODO: check whatever following are appearing in data items, start tracking
+            # without requirement of having them present
+            'osmcarto-rendering', 'osmcarto-rendering-size',
+            'osmcarto-rendering-node', 'osmcarto-rendering-node-size',
+            'osmcarto-rendering-way', 'osmcarto-rendering-way-size',
+            'osmcarto-rendering-area', 'osmcarto-rendering-area-size',
+            'website',
+            'nativekey', # not copied into data items
+            'onChangeset', # not used but makes sense
+            'image_caption', # popular, eliminate with bot, not worth manual removal (some may be valid! make list?)
+            'onClosedWay', # popular on network pages - leave removal for bot edit
+            'url_pattern', # pointless, maybe I will also eleiminate it some day
+            'nativekey', 'nativevalue', # TODO allow only on PL pages? Or all translation pages?
+            ]
+
 def turn_page_text_to_parsed(text, page_title):
     if page_title == None:
         raise Exception("page_title cannot be None")
@@ -44,20 +61,6 @@ def turn_page_text_to_parsed(text, page_title):
     template_found_already = False
     expected_keys = ["image", "description", "status", "statuslink", "onNode", "onWay", "onArea", "onRelation",
                      "requires", "implies", "combination", "seeAlso", "wikidata", "group"]
-    also_expected_but_ignored_keys = [
-                                      # TODO: check whatever following are appearing in data items, start tracking
-                                      # without requirement of having them present
-                                      'osmcarto-rendering', 'osmcarto-rendering-size',
-                                      'osmcarto-rendering-node', 'osmcarto-rendering-node-size',
-                                      'osmcarto-rendering-way', 'osmcarto-rendering-way-size',
-                                      'osmcarto-rendering-area', 'osmcarto-rendering-area-size',
-                                      'website',
-                                      'nativekey', # not copied into data items
-                                      'onChangeset', # not used but makes sense
-                                      'image_caption', # popular, eliminate with bot, not worth manual removal (some may be valid! make list?)
-                                      'onClosedWay', # popular on network pages - leave removal for bot edit
-                                      'url_pattern', # pointless, maybe I will also eleiminate it some day
-                                      ]
     for template in templates:
         #print(template.name)
         #print(template.params)
@@ -76,7 +79,7 @@ def turn_page_text_to_parsed(text, page_title):
                         continue # TODO check match
                     if key == "value" and template.name.strip() == "ValueDescription":
                         continue # TODO check match
-                    if key not in expected_keys and key not in also_expected_but_ignored_keys:
+                    if key not in expected_keys and key not in allowed_and_ignored_keys():
                         print(": Unexplained weird parameter (" + key + ") in", template.name.strip(), "on", links.osm_wiki_page_link(page_title))
                         raise ValueError("Unexplained weird unhandled <" + key + "> parameter")
                 elif param.strip() == "":
