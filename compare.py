@@ -935,6 +935,7 @@ def detect_images_with_missing_licences():
                 webbrowser.open(links.osm_wiki_page_link(page.title()), new=2)
                 webbrowser.open(links.osm_wiki_page_edit_link(page.title()), new=2)
                 reported_remaining_count -= 1
+    print("For help with dealing with unlicensed media, see https://wiki.openstreetmap.org/wiki/Category:Media_without_a_license")
 
 def display_reports(reports_for_display, url_formatter):
     # dump due to bug
