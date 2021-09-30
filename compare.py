@@ -617,10 +617,15 @@ class TagWithDocumentation():
                                 continue
                             if "/" in value:
                                 continue
+                            # "*" is not included as in such case {{Tag|keyname}} is preferred
+                            if "*" in value and value != "*": # {{Tag|barrier||*_gate}} at https://wiki.openstreetmap.org/wiki/Tag:barrier=gate
+                                continue
                             if ";" in value:
                                 # TODO still complain if page exists for such tag
                                 continue
                             if "user defined" in value.lower():
+                                continue
+                            if "value" == value:
                                 continue
                             if "type of" in value.lower():
                                 continue
