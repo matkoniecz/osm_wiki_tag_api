@@ -195,9 +195,19 @@ def compare_data(tag_docs):
     url = None
     if page_name == None:
         page_name = tag_docs.wiki_documentation[0]
+        language = page_name.split(":")[0].lower()
+        template = tag_docs.parsed_infobox(language)
         url = links.osm_wiki_page_link(page_name)
-        print(url, "has no English version")
-        report["issues"].append({"page_name": page_name, "osm_wiki_url": url, "type": "missing English article"})
+        if "status" not in template:
+            print(url, "has no English version - amd has unknown status", tag_docs)
+            report["issues"].append({"page_name": page_name, "osm_wiki_url": url, "type": "missing English article about a tag with an unknown status"})
+        elif normalize_status_string(template["status"]) in tag_docs.unimportant_tag_status():
+            # not really important...
+            #print(url, "has no English version - but it is a proposed/deprecated page anyway", tag_docs)
+            report["issues"].append({"page_name": page_name, "osm_wiki_url": url, "type": "missing English article about a proposed/deprecated tag"})
+        else:
+            print(url, "has no English version", tag_docs)
+            report["issues"].append({"page_name": page_name, "osm_wiki_url": url, "type": "missing English article"})
         return report
     else:
         url = links.osm_wiki_page_link(page_name)
