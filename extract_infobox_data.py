@@ -90,6 +90,19 @@ def turn_page_text_to_parsed(text, page_title):
                     print(":", param)
                     print(":", template.params)
                     raise ValueError("Unexplained weird parameter")
-
-
+    for template in templates:
+        #print(template.name)
+        #print(template.params)
+        if template.name.strip() == "Deprecated":
+            if template_found_already:
+                #TODO - nasty to resolve
+                #print("MULTIPLE MATCHING TEMPLATES")
+                #raise ValueError("Multiple matching templates")
+                return returned
+            template_found_already = True
+            returned = {'status': 'deprecated', 
+            'onNode': 'no', 'onWay': 'no', 'onArea': 'no', 'onRelation': 'no',
+            'description': 'Using this tag is discouraged, use XXXXXXXXXXXUNFILLEDFORNOW - TODO', # TODO
+            'image': 'Ambox warning pn.svg' # TODO remove (this will open requests to edit data items)
+            }
     return returned
