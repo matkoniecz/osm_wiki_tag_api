@@ -714,8 +714,27 @@ def pages_grouped_by_tag_from_list(titles):
     return pages
 
 def self_check_on_init():
+    "ab".removeprefix("a") # quick check that we are running python 3.9+
+
     if TagWithDocumentation([]).find_title_in_given_language_among_matching('pl', ['Pl:Tag:wood=deciduous'], debug=True) != 'Pl:Tag:wood=deciduous':
         raise Exception("failed to extract correct title")
+
+    # TODO - is key, value really skipped? why?
+    text = """{{ValueDescription
+    |key=skipped_apparently
+    |value=skipped_apparently
+    |group=arghhhj
+    }}"""
+
+    extracted = extract_infobox_data.turn_page_text_to_parsed(text, "dummy title")
+    print(extracted)
+    if extracted["group"] != "arghhhj":
+        raise Exception("failed to extract correct parameter")
+
+    extracted = extract_infobox_data.turn_page_text_to_parsed("{{Deprecated|oldkey=amenity|oldvalue=community_center|newtext=tag:amenity=community_centre}}", "dummy title")
+    if extracted["status"] != "deprecated":
+        raise Exception("failed to extract correct parameter")
+
     print("https://taginfo.openstreetmap.org/api/4/tag/chronology?key=type&value=associated_address")
     print("requires parsing dates https://taginfo.openstreetmap.org/api/4/tag/chronology?key=type&value=associated_address ")
 
@@ -737,17 +756,12 @@ def self_check_on_init():
     print("================================")
     print("https://wiki.openstreetmap.org/wiki/Pl:Tag:building%3Dkiosk - status mismatches main version, should be detected!")
     print("================================")
-    "ab".removeprefix("a") # quick check that we are running python 3.9+
     compare_data(TagWithDocumentation(["Tag:amenity=townhall", "Tag:railway=subway"]))
     compare_data(TagWithDocumentation(["Tag:amenity=trolley_bay"]))
     compare_data(TagWithDocumentation(["Key:right:country"]))
     entry = TagWithDocumentation(["Tag:utility=power"])
     text = entry.base_page_text()
-    print(compare_data(entry))
-    print("is_key_reportable_as_missing_in_template(\"image\", entry) =", is_key_reportable_as_missing_in_template("image", entry, 'en'))
-    print("is_adding_image_important(entry) =", is_adding_image_important(entry))
-    print(entry.parsed_infobox('en'))
-    print(entry.parsed_infobox('en')["status"])
+    compare_data(entry)
 
 def images_help_prefix():
     report = "\n"
