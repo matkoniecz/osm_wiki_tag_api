@@ -541,7 +541,7 @@ class TagWithDocumentation():
                                     print(":", url, "Page describing shop should mention opening_hours tag! https://wiki.openstreetmap.org/w/index.php?title=Tag:shop%3Dnuts&action=edit&section=2 may be useful source of properties")
 
         if "DISPLAYTITLE" in text:
-            print(url, "has unneded DISPLAYTITLE template")
+            print(url, "has unneeded DISPLAYTITLE template")
 
         unwanted_mapping_format = ["How to map as a node or area", "How to map as a building", "How to map as grounds"]
         for template in unwanted_mapping_format:
@@ -819,7 +819,7 @@ def collect_reports():
         try:
             reports_for_display = update_reports(reports_for_display, group)
         except KeyError:
-            print("faliure while processing", index)
+            print("failure while processing", index)
             raise
         processed += 1
         if processed % 1000 == 0:
