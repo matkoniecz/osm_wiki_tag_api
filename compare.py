@@ -612,7 +612,7 @@ class TagWithDocumentation():
                     if template.params[1] == '' and len(template.params) == 3:
                         key = template.params[0]
                         value =  template.params[2]
-                        if self.is_parameter_with_linkable_value(key):
+                        if self.is_key_with_linkable_value(key):
                             if key in ["location"]: # TODO - enable
                                 continue
                             if "/" in value:
@@ -643,15 +643,15 @@ class TagWithDocumentation():
                         pass
                         #print(url, 'has weird tag template', template.params)
 
-    def is_parameter_with_linkable_value(self, parameter):
+    def is_key_with_linkable_value(self, key):
         for banned_prefix in ['name', 'operator', 'description', 'maxspeed', 'species', 'genus', 'opening_hours', 'ref',
             'old_ref', "is_in", 'plant:output:', 'height', 'start_date', 'frequency', 'capacity', 'max_age', 'min_age',
             'width', 'brand', 'wikidata', 'wikipedia', 'maxheight', 'maxweight', 'created_by', 'population', 'addr:',
             'int_ref', 'old_ref', 'colour', 'incline']:
-            if parameter.find(banned_prefix) == 0:
+            if key.find(banned_prefix) == 0:
                 return False
         for banned_anywhere in ['wikidata']:
-            if banned_anywhere in parameter:
+            if banned_anywhere in key:
                 return False
         return True
 
