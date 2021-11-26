@@ -760,12 +760,16 @@ def self_check_on_init():
     print("================================")
     print("https://wiki.openstreetmap.org/wiki/Pl:Tag:building%3Dkiosk - status mismatches main version, should be detected!")
     print("================================")
-    compare_data(TagWithDocumentation(["Tag:amenity=townhall", "Tag:railway=subway"]))
+    # TODO what should happend here?
     compare_data(TagWithDocumentation(["Tag:amenity=trolley_bay"]))
     compare_data(TagWithDocumentation(["Key:right:country"]))
     entry = TagWithDocumentation(["Tag:utility=power"])
     text = entry.base_page_text()
     compare_data(entry)
+
+    print("expected report about mismatching wikidata (only in CS version)")
+    compare_data(TagWithDocumentation(["Tag:historic=castle", "Cs:Tag:historic=castle"]))
+    print("-000000000000000000000000")
 
 def images_help_prefix():
     report = "\n"
