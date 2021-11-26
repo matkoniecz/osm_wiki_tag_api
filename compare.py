@@ -653,6 +653,10 @@ class TagWithDocumentation():
         for banned_anywhere in ['wikidata']:
             if banned_anywhere in key:
                 return False
+        if key in ["construction", # https://wiki.openstreetmap.org/w/index.php?title=Tag:construction%3Dprimary&redirect=no
+            "location" # TODO - enable
+            ]:
+            return False
         return True
 
 def pages_grouped_by_tag():
