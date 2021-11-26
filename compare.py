@@ -199,7 +199,7 @@ def compare_data(tag_docs):
         template = tag_docs.parsed_infobox(language)
         url = links.osm_wiki_page_link(page_name)
         if "status" not in template:
-            print(url, "has no English version - amd has unknown status", tag_docs)
+            print(url, "has no English version - and has unknown status", tag_docs)
             report["issues"].append({"page_name": page_name, "osm_wiki_url": url, "type": "missing English article about a tag with an unknown status"})
         elif normalize_status_string(template["status"]) in tag_docs.unimportant_tag_status():
             # not really important...
