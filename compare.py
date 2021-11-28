@@ -442,7 +442,7 @@ def valid_wikidata(page_name):
 
 class TagWithDocumentation():
     def __init__(self, pages):
-        self.wiki_documentation = pages
+        self.wiki_documentation = pages # titles
         self.page_texts = {}
         self.data_item = None
     
