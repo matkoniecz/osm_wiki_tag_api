@@ -192,46 +192,67 @@ def add_missing_parameters_and_missing_values_report(report, tag_docs, language)
                 report["issues"][-1]["embedded_image_present"] = tag_docs.is_there_embedded_image(language) # which language should be used?
     return report
 
+def handle_missing_english_version(tag_docs, report):
+    page_name = tag_docs.wiki_documentation[0]
+    language = page_name.split(":")[0].lower()
+    template = tag_docs.parsed_infobox(language)
+    url = links.osm_wiki_page_link(page_name)
+    if "status" not in template:
+        print(url, "has no English version - and has unknown status", tag_docs)
+        report["issues"].append({"page_name": page_name, "osm_wiki_url": url, "type": "missing English article about a tag with an unknown status"})
+    elif normalize_status_string(template["status"]) in tag_docs.unimportant_tag_status():
+        # not really important...
+        #print(url, "has no English version - but it is a proposed/deprecated page anyway", tag_docs)
+        report["issues"].append({"page_name": page_name, "osm_wiki_url": url, "type": "missing English article about a proposed/deprecated tag"})
+    else:
+        print(url, "has no English version", tag_docs)
+        report["issues"].append({"page_name": page_name, "osm_wiki_url": url, "type": "missing English article"})
+
 def compare_data(tag_docs):
     report = {"issues": []}
-    page_name = tag_docs.base_title()
+    for language in tag_docs.available_languages():
+        print(language)
+        report = compare_data_in_specific_language(tag_docs, report, language)
+    return report
+    
+def compare_data_in_specific_language(tag_docs, report, language):
     # title_in_language("Pl")
     url = None
-    if page_name == None:
-        page_name = tag_docs.wiki_documentation[0]
-        language = page_name.split(":")[0].lower()
-        template = tag_docs.parsed_infobox(language)
-        url = links.osm_wiki_page_link(page_name)
-        if "status" not in template:
-            print(url, "has no English version - and has unknown status", tag_docs)
-            report["issues"].append({"page_name": page_name, "osm_wiki_url": url, "type": "missing English article about a tag with an unknown status"})
-        elif normalize_status_string(template["status"]) in tag_docs.unimportant_tag_status():
-            # not really important...
-            #print(url, "has no English version - but it is a proposed/deprecated page anyway", tag_docs)
-            report["issues"].append({"page_name": page_name, "osm_wiki_url": url, "type": "missing English article about a proposed/deprecated tag"})
-        else:
-            print(url, "has no English version", tag_docs)
-            report["issues"].append({"page_name": page_name, "osm_wiki_url": url, "type": "missing English article"})
+
+    page_name = tag_docs.title_in_language(language)
+    if tag_docs.base_title() == None:
+        report = handle_missing_english_version(tag_docs, report)
         return report
     else:
         url = links.osm_wiki_page_link(page_name)
-    tag_docs.spot_issues_in_page_text('en')
+    tag_docs.spot_issues_in_page_text(language)
     written_something = False
-    template = tag_docs.parsed_infobox('en')
+    template = tag_docs.parsed_infobox(language)
     if template == None:
-        # TODO report errors
-        return # parsing failed
-    page_name = tag_docs.title_in_language('Pl')
-    if page_name != None:
-        pl_template = tag_docs.parsed_infobox('pl')
-        # TODO compare with en version
-        if template == None:
-            # TODO report problem
-            return # parsing failed in Polish
+        print("parsing failed on", page_name)
+        return
+    page_name = tag_docs.title_in_language(language)
     if template == {}:
-        return # for example, on pages where Template:Deprecated calls it internally
+        text = tag_docs.language_page_text("en")
+        wikicode = mwparserfromhell.parse(text)
+        templates = wikicode.filter_templates()
+        expected_regular_template_found = False
+        deprecated_template_found = False
+        for template in templates:
+            if template.name.strip() in ["ValueDescription", "KeyDescription"]:
+                print(page_name, "has", template.name, "but no content in it")
+                expected_regular_template_found = True
+            if template.name.strip() in ["Deprecated"]:
+                deprecated_template_found = False
+        if deprecated_template_found and not expected_regular_template_found:
+            # Template:Deprecated calls it internally
+            # TODO extract what little can be extracted from template Deprecated? maybe?
+            return
+        print("empty template parsing result for ", page_name, "containing following templates", templates)
+        return
     #report = add_missing_parameters_and_missing_values_report(report, tag_docs, 'en') # it should be reported only when data item is leaking, TODO: fix it with bot
     #report = add_missing_parameters_and_missing_values_report(report, tag_docs, 'Pl') # it should be reported only when data item is leaking, TODO: fix it with bot
+
     for key in set(set(tag_docs.parsed_data_item().keys()) | set(template.keys())):
         if key in ["data_item_id"]:
             continue # not actual data
@@ -425,6 +446,22 @@ class TagWithDocumentation():
     
     def register_wiki_page(self, page_title):
         self.wiki_documentation.append(page_title)
+    
+    def available_languages(self):
+        returned = []
+        base_title = self.base_title()
+        for page_title in self.wiki_documentation:
+            if page_title == base_title:
+                returned.append(self.base_language())
+            elif ":" in page_title:
+                language_prefix = page_title.split(":")[0]
+                title = page_title.removeprefix(language_prefix + ":")
+                if title != base_title:
+                    print("unexpected title mismatch", title, "vs", base_title, "in", page_title)
+                returned.append(language_prefix.lower())
+            else:
+                print(page_title, "is an unexpected title")
+        return returned
 
     def parsed_data_item(self):
         if self.data_item == None:
@@ -724,6 +761,18 @@ def pages_grouped_by_tag_from_list(titles):
 def self_check_on_init():
     "ab".removeprefix("a") # quick check that we are running python 3.9+
 
+    print("expected report about mismatching wikidata (only in CS version)")
+    group = TagWithDocumentation(["Tag:historic=castle", "Cs:Tag:historic=castle"])
+    print(group.available_languages())
+    if "cs" not in group.available_languages():
+        raise "cs missing"
+    if "en" not in group.available_languages():
+        raise "en missing"
+    if len(group.available_languages()) != 2:
+        raise "unwanted extra language(s)"
+    print(compare_data(group))
+ 
+ 
     if TagWithDocumentation([]).find_title_in_given_language_among_matching('pl', ['Pl:Tag:wood=deciduous'], debug=True) != 'Pl:Tag:wood=deciduous':
         raise Exception("failed to extract correct title")
 
@@ -771,8 +820,6 @@ def self_check_on_init():
     text = entry.base_page_text()
     compare_data(entry)
 
-    print("expected report about mismatching wikidata (only in CS version)")
-    compare_data(TagWithDocumentation(["Tag:historic=castle", "Cs:Tag:historic=castle"]))
     print("-000000000000000000000000")
 
 def images_help_prefix():
