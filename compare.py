@@ -294,6 +294,7 @@ def compare_data_in_specific_language(tag_docs, report, language):
             if key == "group":
                 continue # do not report leaks here (for now - TODO!)
             if in_data_item == None:
+                # do not report problems in data items
                 continue
             print(":", url, "-", key, "is from data item (", in_data_item, ")")
             written_something = True
