@@ -172,6 +172,20 @@ def normalize(in_template, in_data_item, key):
             normalized_in_template = normalize_description(normalized_in_template)
             normalized_in_data_item = normalize_description(normalized_in_data_item)
 
+
+    if key in ["onNode", "onWay", "onArea", "onRelation"]:
+        if normalized_in_template != None:
+            if "status" in normalized_in_template:
+                if normalized_in_template["status"] in ["obsolete", "deprecated"]:
+                    if normalized_in_template == "no":
+                        if normalized_in_data_item != None and normalized_in_data_item != "no":
+                            # ignores cases where onNode, onWay etc all can be set to 'no'
+                            # also in the data item
+                            # may be worth special handling if someone cares about fixing data items
+                            # but disabled for now
+                            # TODO
+                            normalized_in_data_item = "no"
+
     return normalized_in_template, normalized_in_data_item
 
 def add_missing_parameters_and_missing_values_report(report, tag_docs, language):
@@ -291,18 +305,6 @@ def compare_data_in_specific_language(tag_docs, report, language):
                     print("</pre>")
             continue
         
-        if key in ["onNode", "onWay", "onArea", "onRelation"]:
-            if "status" in template:
-                if template["status"] in ["obsolete", "deprecated"]:
-                    if normalized_in_template == "no":
-                        if normalized_in_data_item != None and normalized_in_data_item != "no":
-                            # ignores cases where onNode, onWay etc all can be set to 'no'
-                            # may be worth special handling if someone cares about fixing data items
-                            # or to reduce risk of damage
-                            # but disabled for now
-                            # TODO
-                            normalized_in_data_item = "no"
-
         if in_template != None and in_data_item != None:
             if key == "image":
                 continue # do not report mismatches here
