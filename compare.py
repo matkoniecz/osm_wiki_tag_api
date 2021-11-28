@@ -225,7 +225,6 @@ def handle_missing_english_version(tag_docs, report):
 def compare_data(tag_docs):
     report = {"issues": []}
     for language in tag_docs.available_languages():
-        print(language)
         report = compare_data_in_specific_language(tag_docs, report, language)
     return report
     
