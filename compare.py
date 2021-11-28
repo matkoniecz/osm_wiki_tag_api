@@ -278,7 +278,7 @@ def compare_data_in_specific_language(tag_docs, report, language):
         
         if normalized_in_template != None:
             if normalized_in_data_item == None:
-                # ignore everything else - I am improving OSM Wiki, not Data Items. 
+                # ignore everything else - I am improving OSM Wiki, not data items. 
                 # And this is for https://wiki.openstreetmap.org/wiki/Proposed_features/remove_link_to_Wikidata_from_infoboxes
                 data_item_url = None
                 if key == "wikidata":
