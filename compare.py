@@ -119,6 +119,10 @@ def normalize_status_string(status):
     return status
 
 def normalize(in_template, in_data_item, key):
+    # removes some mismatches where mismatches are cosmetic
+    # or would only improve data items, not OSM Wiki
+    # or where reporting them would overload list
+
     normalized_in_data_item = in_data_item
     normalized_in_template = in_template
     if normalized_in_template != None:
