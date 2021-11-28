@@ -517,8 +517,6 @@ class TagWithDocumentation():
                 return page_title
 
     def find_title_in_given_language_among_matching(self, lang_code, title_pool, debug=False):
-        if debug:
-            print("searching for", lang_code, "in", title_pool, "search failed")
         for candidate in title_pool:
             main_candidate_part = candidate.lower().removeprefix(lang_code.lower() + ":") # this allows to use both Pl and pl (and pL etc)
             if candidate.lower() != main_candidate_part.lower():
@@ -532,6 +530,8 @@ class TagWithDocumentation():
             else:
                 if debug:
                     print(candidate.lower(), "vs", main_candidate_part.lower())
+        if debug:
+            print("searching for", lang_code, "in", title_pool, "search failed")
 
     def title_in_language(self, lang_code, debug=False):
         if lang_code == self.base_language():
