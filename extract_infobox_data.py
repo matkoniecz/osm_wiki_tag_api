@@ -77,8 +77,14 @@ def turn_page_text_to_parsed(text, page_title):
                     key = param.split("=")[0].strip()
                     if key == "key":
                         continue # TODO check match
-                    if key == "value" and template.name.strip() == "ValueDescription":
+                    if key == "value": # and template.name.strip() == "ValueDescription": # TODO reenable? maybe?
                         continue # TODO check match
+                    if key == "type":
+                        value = param.split("=")[1].strip()
+                        if value == "value" and template.name.strip() == "ValueDescription":
+                            continue # TODO complain about it
+                        if value == "key" and template.name.strip() == "KeyDescription":
+                            continue # TODO complain about it
                     if key not in expected_keys and key not in allowed_and_ignored_keys():
                         print(": Unexplained weird parameter (" + key + ") in", template.name.strip(), "on", links.osm_wiki_page_link(page_title))
                         raise ValueError("Unexplained weird unhandled <" + key + "> parameter")

@@ -221,6 +221,7 @@ def handle_missing_english_version(tag_docs, report):
     else:
         print(url, "has no English version", tag_docs)
         report["issues"].append({"page_name": page_name, "osm_wiki_url": url, "type": "missing English article"})
+    return report
 
 def compare_data(tag_docs):
     report = {"issues": []}
@@ -243,7 +244,7 @@ def compare_data_in_specific_language(tag_docs, report, language):
     template = tag_docs.parsed_infobox(language)
     if template == None:
         print("parsing failed on", page_name)
-        return
+        return report
     page_name = tag_docs.title_in_language(language)
     if template == {}:
         text = tag_docs.language_page_text("en")
@@ -252,17 +253,44 @@ def compare_data_in_specific_language(tag_docs, report, language):
         expected_regular_template_found = False
         deprecated_template_found = False
         for template in templates:
-            if template.name.strip() in ["ValueDescription", "KeyDescription"]:
+            if template.name.strip().lower() in ["valueDescription", "keydescription"]:
                 print(page_name, "has", template.name, "but no content in it")
                 expected_regular_template_found = True
-            if template.name.strip() in ["Deprecated"]:
+            if template.name.strip().lower() in ["deprecated"]:
                 deprecated_template_found = False
         if deprecated_template_found and not expected_regular_template_found:
             # Template:Deprecated calls it internally
             # TODO extract what little can be extracted from template Deprecated? maybe?
+            return report
+        if "seamark" in page_name:
+            # many, many stub pages for basically unused tags
+            # TODO: remove this
             return
-        print("empty template parsing result for ", page_name, "containing following templates", templates)
-        return
+        print("empty template parsing result for", links.osm_wiki_page_link(page_name), "from", page_name, "containing following templates", templates)
+        for template in templates:
+            if "ValueDescription" in template:
+                print("""
+{{ValueDescription
+| key           = TODO: prefill key from the title
+| value         = TODO: prefill value from the title
+
+| image         = 
+| description   = 
+| group         = 
+| onNode        = 
+| onWay         = 
+| onArea        = 
+| onRelation    = 
+| requires      = 
+| implies       = 
+| combination   = 
+| seeAlso       = 
+| status        = 
+| statuslink    = 
+
+}}""")
+
+        return report
     #report = add_missing_parameters_and_missing_values_report(report, tag_docs, 'en') # it should be reported only when data item is leaking, TODO: fix it with bot
     #report = add_missing_parameters_and_missing_values_report(report, tag_docs, 'Pl') # it should be reported only when data item is leaking, TODO: fix it with bot
 
@@ -479,7 +507,10 @@ class TagWithDocumentation():
             return extract_infobox_data.turn_page_text_to_parsed(self.page_texts[language], title)
         except ValueError:
             print(":", language, self.base_title(), "parsing failed")
-            print(links.osm_wiki_page_link(self.base_title()))
+            print()
+            print("--..--..--")
+            print()
+            #print(links.osm_wiki_page_link(self.base_title()))
             return None
     
     def is_there_embedded_image(self, language):
@@ -566,10 +597,25 @@ class TagWithDocumentation():
     def spot_issues_in_page_text(self, language):
         self.load_page_text(language)
         self.spot_issues_in_a_given_page(self.page_texts[language], self.title_in_language(language))
+        if language.lower() in ["pl", "en"]:
+            self.spot_issues_in_a_given_page_requiring_understanding_langage(self.page_texts[language], self.title_in_language(language), language)
     
     def spot_issues_in_a_given_page(self, text, page_name):
         url = links.osm_wiki_page_link(page_name)
         parsed_text = mwparserfromhell.parse(text)
+
+        self.detect_magic_tag_lister_mentioning_common_tags(parsed_text, page_name) # detects {{Common tags to use in combination}}
+        self.detect_repeated_parameters(parsed_text, page_name) # detects {{ambox|text=Ala|text=Kasia}}
+
+        if "DISPLAYTITLE" in text:
+            print(url, "has unneeded DISPLAYTITLE template")
+
+    def spot_issues_in_a_given_page_requiring_understanding_langage(self, text, page_name, language):
+        url = links.osm_wiki_page_link(page_name)
+        # TODO detect_invalidly_disabled_linking can be run on all languages after less urgen issues were fixed
+        # but maybe only on the most obvious cases or something?
+        parsed_text = mwparserfromhell.parse(text)
+        self.detect_invalidly_disabled_linking(parsed_text, page_name) # detects {{building|church}}
 
         # TODO specifically detect its presence in both how to tag section and in the sidebar
         if self.is_dying_tag() == False:
@@ -583,21 +629,20 @@ class TagWithDocumentation():
                                 if "{{deprecated" not in text.lower(): # see for example https://wiki.openstreetmap.org/w/index.php?title=Tag:shop%3Dfast_food&action=edit
                                     print(":", url, "Page describing shop should mention opening_hours tag! https://wiki.openstreetmap.org/w/index.php?title=Tag:shop%3Dnuts&action=edit&section=2 may be useful source of properties")
 
-        if "DISPLAYTITLE" in text:
-            print(url, "has unneeded DISPLAYTITLE template")
-
         unwanted_mapping_format = ["How to map as a node or area", "How to map as a building", "How to map as grounds"]
         for template in unwanted_mapping_format:
             if template in text:
+                en_area_preferred = ":: <nowiki>Draw an [[area]] marking this feature. It is also OK to set a [[node]] at its center.</nowiki>"
+                en_area_strongly_preferred = ":: <nowiki>Draw an [[area]] marking this feature. It is also OK to set a [[node]] at its center, if mapping as area is impossible.</nowiki>"
+                en_node_preferred = ":: <nowiki>Set a [[node]] at the center of the feature or draw an [[area]] along its outline.</nowiki>"
+                en_messages = [en_area_preferred, en_area_strongly_preferred, en_node_preferred]
+                if "Tag:shop" in page_name:
+                    en_messages = [en_node_preferred]
+                messages = en_messages
                 print(":", url, "has unwanted '" + template + "' template. Following text may be used as a base for replacement:")
-                print(":: <nowiki>Draw an [[area]] marking this feature. It is also OK to set a [[node]] at its center.</nowiki>")
-                print(":: <nowiki>Draw an [[area]] marking this feature. It is also OK to set a [[node]] at its center, if mapping as area is impossible.</nowiki>")
-                print(":: <nowiki>Set a [[node]] at the center of the feature or draw an [[area]] along its outline.</nowiki>")
+                for message in messages:
+                    print(message)
   
-        self.detect_magic_tag_lister_mentioning_common_tags(parsed_text, page_name) # detects {{Common tags to use in combination}}
-        self.detect_invalidly_disabled_linking(parsed_text, page_name) # detects {{building|church}}
-        self.detect_repeated_parameters(parsed_text, page_name) # detects {{ambox|text=Ala|text=Kasia}}
-
     def detect_magic_tag_lister_mentioning_common_tags(self, parsed_text, page_name):
         url = links.osm_wiki_page_link(page_name)
         for template in parsed_text.filter_templates():
@@ -655,25 +700,7 @@ class TagWithDocumentation():
                     if template.params[1] == '' and len(template.params) == 3:
                         key = template.params[0]
                         value =  template.params[2]
-                        if self.is_key_with_linkable_value(key):
-                            if key in ["location"]: # TODO - enable
-                                continue
-                            if "/" in value:
-                                continue
-                            # "*" is not included as in such case {{Tag|keyname}} is preferred
-                            if "*" in value and value != "*": # {{Tag|barrier||*_gate}} at https://wiki.openstreetmap.org/wiki/Tag:barrier=gate
-                                continue
-                            if ";" in value:
-                                # TODO still complain if page exists for such tag
-                                continue
-                            if "user defined" in value.lower():
-                                continue
-                            if "value" == value:
-                                continue
-                            if "type of" in value.lower():
-                                continue
-                            if "name of" in value.lower():
-                                continue
+                        if self.is_tag_linkable(key, value):
                             tag = str(template.params[0]) + "=" + str(value)
                             target = "Tag:" + tag.replace("_", " ")
                             if target != page_name: # TODO use remove_language_prefix_if_present
@@ -682,9 +709,30 @@ class TagWithDocumentation():
                                         print(":", url, 'has disabled link that should be active in <nowiki>{{Tag|' + str(key) + "||" + str(value) + "}}</nowiki> template (replace double line with single line to activate it)")
                                     else:
                                         pass # maybe enable in future
-                    else:
-                        pass
-                        #print(url, 'has weird tag template', template.params)
+    def is_tag_linkable(self, key, value):
+        if self.is_key_with_linkable_value(key):
+            if self.is_tag_value_linkable(key, value):
+                return True
+        return False
+
+    def is_tag_value_linkable(self, key, value):
+        if "/" in value:
+            return False
+        # "*" is not included as in such case {{Tag|keyname}} is preferred
+        if "*" in value and value != "*": # {{Tag|barrier||*_gate}} at https://wiki.openstreetmap.org/wiki/Tag:barrier=gate
+            return False
+        if ";" in value:
+            # TODO still complain if page exists for such tag
+            return False
+        if "user defined" in value.lower():
+            return False
+        if "value" == value:
+            return False
+        if "type of" in value.lower():
+            return False
+        if "name of" in value.lower():
+            return False
+        return True
 
     def is_key_with_linkable_value(self, key):
         for banned_prefix in ['name', 'operator', 'description', 'maxspeed', 'species', 'genus', 'opening_hours', 'ref',
@@ -765,14 +813,13 @@ def self_check_on_init():
 
     print("expected report about mismatching wikidata (only in CS version)")
     group = TagWithDocumentation(["Tag:historic=castle", "Cs:Tag:historic=castle"])
-    print(group.available_languages())
     if "cs" not in group.available_languages():
         raise "cs missing"
     if "en" not in group.available_languages():
         raise "en missing"
     if len(group.available_languages()) != 2:
         raise "unwanted extra language(s)"
-    print(compare_data(group))
+    compare_data(group)
  
  
     if TagWithDocumentation([]).find_title_in_given_language_among_matching('pl', ['Pl:Tag:wood=deciduous'], debug=True) != 'Pl:Tag:wood=deciduous':
@@ -951,89 +998,6 @@ def main():
     print("==== Tags with quickly growing usage but without own page ====")
     print(missing_pages)
     display_reports(reports_for_display, mediawiki_url_formatter)
-    print("""CC0-self at osm wiki
-
-https://wiki.openstreetmap.org/w/index.php?title=User_talk:Strubbl&curid=266680&diff=2174339&oldid=2174041
-
-handle this before bothering more uploaders""")
-    #detect_images_with_missing_licences()
-
-
-def detect_images_with_missing_licences():
-    #############################################################
-
-    #############################################################
-
-    #############################################################
-
-    #############################################################
-
-    #############################################################
-
-    #############################################################
-
-    #############################################################
-
-    #############################################################
-
-    #############################################################
-
-    #############################################################
-
-    #############################################################
-
-    #############################################################
-
-    #############################################################
-
-    #############################################################
-
-    #############################################################
-    # LIMIT ADD
-    # skip .pdf
-    #############################################################
-    reported_remaining_count = 20
-    print("AAAAAAAAAAAA - NOT REALLY TESTES")
-    site = pywikibot.Site('en', 'osm')
-    # list namespaces
-    for n in site.namespaces:
-        print(n)
-        print(site.namespaces[n])
-        print(site.namespaces[n].canonical_prefix())
-        print(site.namespaces[n].normalize_name(site.namespaces[n].canonical_prefix()))
-        print(type(site.namespaces[n]))
-
-    # use https://gerrit.wikimedia.org/g/pywikibot/core/+/HEAD/scripts/unusedfiles.py ???
-    valid_licencing_templates = [
-        "{{PD}}", # in far future it may be worth replacing
-        "{{delete", # active deletion request waiting for processing means that page is processed for now
-        "{{PD-shape}}",
-        "{{PD-text}}",
-        "{{PD-textlogo}}",
-        "{{PD-self}}",
-        # https://wiki.openstreetmap.org/wiki/Category:Media_license_templates
-    ]
-    # all pages in file namespace
-    for page in site.allpages(namespace = [6]):
-        if reported_remaining_count <= 0:
-            return
-        if ".pdf" in page.title().lower():
-            continue # TODO, enable
-        unused = True
-        for usage_page in page.getReferences():
-            print("       ", page.title(), "is used, will be skipped:", usage_page.title())
-            unused = False
-        if unused:
-            if page.text == None:
-                print("none? here?")
-            if page.text == "":
-                print(page)
-                print(page.title())
-                print(page.text)
-                webbrowser.open(links.osm_wiki_page_link(page.title()), new=2)
-                webbrowser.open(links.osm_wiki_page_edit_link(page.title()), new=2)
-                reported_remaining_count -= 1
-    print("For help with dealing with unlicensed media, see https://wiki.openstreetmap.org/wiki/Category:Media_without_a_license")
 
 def display_reports(reports_for_display, url_formatter):
     # dump due to bug
@@ -1076,7 +1040,7 @@ def display_reports(reports_for_display, url_formatter):
                 line += "* "
                 line += url_formatter(issue["osm_wiki_url"]) + " "
                 if issue["data_item_url"] == None:
-                    line += "-misising data item-"
+                    line += "-missing data item-"
                 else:
                     line += url_formatter(issue["data_item_url"]) + " "
                 line += issue["key"]

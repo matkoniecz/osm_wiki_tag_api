@@ -96,7 +96,11 @@ def extract_string(entity, claim_id, ignore_qualifier_list=[]):
     statement = extract_statement(entity, claim_id, ignore_qualifier_list)
     if statement == None:
         return None
-    return statement["datavalue"]["value"]
+    if "datavalue" in statement:
+        return statement["datavalue"]["value"]
+    else:
+        print("unexpectedly missing datavalue for", entity, claim_id)
+        return None
 
 def extract_url(entity, claim_id):
     # maybe implementing whatever type matches should be done...
