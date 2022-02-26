@@ -152,6 +152,9 @@ def normalize(in_template, in_data_item, key):
             normalized_in_template = normalized_in_template.removeprefix("Image:")
             normalized_in_template = normalized_in_template.removeprefix("File:")
             normalized_in_template = normalized_in_template.replace("_", " ")
+            normalized_in_template = "File:" + normalized_in_template
+        if normalized_in_data_item != None:
+            normalized_in_data_item = "File:" + normalized_in_data_item
 
     if key == "status":
         normalized_in_template = normalize_status_string(normalized_in_template)
