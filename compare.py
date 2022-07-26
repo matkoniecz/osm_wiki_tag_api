@@ -255,7 +255,7 @@ def compare_data_in_specific_language(tag_docs, report, language):
                 print(page_name, "has", template.name, "but no content in it")
                 expected_regular_template_found = True
             if template.name.strip().lower() in ["deprecated"]:
-                deprecated_template_found = False
+                deprecated_template_found = True
         if deprecated_template_found and not expected_regular_template_found:
             # Template:Deprecated calls it internally
             # TODO extract what little can be extracted from template Deprecated? maybe?
