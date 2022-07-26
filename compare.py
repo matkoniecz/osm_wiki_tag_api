@@ -515,6 +515,11 @@ class TagWithDocumentation():
         url = links.osm_wiki_page_link(page_name)
         parsed_text = mwparserfromhell.parse(text)
 
+        for html in ["ul", "li", "br"]:
+            for variant in ["<"+html+">", "</"+html+">", "<"+html+"/>", "<"+html+" />"]:
+                if variant in text:
+                    print(url, "has", variant, "remove and replace with wikicode")
+
         self.detect_magic_tag_lister_mentioning_common_tags(parsed_text, page_name) # detects {{Common tags to use in combination}}
         self.detect_repeated_parameters(parsed_text, page_name) # detects {{ambox|text=Ala|text=Kasia}}
 
