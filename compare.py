@@ -844,24 +844,6 @@ def self_check_on_init():
     if extracted["status"] != "deprecated":
         raise Exception("failed to extract correct parameter")
 
-    print("https://taginfo.openstreetmap.org/api/4/tag/chronology?key=type&value=associated_address")
-    print("requires parsing dates https://taginfo.openstreetmap.org/api/4/tag/chronology?key=type&value=associated_address ")
-
-    print("taginfo.count_new_appearances_of_tag_historic_data - it counts datapoints! Not days! Arghhhhh.")
-    print("https://taginfo.openstreetmap.org/tags/?key=type&value=associated_address#chronology")
-    print(taginfo.count_new_appearances_of_tag_historic_data("type", "associated_address", 1))
-    print(taginfo.count_new_appearances_of_tag_historic_data("type", "associated_address", 10))
-    print(taginfo.count_new_appearances_of_tag_historic_data("type", "associated_address", 20))
-    print(taginfo.count_new_appearances_of_tag_historic_data("type", "associated_address", 30))
-    print(taginfo.count_new_appearances_of_tag_historic_data("type", "associated_address", 40))
-    print(taginfo.count_new_appearances_of_tag_historic_data("type", "associated_address", 50))
-    print(taginfo.count_new_appearances_of_tag_historic_data("type", "associated_address", 60))
-    print(taginfo.count_new_appearances_of_tag_historic_data("type", "associated_address", 70))
-    print(taginfo.count_new_appearances_of_tag_historic_data("type", "associated_address", 80))
-    print(taginfo.count_new_appearances_of_tag_historic_data("type", "associated_address", 90))
-    print(taginfo.count_new_appearances_of_tag_historic_data("type", "associated_address", 100))
-    print()
-    print("after fixing enable type tag in missing_wiki_pages")
     print("================================")
     print("https://wiki.openstreetmap.org/wiki/Pl:Tag:building%3Dkiosk - status mismatches main version, should be detected!")
     print("================================")
@@ -899,7 +881,7 @@ def update_reports(reports_for_display, group):
     if report != None:
         for issue in report["issues"]:
             if issue["type"] == "missing_value_in_infobox_with_key_present":
-                if taginfo.count_appearances_from_wiki_page_title(group.base_title()) >= 5000:
+                if count_appearances_from_wiki_page_title(group.base_title()) >= 5000:
                     if issue["key"] == "image":
                         if issue["embedded_image_present"] == False:
                             reports_for_display['missing_images_template_ready_for_adding'].append(issue)
@@ -907,11 +889,29 @@ def update_reports(reports_for_display, group):
                         reports_for_display['missing_status_template_ready_for_adding'].append(issue)
             if issue["type"] == "mismatch between OSM Wiki and data item":
                 reports_for_display['mismatches_between_osm_wiki_and_data_items'].append(issue)
-            if issue["type"] == "data item content may be copied from OSM Wiki":
-                reports_for_display['data_not_copied_to_data_items'].append(issue)
+            if issue["type"] == "wikidata key present":
+                reports_for_display['wikidata_key_present'].append(issue)
 
     return reports_for_display
 
+def count_appearances_from_wiki_page_title(osm_wiki_page_title):
+    key, value = tag_from_wiki_title(osm_wiki_page_title)
+    if value != None:
+        return taginfo.query.count_appearances_of_tag(key, value)
+    else:
+        return taginfo.query.count_appearances_of_key(key)
+
+def tag_from_wiki_title(osm_wiki_page_title):
+    title = osm_wiki_page_title.replace(" ", "_")
+    if title.find("Tag:") == 0:
+        cleaned = title.replace("Tag:", "")
+        key, value = cleaned.split("=")
+        return key, value
+    elif title.find("Key:") == 0:
+        key = title.replace("Key:", "")
+        return key, None
+    else:
+        raise "unhandled"
 
 def collect_reports():
     site = pywikibot.Site('en', 'osm')

@@ -17,7 +17,7 @@ Ideally, open an issue first if you want to add something not listed below.
 
 * Missing documentation and proper tests
 
-It is also existing as bunch of code and is not published as `pip` library. If Python taginfo wrapper, OSM Wiki template extractiom, data item extraction or other code would be useful for you in a library - please open an issue for that.
+It is also existing as bunch of code and is not published as `pip` library. If  OSM Wiki template extraction, data item extraction or other code would be useful for you in a library - please open an issue for that.
 
 # Dependencies
 

@@ -4,16 +4,18 @@ import time
 
 def list_of_new_popular_values_for_key(key, multiplier, offset):
     new_popular_values = []
-    values = taginfo.get_all_values_of_key(key)
-    for entry in values:
+    for entry in taginfo.query.values_of_key_with_data(key):
         value = entry["value"]
         description = entry["description"]
         if description == "" or description == None:
-            delta = taginfo.count_new_appearances_of_tag_historic_data(key, value, offset)
+            delta = taginfo.query.count_new_appearances_of_tag_historic_data(key, value, offset)
             if delta == None:
                 return new_popular_values # dropped into lower use
             if delta > 1000 * multiplier: # growing
                 new_popular_values.append({"key": key, "value": value, "delta": delta, "delta_offset_in_days": offset})
+                #print(new_popular_values[-1])
+                #print(entry)
+                #print()
     return new_popular_values
 
 
@@ -102,7 +104,7 @@ def keys_where_values_should_be_documented_with_weights():
     {'key': "fee", 'scaling': 1},
     {'key': "oneway", 'scaling': 1},
     {'key': "water", 'scaling': 1},
-    #{'key': "type", 'scaling': 1}, disabled due to a bug
+    #{'key': "type", 'scaling': 1}, https://taginfo.openstreetmap.org/tags/type=waterway - taginfo gets confused and claims that no description exists
     ]
 
 def undocumented_values_among_popular_tags_reports():
