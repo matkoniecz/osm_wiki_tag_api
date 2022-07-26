@@ -134,11 +134,6 @@ def normalize(in_template, in_data_item, key):
         if normalized_in_template == "":
             normalized_in_template = None
 
-    #if key == "wikidata":
-        #not used for now, missing wikidata in template is simply not reported
-        #if normalized_in_template == None and normalized_in_data_item != None:
-        #    normalized_in_template = valid_wikidata(page_name)
-
     if key == "statuslink":
         if normalized_in_data_item != None:
             normalized_in_data_item = normalized_in_data_item.removeprefix("https://wiki.openstreetmap.org/wiki/")
@@ -309,19 +304,13 @@ def compare_data_in_specific_language(tag_docs, report, language):
         
         if normalized_in_template != None:
             if normalized_in_data_item == None:
-                # ignore everything else - I am improving OSM Wiki, not data items. 
+                # ignore it! - I am improving OSM Wiki, not data items. 
                 # And this is for https://wiki.openstreetmap.org/wiki/Proposed_features/remove_link_to_Wikidata_from_infoboxes
                 data_item_url = None
-                if key == "wikidata":
-                    data_item_data = tag_docs.parsed_data_item()
-                    if data_item_data != None and "data_item_id" in data_item_data:
-                        data_item_url = "https://wiki.openstreetmap.org/wiki/Item:" + data_item_data["data_item_id"]
-                    report["issues"].append({"page_name": page_name, "osm_wiki_url": url, 'data_item_url': data_item_url, "type": "data item content may be copied from OSM Wiki", "key": key, 'osm_wiki_value': in_template, 'data_item_value': in_data_item})
+            if key == "wikidata":
+                report["issues"].append({"page_name": page_name, "osm_wiki_url": url, "type": "wikidata key present", "key": key, 'osm_wiki_value': in_template})
 
         if normalized_in_template == None:
-            if key == "wikidata":
-                continue # big time sing, it would be smarter to work on removal it from infoboxes
-
             if key == "group":
                 continue # do not report leaks here (for now - TODO!)
             if in_data_item == None:
@@ -376,8 +365,8 @@ def print_report_to_stdout(report):
             else:
                 print(":", issue["osm_wiki_url"], issue["data_item_url"], "-", issue["key"], "are mismatched between OSM Wiki and data item (", issue['osm_wiki_value'], "vs", issue['data_item_value'], ")")
                 written_something = True
-        if issue["type"] == "data item content may be copied from OSM Wiki":
-            print(":", issue["osm_wiki_url"], issue["data_item_url"], "-", issue["key"], "can be copied from OSM Wiki to data item (", issue['osm_wiki_value'], "vs", issue['data_item_value'], ")")
+        if issue["type"] == "wikidata key present":
+            print(":", issue["osm_wiki_url"], "-", issue["key"], "wikidata key is present in infobox and should be removed (", issue['osm_wiki_value'], ")")
             written_something = True
     return written_something
 
@@ -389,87 +378,6 @@ def normalize_description(description):
     if description[-1] != ".":
         return description
     return description[:-1]
-
-def valid_wikidata(page_name):
-    # why not added? Because I consider wikidata parameter as a mistake
-    # why listed here? To detect invalid ones
-    page_name = page_name.replace(" ", "_")
-    wikidata = {
-        "Tag:aerialway=chair_lift": "Q850767",
-        "Tag:barrier=toll_booth": "Q1364150",
-        "Tag:man_made=survey_point": "Q352956",
-        "Tag:natural=wood": "Q4421",
-        "Tag:highway=motorway_junction": "Q353070",
-        "Tag:amenity=cafe": "Q30022",
-        "Tag:barrier=hedge": "Q235779",
-        "Tag:bicycle=no": "Q66361472",
-        "Tag:barrier=city_wall": "Q16748868",
-        "Tag:waterway=canal": "Q12284",
-        "Tag:power=generator": "Q131502",
-        "Tag:amenity=biergarten": "Q857909",
-        "Tag:place=city": "Q515",
-        "Tag:highway=mini_roundabout": "Q12037720",
-        "Tag:highway=footway": "Q3352369",
-        "Tag:man_made=pipeline": "Q16885408",
-        "Tag:highway=residential": "Q97674120",
-        "Tag:public_transport=stop_position": "Q548662",
-        "Tag:landuse=farmland": "Q3395383",
-        "Tag:sport=canoe": "Q20856109",
-        "Tag:sport=cricket": "Q5375",
-        "Tag:sport=croquet": "Q193387",
-        "Tag:sport=korfball": "Q192937",
-        "Tag:sport=pelota": "Q26261727",
-        "Tag:sport=rowing": "Q159354",
-        "Tag:sport=dog_racing": "Q1345388",
-        "Tag:sport=hockey": "Q1622659",
-        "Tag:sport=multi": "Q97324747",
-        "Tag:sport=racquet": "Q2426135",
-        "Tag:sport=rugby": "Q5378",
-        "Tag:sport=cycling": "Q53121",
-        "Tag:sport=shooting": "Q206989",
-        "Tag:waterway=ditch": "Q2048319",
-        "Tag:landuse=grass": "Q643352",
-        "Tag:amenity=bbq": "Q853185",
-        "Tag:man_made=water_works": "Q11849395",
-        "Tag:service=siding": "Q21683257",
-        "Tag:railway=funicular": "Q142031",
-        "Tag:aerialway=mixed_lift": "Q3546684",
-        "Tag:aerialway=gondola": "Q1576693",
-        "Tag:natural=lake": "Q23397",
-        "Tag:man_made=mineshaft": "Q556186",
-        "Tag:man_made=cutline": "Q487843",
-        "Tag:maritime=yes": "Q3089219", # one of two uses matches
-        "Tag:boundary=maritime": "Q3089219",
-        "Tag:information=board": "Q76419950",
-        "Tag:route=ferry": "Q18984099",
-        "Tag:aeroway=aerodrome": "Q62447",
-        "Tag:amenity=grave_yard": "Q39614",
-        "Tag:highway=path": "Q5004679",
-        "Tag:highway=bridleway": "Q1639395",
-        "Tag:amenity=bar": "Q187456",
-        "Tag:highway=street_lamp": "Q503958",
-        "Tag:boundary=political": "Q192611",
-        "Tag:information=tactile_model": "Q25382084",
-        "Tag:junction=jughandle": "Q2642279",
-        "Tag:tower:type=observation": "Q1440300",
-        "Tag:office=government": "Q327333",
-        "Tag:man_made=monitoring_station": "Q6130002",
-        "Tag:man_made=flagpole": "Q1971570",
-        "Tag:sport=skating": "Q14300548",
-        "Tag:landform=raised_beach": "Q17155155",
-        "Tag:sport=rugby_league": "Q10962",
-        "Tag:sport=rugby_union": "Q5849",
-        "Tag:sport=gaelic_football": "Q204632",
-        "Tag:sport=gaelic_games": "Q2447366",
-        "Tag:microbrewery=yes": "Q5487333",
-        "Tag:man_made=adit": "Q58917",
-        "Tag:emergency=rescue_box": "Q40049164",
-        "Tag:route=piste": "Q1281105",
-        "Tag:landuse=plant_nursery": "Q155511",
-        "Tag:emergency=water_tank": "Q6501028",
-        "Tag:historic=tomb": "Q381885",
-    }
-    return wikidata.get(page_name)
 
 class TagWithDocumentation():
     def __init__(self, pages):
@@ -814,7 +722,6 @@ def pages_grouped_by_tag_from_list(titles):
 def self_check_on_init():
     "ab".removeprefix("a") # quick check that we are running python 3.9+
 
-    print("expected report about mismatching wikidata (only in CS version)")
     group = TagWithDocumentation(["Tag:historic=castle", "Cs:Tag:historic=castle"])
     if "cs" not in group.available_languages():
         raise "cs missing"
@@ -920,7 +827,7 @@ def collect_reports():
         'missing_images_template_ready_for_adding': [],
         'missing_status_template_ready_for_adding': [],
         'mismatches_between_osm_wiki_and_data_items': [],
-        'data_not_copied_to_data_items': [],
+        'wikidata_key_present': [],
     }
     pages = pages_grouped_by_tag()
     keys = list(pages.keys())
