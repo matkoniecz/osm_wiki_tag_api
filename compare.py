@@ -266,11 +266,34 @@ def compare_data_in_specific_language(tag_docs, report, language):
             return
         print("empty template parsing result for", links.osm_wiki_page_link(page_name), "from", page_name, "containing following templates", templates)
         for template in templates:
+            key, value = tag_from_wiki_title(page_name)
             if "ValueDescription" in template:
+                print(links.osm_wiki_page_link(page_name))
                 print("""
 {{ValueDescription
-| key           = TODO: prefill key from the title
-| value         = TODO: prefill value from the title
+| key           = """ + key + """
+| value         = """ + value + """
+
+| image         = 
+| description   = 
+| group         = 
+| onNode        = 
+| onWay         = 
+| onArea        = 
+| onRelation    = 
+| requires      = 
+| implies       = 
+| combination   = 
+| seeAlso       = 
+| status        = 
+| statuslink    = 
+
+}}""")
+            if "KeyDescription" in template:
+                print(links.osm_wiki_page_link(page_name))
+                print("""
+{{KeyDescription
+| key           = """ + key + """
 
 | image         = 
 | description   = 
