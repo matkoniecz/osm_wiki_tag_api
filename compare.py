@@ -266,7 +266,7 @@ def compare_data_in_specific_language(tag_docs, report, language):
             return
         print("empty template parsing result for", links.osm_wiki_page_link(page_name), "from", page_name, "containing following templates", templates)
         for template in templates:
-            key, value = tag_from_wiki_title(page_name)
+            key, value = tag_from_wiki_title(tag_docs.base_title())
             if "ValueDescription" in template:
                 print(links.osm_wiki_page_link(page_name))
                 print("""
