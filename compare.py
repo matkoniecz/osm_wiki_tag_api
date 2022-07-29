@@ -876,7 +876,8 @@ def collect_reports():
         if len(reports_for_display['missing_images_template_ready_for_adding']) > 10:
             if len(reports_for_display['missing_status_template_ready_for_adding']) > 10:
                 if len(reports_for_display['mismatches_between_osm_wiki_and_data_items']) >= 1:
-                    break
+                    if len(reports_for_display['wikidata_key_present']) >= 1:
+                        break
     return reports_for_display
 
 def osm_wiki_improvements_prefix():
