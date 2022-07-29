@@ -847,7 +847,9 @@ def tag_from_wiki_title(osm_wiki_page_title):
         key = title.replace("Key:", "")
         return key, None
     else:
-        raise "unhandled"
+        print()
+        print(osm_wiki_page_title)
+        raise "unhandled " + osm_wiki_page_title
 
 def collect_reports():
     site = pywikibot.Site('en', 'osm')
