@@ -876,8 +876,7 @@ def collect_reports():
         if len(reports_for_display['missing_images_template_ready_for_adding']) > 10:
             if len(reports_for_display['missing_status_template_ready_for_adding']) > 10:
                 if len(reports_for_display['mismatches_between_osm_wiki_and_data_items']) >= 1:
-                    if len(reports_for_display['data_not_copied_to_data_items']) >= 1:
-                        break
+                    break
     return reports_for_display
 
 def osm_wiki_improvements_prefix():
@@ -992,34 +991,6 @@ def display_reports(reports_for_display, url_formatter):
             except KeyError:
                 print(issue)
                 print("mismatches_between_osm_wiki_and_data_items have incomplete data")
-                raise
-            except TypeError:
-                print(issue)
-                print("type handling bug")
-                raise
-    report_segment = reports_for_display['data_not_copied_to_data_items']
-    if len(report_segment) > 0:
-        report += "\n"
-        report += "====Data not copied to data items====\n"
-        report += "data can be copied from OSM Wiki to data items ([https://wiki.openstreetmap.org/wiki/Special:ItemByTitle?site=wiki you can use this page to create missing data items]):\n"
-        for issue in report_segment:
-            try:
-                line = ""
-                line += "* "
-                line += url_formatter(issue["osm_wiki_url"]) + " "
-                if issue["data_item_url"] == None:
-                    line += "-misising data item-"
-                else:
-                    line += url_formatter(issue["data_item_url"]) + " "
-                line += issue["key"]
-                line += "( wiki has <code>" 
-                line += issue['osm_wiki_value'] 
-                line += "</code>)" 
-                line += "\n"
-                report += line
-            except KeyError:
-                print(issue)
-                print("data_not_copied_to_data_items have incomplete data")
                 raise
             except TypeError:
                 print(issue)
