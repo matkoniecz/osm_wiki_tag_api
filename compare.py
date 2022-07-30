@@ -228,7 +228,6 @@ def compare_data(tag_docs):
     return report
     
 def compare_data_in_specific_language(tag_docs, report, language):
-    # title_in_language("Pl")
     url = None
 
     page_name = tag_docs.title_in_language(language)
