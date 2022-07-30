@@ -272,7 +272,6 @@ def compare_data_in_specific_language(tag_docs, report, language):
 {{ValueDescription
 | key           = """ + key + """
 | value         = """ + value + """
-
 | image         = 
 | description   = 
 | group         = 
@@ -286,14 +285,12 @@ def compare_data_in_specific_language(tag_docs, report, language):
 | seeAlso       = 
 | status        = 
 | statuslink    = 
-
 }}""")
             if "KeyDescription" in template:
                 print(links.osm_wiki_page_link(page_name))
                 print("""
 {{KeyDescription
 | key           = """ + key + """
-
 | image         = 
 | description   = 
 | group         = 
@@ -307,7 +304,6 @@ def compare_data_in_specific_language(tag_docs, report, language):
 | seeAlso       = 
 | status        = 
 | statuslink    = 
-
 }}""")
 
         return report
