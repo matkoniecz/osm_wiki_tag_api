@@ -8,6 +8,8 @@ import urllib
 import urllib.request
 import urllib.parse
 import json
+import time
+import http
 
 def page_data(page_title):
     parsed = json_response_from_api(page_title)
@@ -168,3 +170,7 @@ def json_response_from_url(url):
     except UnicodeEncodeError:
         print("failed to process", url)
         raise
+    except http.client.RemoteDisconnected as disconnected_err:
+        print("http.client.RemoteDisconnected on, retrying", url)
+        time.sleep(20)
+        return json_response_from_url(url)
