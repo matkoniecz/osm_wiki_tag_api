@@ -941,7 +941,7 @@ def dump_infobox_data(pages):
                 page_name = tag_docs.title_in_language(language)
                 template = tag_docs.parsed_infobox(language)
                 if template == None:
-                    print("parsing failed on", osm_wiki_page_edit_link(page_name))
+                    print("parsing failed on", links.osm_wiki_page_edit_link(page_name))
                 else:
                     data = [links.osm_wiki_page_link(page_name)]
                     for parameter in infobox_keys:
