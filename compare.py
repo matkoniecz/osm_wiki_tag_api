@@ -321,6 +321,14 @@ def compare_data_in_specific_language(tag_docs, report, language):
         in_template = template.get(key)
         normalized_in_template, normalized_in_data_item = normalize(in_template, in_data_item, key)
         
+        if key == "status":
+            in_template_without_comment = None
+            if normalized_in_template != None:
+                in_template_without_comment = re.sub('<!--.*-->', '', normalized_in_template)
+            if normalized_in_template != in_template_without_comment:
+                print("*", url, "status is", in_template_without_comment)
+                report["issues"].append({"page_name": page_name, "osm_wiki_url": url, "type": "aliased status present", "key": key, 'osm_wiki_value': in_template_without_comment})
+
         if normalized_in_template != None:
             if normalized_in_data_item == None:
                 # ignore it! - I am improving OSM Wiki, not data items. 
@@ -386,6 +394,9 @@ def print_report_to_stdout(report):
                 written_something = True
         if issue["type"] == "wikidata key present":
             print(":", issue["osm_wiki_url"], "-", issue["key"], "wikidata key is present in infobox and should be removed (", issue['osm_wiki_value'], ")")
+            written_something = True
+        if issue["type"] == "aliased status present":
+            print(":", issue["osm_wiki_url"], "-", issue["key"], "aliased status is present while canonical would be better (", issue['osm_wiki_value'], ")")
             written_something = True
     return written_something
 
@@ -823,6 +834,9 @@ def update_reports(reports_for_display, group):
                 reports_for_display['mismatches_between_osm_wiki_and_data_items'].append(issue)
             if issue["type"] == "wikidata key present":
                 reports_for_display['wikidata_key_present'].append(issue)
+            if issue["type"] == "aliased status present":
+                reports_for_display['aliased_status_present'].append(issue)
+                
 
     return reports_for_display
 
@@ -855,6 +869,7 @@ def collect_reports(pages):
         'missing_status_template_ready_for_adding': [],
         'mismatches_between_osm_wiki_and_data_items': [],
         'wikidata_key_present': [],
+        'aliased status present': [],
     }
     keys = list(pages.keys())
     random.shuffle(keys)
@@ -872,7 +887,8 @@ def collect_reports(pages):
             if len(reports_for_display['missing_status_template_ready_for_adding']) > 10:
                 if len(reports_for_display['mismatches_between_osm_wiki_and_data_items']) >= 1:
                     if len(reports_for_display['wikidata_key_present']) >= 1:
-                        break
+                        if len(reports_for_display['aliased status present']) >= 20:
+                            break
     return reports_for_display
 
 def osm_wiki_improvements_prefix():
@@ -1022,6 +1038,28 @@ def display_reports(reports_for_display, url_formatter):
                 print(issue)
                 print("type handling bug")
                 raise
+    report_segment = reports_for_display['aliased status present']
+    if len(report_segment) > 0:
+        report += "\n"
+        report += "====Aliased status of tag is being used====\n"
+        for issue in report_segment:
+            try:
+                line = ""
+                line += "* "
+                line += url_formatter(issue["osm_wiki_url"]) + " "
+                line += issue["key"]
+                line += " - <code>" + issue['osm_wiki_value'] + "</code>"
+                line += "\n"
+                report += line
+            except KeyError:
+                print(issue)
+                print("aliased status present have incomplete data")
+                raise
+            except TypeError:
+                print(issue)
+                print("type handling bug")
+                raise
+
     print(report)
 
 main()
