@@ -777,7 +777,7 @@ def self_check_on_init():
         raise Exception("failed to extract correct parameter")
 
     print("================================")
-    print("https://wiki.openstreetmap.org/wiki/Pl:Tag:building%3Dkiosk - status mismatches main version, should be detected!")
+    print("find translated page where status mismatches main version, and verify that it is detected")
     print("================================")
     # TODO what should happend here?
     compare_data(TagWithDocumentation(["Tag:amenity=trolley_bay"]))
