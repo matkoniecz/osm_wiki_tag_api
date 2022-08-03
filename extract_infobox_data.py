@@ -52,6 +52,10 @@ def allowed_and_ignored_keys():
             'nativekey', 'nativevalue', # TODO allow only on PL pages? Or all translation pages?
             ]
 
+def expected_keys():
+    return ["image", "description", "status", "statuslink", "onNode", "onWay", "onArea", "onRelation",
+                     "requires", "implies", "combination", "seeAlso", "wikidata", "group"]
+
 def turn_page_text_to_parsed(text, page_title):
     if page_title == None:
         raise Exception("page_title cannot be None")
@@ -59,8 +63,6 @@ def turn_page_text_to_parsed(text, page_title):
     templates = wikicode.filter_templates()
     returned = {}
     template_found_already = False
-    expected_keys = ["image", "description", "status", "statuslink", "onNode", "onWay", "onArea", "onRelation",
-                     "requires", "implies", "combination", "seeAlso", "wikidata", "group"]
     for template in templates:
         #print(template.name)
         #print(template.params)
@@ -69,7 +71,7 @@ def turn_page_text_to_parsed(text, page_title):
                 print("MULTIPLE MATCHING TEMPLATES")
                 raise ValueError("Multiple matching templates")
             template_found_already = True
-            for fetched in expected_keys:
+            for fetched in expected_keys():
                 if template.has(fetched):
                     returned[fetched] = template.get(fetched).value.strip()
             for param in template.params:
@@ -85,7 +87,7 @@ def turn_page_text_to_parsed(text, page_title):
                             continue # TODO complain about it
                         if value == "key" and template.name.strip() == "KeyDescription":
                             continue # TODO complain about it
-                    if key not in expected_keys and key not in allowed_and_ignored_keys():
+                    if key not in expected_keys() and key not in allowed_and_ignored_keys():
                         print(": Unexplained weird parameter (" + key + ") in", template.name.strip(), "on", links.osm_wiki_page_link(page_title))
                         raise ValueError("Unexplained weird unhandled <" + key + "> parameter")
                 elif param.strip() == "":

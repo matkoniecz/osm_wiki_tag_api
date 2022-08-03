@@ -10,6 +10,7 @@ import random
 import mwparserfromhell
 import pprint
 import webbrowser
+import csv
 
 # https://www.mediawiki.org/wiki/Manual:Pywikibot/Installation#Install_Pywikibot
 # I followed it, run script, and recopied it here
@@ -846,7 +847,7 @@ def tag_from_wiki_title(osm_wiki_page_title):
         print(osm_wiki_page_title)
         raise "unhandled " + osm_wiki_page_title
 
-def collect_reports():
+def collect_reports(pages):
     site = pywikibot.Site('en', 'osm')
     processed = 0
     reports_for_display = {
@@ -855,7 +856,6 @@ def collect_reports():
         'mismatches_between_osm_wiki_and_data_items': [],
         'wikidata_key_present': [],
     }
-    pages = pages_grouped_by_tag()
     keys = list(pages.keys())
     random.shuffle(keys)
     for index in keys:
@@ -915,10 +915,40 @@ def mediawiki_url_formatter(url):
     
     raise ValueError("impossible happened with " + url)        
 
+def dump_infobox_data(pages):
+    infobox_keys = extract_infobox_data.expected_keys() + extract_infobox_data.allowed_and_ignored_keys()
+    with open('infobox_data.csv', 'w', newline='') as f:
+        writer = csv.writer(f)
+        writer.writerow(["url"] + infobox_keys)
+        for tag_docs in list_tag_docs_from_pages(pages):
+            for language in tag_docs.available_languages():
+                page_name = tag_docs.title_in_language(language)
+                template = tag_docs.parsed_infobox(language)
+                if template == None:
+                    print("parsing failed on", osm_wiki_page_edit_link(page_name))
+                else:
+                    data = [links.osm_wiki_page_link(page_name)]
+                    for parameter in infobox_keys:
+                        if parameter in template:
+                            data.append(template[parameter])
+                        else:
+                            data.append("")
+                    writer.writerow(data)
+
+def list_tag_docs_from_pages(pages):
+    indexes_in_wiki_page_dataset = list(pages.keys())
+    for index in indexes_in_wiki_page_dataset:
+        tag_docs = pages[index]
+        yield tag_docs
+
 def main():
     self_check_on_init()
 
-    reports_for_display = collect_reports()
+    pages = pages_grouped_by_tag()
+
+    dump_infobox_data(pages)
+
+    reports_for_display = collect_reports(pages)
     missing_pages = missing_pages_report()
 
     print(osm_wiki_improvements_prefix())
