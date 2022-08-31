@@ -1,6 +1,6 @@
 import csv
 import re
-
+# see also https://wiki.openstreetmap.org/wiki/Category:Feature_descriptions_with_incorrect_status_value
 with open('infobox_data.csv') as csvfile:
     spamreader = csv.reader(csvfile)
     for row in spamreader:
