@@ -427,8 +427,6 @@ class TagWithDocumentation():
             elif ":" in page_title:
                 language_prefix = page_title.split(":")[0]
                 title = page_title.removeprefix(language_prefix + ":")
-                if title != base_title:
-                    print("unexpected title mismatch", title, "vs", base_title, "in", page_title)
                 returned.append(language_prefix.lower())
             else:
                 print(page_title, "is an unexpected title")
@@ -487,6 +485,7 @@ class TagWithDocumentation():
         for page_title in self.wiki_documentation:
             if page_title.find("Tag:") == 0 or page_title.find("Key:") == 0:
                 return page_title
+        return None # only non-English page exists, see say https://wiki.openstreetmap.org/wiki/Pl:Key:railway:area
 
     def find_title_in_given_language_among_matching(self, lang_code, title_pool, debug=False):
         for candidate in title_pool:
