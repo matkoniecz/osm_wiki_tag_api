@@ -966,21 +966,23 @@ def main():
     reports_for_display = collect_reports(pages)
     missing_pages = missing_pages_report()
 
-    print(osm_wiki_improvements_prefix())
-    print(missing_pages)
-    display_reports(reports_for_display, ascii_url_formatter)
+    report = osm_wiki_improvements_prefix()
+    report += missing_pages
+    report += report_text(reports_for_display, ascii_url_formatter)
+    print(report)
 
     print()
     print()
     print()
 
-    print(osm_wiki_improvements_prefix())
-    print("=== Organised overview of major issues ===")
-    print("==== Tags with quickly growing usage but without own page ====")
-    print(missing_pages)
-    display_reports(reports_for_display, mediawiki_url_formatter)
+    report = ""
+    report += osm_wiki_improvements_prefix()
+    report += "=== Organised overview of major issues ==="
+    report += "==== Tags with quickly growing usage but without own page ===="
+    report += missing_pages
+    report += report_text(reports_for_display, mediawiki_url_formatter)
 
-def display_reports(reports_for_display, url_formatter):
+def report_text(reports_for_display, url_formatter):
     # dump due to bug
     #print(reports_for_display)
     #pprint.pp(reports_for_display)
@@ -1010,7 +1012,17 @@ def display_reports(reports_for_display, url_formatter):
             except KeyError:
                 print(issue)
                 raise
+
     report_segment = reports_for_display['mismatches_between_osm_wiki_and_data_items']
+    report += get_report_segment_text_mismatch_with_wikibase(url_formatter, report_segment)
+
+    report_segment = reports_for_display['aliased status present']
+    report += get_report_segment_text_value_issue(url_formatter, report_segment, "Aliased status of tag is being used")
+
+    return report
+
+def get_report_segment_text_mismatch_with_wikibase(url_formatter, report_segment):
+    report = ""
     if len(report_segment) > 0:
         report += "\n"
         report += "====Important mismatch of OSM Wiki and data items====\n"
@@ -1037,10 +1049,13 @@ def display_reports(reports_for_display, url_formatter):
                 print(issue)
                 print("type handling bug")
                 raise
-    report_segment = reports_for_display['aliased status present']
+    return report
+
+def get_report_segment_text_value_issue(url_formatter, report_segment, title):
+    report = ""
     if len(report_segment) > 0:
         report += "\n"
-        report += "====Aliased status of tag is being used====\n"
+        report += "====" + title + "====\n"
         for issue in report_segment:
             try:
                 line = ""
@@ -1058,7 +1073,28 @@ def display_reports(reports_for_display, url_formatter):
                 print(issue)
                 print("type handling bug")
                 raise
+    return report
 
-    print(report)
+def get_report_segment_text_general_issue(url_formatter, report_segment, title):
+    report = ""
+    if len(report_segment) > 0:
+        report += "\n"
+        report += "====" + title + "====\n"
+        for issue in report_segment:
+            try:
+                line = ""
+                line += "* "
+                line += url_formatter(issue["osm_wiki_url"])
+                line += "\n"
+                report += line
+            except KeyError:
+                print(issue)
+                print(title + " have incomplete data")
+                raise
+            except TypeError:
+                print(issue)
+                print("type handling bug")
+                raise
+    return report
 
 main()
