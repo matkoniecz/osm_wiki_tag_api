@@ -988,6 +988,7 @@ def main():
     report += "==== Tags with quickly growing usage but without own page ===="
     report += missing_pages
     report += report_text(reports_for_display, mediawiki_url_formatter)
+    print(report + "\n" + "==Other listings=={{User:Mateusz Konieczny/todo}}")
 
 def report_text(reports_for_display, url_formatter):
     # dump due to bug
