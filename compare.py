@@ -242,6 +242,7 @@ def compare_data_in_specific_language(tag_docs, report, language):
     template = tag_docs.parsed_infobox(language)
     if template == None:
         print("parsing failed on", page_name)
+        report["issues"].append({"page_name": page_name, "osm_wiki_url": url, "type": "parsing failed"})
         return report
     page_name = tag_docs.title_in_language(language)
     if template == {}:
@@ -397,6 +398,9 @@ def print_report_to_stdout(report):
             written_something = True
         if issue["type"] == "aliased status present":
             print(":", issue["osm_wiki_url"], "-", issue["key"], "aliased status is present while canonical would be better (", issue['osm_wiki_value'], ")")
+            written_something = True
+        if issue["type"] == "parsing failed":
+            print(":", issue["osm_wiki_url"], "- failed to cleanly parse wiki template page")
             written_something = True
     return written_something
 
@@ -835,6 +839,8 @@ def update_reports(reports_for_display, group):
                 reports_for_display['wikidata_key_present'].append(issue)
             if issue["type"] == "aliased status present":
                 reports_for_display['aliased_status_present'].append(issue)
+            if issue["type"] == "parsing failed":
+                reports_for_display['parsing failed'].append(issue)
                 
 
     return reports_for_display
@@ -869,6 +875,7 @@ def collect_reports(pages):
         'mismatches_between_osm_wiki_and_data_items': [],
         'wikidata_key_present': [],
         'aliased status present': [],
+        'parsing failed': [],
     }
     keys = list(pages.keys())
     random.shuffle(keys)
@@ -1018,6 +1025,9 @@ def report_text(reports_for_display, url_formatter):
 
     report_segment = reports_for_display['aliased status present']
     report += get_report_segment_text_value_issue(url_formatter, report_segment, "Aliased status of tag is being used")
+
+    report_segment = reports_for_display['parsing failed']
+    report += get_report_segment_text_general_issue(url_formatter, report_segment, "Parsing of infobox failed (typical issues are minor)")
 
     return report
 
