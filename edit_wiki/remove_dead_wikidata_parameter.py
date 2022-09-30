@@ -71,7 +71,7 @@ for page_title in mediawiki_api_wrapper.query.pages_from_category("Category:Wiki
         continue
     while True:
         try:
-            mediawiki_api_wrapper.login_and_editing.edit_page(session, page_title, text, "remove wikidata parameter (after [[Proposed features/remove link to Wikidata from infoboxes]])", data['rev_id'], data['timestamp'], mark_as_bot_edit=True)
+            mediawiki_api_wrapper.login_and_editing.edit_page(session, page_title, text, "remove wikidata parameter (after [[Proposed features/remove link to Wikidata from infoboxes]]) - [[Category:Cleanup]] has many tasks where humans are needed and you are welcome to help with them!", data['rev_id'], data['timestamp'], mark_as_bot_edit=True)
             break
         except mediawiki_api_wrapper.login_and_editing.NoEditPermissionException:
             # Recreate session, may be needed after long processing
