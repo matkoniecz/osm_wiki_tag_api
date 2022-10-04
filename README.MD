@@ -43,3 +43,7 @@ title = "Tag:highway=motorway"
 returned = api.get({ :title => title, :action => 'raw' }).body
 puts(returned)
 ```
+
+# Published
+
+Right now it is published on https://github.com/matkoniecz/osm_wiki_tag_api
