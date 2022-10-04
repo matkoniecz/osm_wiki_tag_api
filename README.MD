@@ -25,7 +25,8 @@ Python 3.9+
 
 `pip3 install -r requirements.txt`
 
-#Alternatives
+# Alternatives
+
 ## Taginfo code (Ruby)
 
 This can be used as an alternative way of getting parsed infoboxes if you need a Ruby code.
