@@ -210,7 +210,10 @@ def handle_missing_english_version(tag_docs, report):
     language = page_name.split(":")[0].lower()
     template = tag_docs.parsed_infobox(language)
     url = links.osm_wiki_page_link(page_name)
-    if "status" not in template:
+    if template == None:
+        print("template parsing on", url, "failed, got None instead of parsed template")
+        report["issues"].append({"page_name": page_name, "osm_wiki_url": url, "type": "failed page parsing"})
+    elif "status" not in template:
         print(url, "has no English version - and has unknown status", tag_docs)
         report["issues"].append({"page_name": page_name, "osm_wiki_url": url, "type": "missing English article about a tag with an unknown status"})
     elif normalize_status_string(template["status"]) in tag_docs.unimportant_tag_status():
