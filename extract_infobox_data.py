@@ -54,7 +54,7 @@ def allowed_and_ignored_keys():
 
 def expected_keys():
     return ["image", "description", "status", "statuslink", "onNode", "onWay", "onArea", "onRelation",
-                     "requires", "implies", "combination", "seeAlso", "wikidata", "group"]
+                     "requires", "implies", "combination", "seeAlso", "group"]
 
 def turn_page_text_to_parsed(text, page_title):
     if page_title == None:

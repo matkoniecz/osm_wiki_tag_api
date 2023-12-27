@@ -154,9 +154,6 @@ def turn_api_response_to_parsed(parsed_json):
         if "P11" in entity["claims"]:
             returned["statuslink"] = extract_wikibase_item.extract_url(entity, 'P11')
 
-    value = extract_wikibase_item.extract_string(entity, "P12")
-    if value != None:
-        returned["wikidata"] = value
     return returned
 
 def json_response_from_api(page_title):
