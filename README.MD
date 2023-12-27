@@ -21,9 +21,9 @@ It is also existing as bunch of code and is not published as `pip` library. If  
 
 # Dependencies
 
-Python 3.9+
+Use Python command matching your install:
 
-`pip3 install -r requirements.txt`
+`python3.10 -m pip install -r requirements.txt`
 
 # Alternatives
 
