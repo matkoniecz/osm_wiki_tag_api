@@ -38,6 +38,8 @@ def self_check_on_init():
     if extracted["status"] != "deprecated":
         raise Exception("failed to extract correct parameter")
 
+    compare_data(TagWithDocumentation(["Key:lit by led"])) # handle https://wiki.openstreetmap.org/wiki/Item:Q11461
+
     print("================================")
     print("find translated page where status mismatches main version, and verify that it is detected")
     print("================================")
