@@ -18,6 +18,53 @@ import csv
 
 # TODO: detect incomplete skeleton (distinguish missing parameter and no parameter set)
 
+def self_check_on_init():
+    "ab".removeprefix("a") # quick check that we are running python 3.9+
+
+    group = TagWithDocumentation(["Tag:historic=castle", "Cs:Tag:historic=castle"])
+    if "cs" not in group.available_languages():
+        raise "cs missing"
+    if "en" not in group.available_languages():
+        raise "en missing"
+    if len(group.available_languages()) != 2:
+        raise "unwanted extra language(s)"
+    compare_data(group)
+ 
+ 
+    if TagWithDocumentation([]).find_title_in_given_language_among_matching('pl', ['Pl:Tag:wood=deciduous'], debug=True) != 'Pl:Tag:wood=deciduous':
+        raise Exception("failed to extract correct title")
+
+    extracted = extract_infobox_data.turn_page_text_to_parsed("{{Deprecated|oldkey=amenity|oldvalue=community_center|newtext=tag:amenity=community_centre}}", "dummy title")
+    if extracted["status"] != "deprecated":
+        raise Exception("failed to extract correct parameter")
+
+    print("================================")
+    print("find translated page where status mismatches main version, and verify that it is detected")
+    print("================================")
+    # TODO what should happend here?
+    compare_data(TagWithDocumentation(["Tag:amenity=trolley_bay"]))
+    compare_data(TagWithDocumentation(["Key:right:country"]))
+    entry = TagWithDocumentation(["Tag:utility=power"])
+    text = entry.base_page_text()
+    compare_data(entry)
+
+    print("-000000000000000000000000")
+    test_parameter_extraction_from_infobox()
+
+def test_parameter_extraction_from_infobox():
+    # TODO - is key, value really skipped? why?
+    text = """{{ValueDescription
+    |key=skipped_apparently
+    |value=skipped_apparently
+    |group=arghhhj
+    }}"""
+
+    extracted = extract_infobox_data.turn_page_text_to_parsed(text, "dummy title")
+    print(extracted)
+    raise
+    if extracted["group"] != "arghhhj":
+        raise Exception("failed to extract correct parameter")
+
 def is_adding_image_important(tag_docs):
     page_name = tag_docs.base_title()
     if page_name in ["Key:public_transport:version", "Key:import_uuid"]:
@@ -760,50 +807,6 @@ def pages_grouped_by_tag_from_list(titles):
         print(supposedly_invalid_pages)
         print("above are supposedly invalid pages")
     return pages
-
-def self_check_on_init():
-    "ab".removeprefix("a") # quick check that we are running python 3.9+
-
-    group = TagWithDocumentation(["Tag:historic=castle", "Cs:Tag:historic=castle"])
-    if "cs" not in group.available_languages():
-        raise "cs missing"
-    if "en" not in group.available_languages():
-        raise "en missing"
-    if len(group.available_languages()) != 2:
-        raise "unwanted extra language(s)"
-    compare_data(group)
- 
- 
-    if TagWithDocumentation([]).find_title_in_given_language_among_matching('pl', ['Pl:Tag:wood=deciduous'], debug=True) != 'Pl:Tag:wood=deciduous':
-        raise Exception("failed to extract correct title")
-
-    # TODO - is key, value really skipped? why?
-    text = """{{ValueDescription
-    |key=skipped_apparently
-    |value=skipped_apparently
-    |group=arghhhj
-    }}"""
-
-    extracted = extract_infobox_data.turn_page_text_to_parsed(text, "dummy title")
-    print(extracted)
-    if extracted["group"] != "arghhhj":
-        raise Exception("failed to extract correct parameter")
-
-    extracted = extract_infobox_data.turn_page_text_to_parsed("{{Deprecated|oldkey=amenity|oldvalue=community_center|newtext=tag:amenity=community_centre}}", "dummy title")
-    if extracted["status"] != "deprecated":
-        raise Exception("failed to extract correct parameter")
-
-    print("================================")
-    print("find translated page where status mismatches main version, and verify that it is detected")
-    print("================================")
-    # TODO what should happend here?
-    compare_data(TagWithDocumentation(["Tag:amenity=trolley_bay"]))
-    compare_data(TagWithDocumentation(["Key:right:country"]))
-    entry = TagWithDocumentation(["Tag:utility=power"])
-    text = entry.base_page_text()
-    compare_data(entry)
-
-    print("-000000000000000000000000")
 
 def images_help_prefix():
     report = "\n"
