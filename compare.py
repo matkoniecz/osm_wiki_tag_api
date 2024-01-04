@@ -597,7 +597,7 @@ class TagWithDocumentation():
             self.spot_issues_in_a_given_page_requiring_understanding_langage(self.page_texts[language], self.title_in_language(language), language)
     
     def spot_issues_in_a_given_page(self, text, page_name):
-        url = links.osm_wiki_page_link(page_name)
+        url = links.osm_wiki_page_edit_link(page_name)
         parsed_text = mwparserfromhell.parse(text)
 
         for html in ["ul", "li", "br"]:
